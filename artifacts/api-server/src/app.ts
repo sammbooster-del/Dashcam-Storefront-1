@@ -5,6 +5,7 @@ import { publishableKeyFromHost } from "@clerk/shared/keys";
 import router from "./routes";
 import { logger } from "./lib/logger";
 import { CLERK_PROXY_PATH, clerkProxyMiddleware, getClerkProxyHost } from "./middlewares/clerkProxyMiddleware";
+import { regionalAccess } from "./middlewares/regionalAccess";
 
 const app: Express = express();
 
@@ -27,6 +28,7 @@ app.use(
     },
   }),
 );
+app.use("/api", regionalAccess);
 app.use(CLERK_PROXY_PATH, clerkProxyMiddleware());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

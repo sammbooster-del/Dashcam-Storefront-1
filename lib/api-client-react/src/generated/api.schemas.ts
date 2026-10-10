@@ -5,6 +5,23 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+export type RegionalAccessCode = typeof RegionalAccessCode[keyof typeof RegionalAccessCode];
+
+
+export const RegionalAccessCode = {
+  ALLOWED: 'ALLOWED',
+  REGION_BLOCKED: 'REGION_BLOCKED',
+  LOCATION_UNAVAILABLE: 'LOCATION_UNAVAILABLE',
+} as const;
+
+export interface RegionalAccess {
+  allowed: boolean;
+  /** @nullable */
+  country: string | null;
+  code: RegionalAccessCode;
+  message: string;
+}
+
 export interface DeliveryAlertInput {
   draftId: string;
 }

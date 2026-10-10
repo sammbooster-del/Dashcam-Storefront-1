@@ -50,6 +50,8 @@ export * from './productImageUploadInput';
 export * from './productImageUploadInputContentType';
 export * from './productInput';
 export * from './productUpdate';
+export * from './regionalAccess';
+export * from './regionalAccessCode';
 export * from './storefront';
 export * from './storeSettings';
 export * from './storeSettingsInput';

@@ -15,6 +15,30 @@ tags:
   - name: admin
     description: Protected store management
 paths:
+  /access-status:
+    get:
+      operationId: getAccessStatus
+      tags: [store]
+      summary: Check regional access before showing the store
+      responses:
+        "200":
+          description: Visitor may access the store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegionalAccess"
+        "403":
+          description: Store unavailable in the visitor's region
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegionalAccess"
+        "503":
+          description: Visitor location could not be checked
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegionalAccess"
   /healthz:
     get:
       operationId: healthCheck
@@ -468,6 +492,14 @@ paths:
                 $ref: "#/components/schemas/DemoOrder"
 components:
   schemas:
+    RegionalAccess:
+      type: object
+      required: [allowed, country, code, message]
+      properties:
+        allowed: { type: boolean }
+        country: { type: ["string", "null"] }
+        code: { type: string, enum: [ALLOWED, REGION_BLOCKED, LOCATION_UNAVAILABLE] }
+        message: { type: string }
     DeliveryAlertInput:
       type: object
       additionalProperties: false

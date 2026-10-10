@@ -9,6 +9,17 @@ import * as zod from 'zod';
 
 
 /**
+ * @summary Check regional access before showing the store
+ */
+export const GetAccessStatusResponse = zod.object({
+  "allowed": zod.boolean(),
+  "country": zod.string().nullable(),
+  "code": zod.enum(['ALLOWED', 'REGION_BLOCKED', 'LOCATION_UNAVAILABLE']),
+  "message": zod.string()
+})
+
+
+/**
  * Returns server health status
  * @summary Health check
  */

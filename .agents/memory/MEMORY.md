@@ -16,3 +16,4 @@
 - [Checkout country policy](checkout-country-policy.md) — Worldwide country options are merchant opt-in; country detection is approximate and must not override shopper edits.
 - [Category visibility policy](category-visibility-policy.md) — Category switches override shop visibility without rewriting individual product visibility or stock.
 - [Shared React Query context](shared-query-context.md) — pnpm peer variants can split app and generated-hook contexts in production; dedupe the context library in Vite.
+- [Regional access policy](regional-access-policy.md) — Block access from India independently of delivery-country choices; the preview may hide public IPs.

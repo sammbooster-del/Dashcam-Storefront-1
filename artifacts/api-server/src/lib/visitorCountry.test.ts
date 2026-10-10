@@ -1,0 +1,30 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { clientIp, createCountryLookup, publicIp } from "./visitorCountry";
+
+test("ignores private addresses and spoofed first forwarded entries", () => {
+  assert.equal(publicIp("::ffff:127.0.0.1"), null);
+  assert.equal(publicIp("192.168.1.2"), null);
+  assert.equal(publicIp("fc00::1"), null);
+  assert.equal(publicIp("not-an-ip"), null);
+  assert.equal(clientIp("8.8.8.8, 49.36.0.1, 10.0.0.1", "127.0.0.1"), "49.36.0.1");
+  assert.equal(clientIp(undefined, "::ffff:8.8.8.8"), "8.8.8.8");
+});
+
+test("caches successful country lookups", async () => {
+  let calls = 0;
+  const lookup = createCountryLookup((async () => {
+    calls++;
+    return new Response(JSON.stringify({ country: "IN" }));
+  }) as typeof fetch);
+  assert.equal(await lookup("49.36.0.1"), "IN");
+  assert.equal(await lookup("49.36.0.1"), "IN");
+  assert.equal(calls, 1);
+});
+
+test("provider failures and malformed countries never imply allowed access", async () => {
+  const failed = createCountryLookup((async () => { throw new Error("offline"); }) as typeof fetch);
+  assert.equal(await failed("49.36.0.1"), null);
+  const malformed = createCountryLookup((async () => new Response('{"country":"invalid"}')) as typeof fetch);
+  assert.equal(await malformed("49.36.0.1"), null);
+});

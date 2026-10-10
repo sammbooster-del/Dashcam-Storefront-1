@@ -40,6 +40,7 @@ import type {
   ProductImageUploadInput,
   ProductInput,
   ProductUpdate,
+  RegionalAccess,
   StoreSettingsInput,
   Storefront
 } from './api.schemas';
@@ -70,6 +71,83 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   }
   return result;
 };
+
+export const getGetAccessStatusUrl = () => {
+
+
+
+
+  return `/api/access-status`
+}
+
+/**
+ * @summary Check regional access before showing the store
+ */
+export const getAccessStatus = async ( options?: Parameters<typeof customFetch>[1]): Promise<RegionalAccess> => {
+
+  return customFetch<RegionalAccess>(getGetAccessStatusUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetAccessStatusQueryKey = () => {
+    return [
+    `/api/access-status`
+    ] as const;
+    }
+
+
+export const getGetAccessStatusQueryOptions = <TData = Awaited<ReturnType<typeof getAccessStatus>>, TError = ErrorType<RegionalAccess>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getAccessStatus>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetAccessStatusQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAccessStatus>>> = ({ signal }) => getAccessStatus({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAccessStatus>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetAccessStatusQueryResult = NonNullable<Awaited<ReturnType<typeof getAccessStatus>>>
+export type GetAccessStatusQueryError = ErrorType<RegionalAccess>
+
+
+/**
+ * @summary Check regional access before showing the store
+ */
+
+export function useGetAccessStatus<TData = Awaited<ReturnType<typeof getAccessStatus>>, TError = ErrorType<RegionalAccess>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getAccessStatus>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetAccessStatusQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
 
 export const getHealthCheckUrl = () => {
 

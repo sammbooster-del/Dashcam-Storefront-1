@@ -18,8 +18,8 @@ function browserCountry(): CountryCode | null {
 }
 
 let countryRequest: Promise<CountryCode | null> | undefined;
-function visitorCountry() {
-  return countryRequest ??= (async () => {
+export async function visitorCountry() {
+  const result = await (countryRequest ??= (async () => {
     const controller = new AbortController();
     const timeout = window.setTimeout(() => controller.abort(), 5000);
     try {
@@ -30,7 +30,9 @@ function visitorCountry() {
       return allCountries.find(code => code === data.country) ?? null;
     } catch { return null; }
     finally { window.clearTimeout(timeout); }
-  })();
+  })());
+  if (!result) countryRequest = undefined;
+  return result;
 }
 
 export function useCheckoutCountry(allowed: CountryCode[]) {
