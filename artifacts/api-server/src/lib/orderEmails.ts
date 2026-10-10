@@ -72,7 +72,8 @@ export async function processOrderEmails(deliver: SendEmail = sendEmail, store: 
         // Do not select or pass card numbers, expiry, CVC, OTP or billing data.
         const [order] = await store.select({
           id: demoOrdersTable.id, items: demoOrdersTable.items,
-          contactEmail: demoOrdersTable.contactEmail, shippingAddress: demoOrdersTable.shippingAddress,
+          contactEmail: demoOrdersTable.contactEmail, contactPhone: demoOrdersTable.contactPhone,
+          shippingAddress: demoOrdersTable.shippingAddress,
           subtotalCents: demoOrdersTable.subtotalCents, shippingCents: demoOrdersTable.shippingCents,
           totalCents: demoOrdersTable.totalCents, status: demoOrdersTable.status,
           verificationState: demoOrdersTable.verificationState,

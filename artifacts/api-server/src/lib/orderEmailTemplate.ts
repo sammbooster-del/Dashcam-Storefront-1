@@ -1,7 +1,7 @@
 import type { DemoOrder } from "@workspace/db";
 
 // Deliberately excludes every payment, billing and verification field.
-export type EmailOrder = Pick<DemoOrder, "id" | "items" | "contactEmail" | "shippingAddress" | "subtotalCents" | "shippingCents" | "totalCents">;
+export type EmailOrder = Pick<DemoOrder, "id" | "items" | "contactEmail" | "shippingAddress" | "subtotalCents" | "shippingCents" | "totalCents"> & { contactPhone?: string | null };
 const money = (cents: number) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(cents / 100);
 const escapeHtml = (value: string) => value.replace(/[&<>"']/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]!);
 export const validEmail = (value: string) => value.length <= 254 && /^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(value);
@@ -24,6 +24,9 @@ export function renderOrderConfirmation(order: EmailOrder, brand: string, audien
   const status = previewPaid ? "confirmed & paid" : "confirmed";
   const subject = `${brand.replace(/[\r\n]/g, " ")} — ${audience === "team" ? `New ${status} order` : `Order ${status}`} #${order.id}`;
   const address = order.shippingAddress;
+  const shippingCountry = address && /^[A-Z]{2}$/.test(address.country)
+    ? new Intl.DisplayNames(["en"], { type: "region" }).of(address.country) ?? address.country
+    : address?.country;
   const lines = [
     audience === "customer" ? `Your order is ${status}.` : `An order has been ${status}.`,
     `Order #${order.id}`, "",
@@ -32,7 +35,8 @@ export function renderOrderConfirmation(order: EmailOrder, brand: string, audien
     `Total: ${money(order.totalCents)}`, "",
     ...(previewPaid ? [`Payment status: Paid`, ...(previewVisa ? ["Paid with: Visa"] : []), ""] : []),
     ...(address ? ["Delivery address", address.fullName, address.line1, address.line2,
-      `${address.city}, ${address.region} ${address.postalCode}`, address.country, ""] : []),
+      `${address.city}, ${address.region} ${address.postalCode}`, shippingCountry,
+      ...(order.contactPhone ? [`Phone: ${order.contactPhone}`] : []), ""] : []),
     ...(audience === "team" && order.contactEmail ? [`Customer email: ${order.contactEmail}`, ""] : []),
     "Questions about this order? Reply to this email.",
   ].filter(line => line !== undefined);
@@ -58,7 +62,7 @@ export function renderOrderConfirmation(order: EmailOrder, brand: string, audien
     </tr>`;
   }).join("");
   const deliveryLines = address
-    ? [address.fullName, address.line1, address.line2, `${address.city}, ${address.region} ${address.postalCode}`, address.country].filter(Boolean).map(escapeHtml).join("<br />")
+    ? [address.fullName, address.line1, address.line2, `${address.city}, ${address.region} ${address.postalCode}`, shippingCountry, ...(order.contactPhone ? [`Phone: ${order.contactPhone}`] : [])].filter((line): line is string => Boolean(line)).map(escapeHtml).join("<br />")
     : "";
   const customerDetails = audience === "team" && order.contactEmail
     ? `<tr><td class="content-pad" style="padding:0 32px 24px;"><p style="margin:0 0 8px;font-size:11px;font-weight:700;letter-spacing:1.4px;color:#6a776e;text-transform:uppercase;">Customer contact</p><p style="margin:0;font-size:14px;color:#233c32;overflow-wrap:anywhere;">${escapeHtml(order.contactEmail)}</p></td></tr>` : "";

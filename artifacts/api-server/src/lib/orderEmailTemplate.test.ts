@@ -78,3 +78,13 @@ test("confirmed and paid is limited to explicitly requested development previews
     else process.env.NODE_ENV = original;
   }
 });
+
+test("delivery details include the supplied phone and a readable country name", () => {
+  const content = renderOrderConfirmation({
+    ...order, contactPhone: "+1 202 555 0100",
+    shippingAddress: { ...order.shippingAddress!, country: "IN" },
+  }, "Everyday Finds", "customer");
+  assert.match(content.html, /Phone: \+1 202 555 0100/);
+  assert.match(content.html, /India/);
+  assert.match(content.text, /Phone: \+1 202 555 0100/);
+});
