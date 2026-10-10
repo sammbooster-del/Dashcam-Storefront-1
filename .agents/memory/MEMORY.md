@@ -1,0 +1,11 @@
+- [Storefront reference fidelity](storefront-reference-fidelity.md) — Match the supplied retail layout closely; keep original branding and assets unless reproduction rights are confirmed.
+- [Demo checkout boundaries](demo-order-inventory.md) — Demo orders do not affect stock; live previews never transmit typed card values.
+- [OpenAPI inline-body collision](openapi-inline-body.md) — Name request-body schemas for parameterized operations to avoid duplicate generated TypeScript exports.
+- [Checkout path and cart visibility](checkout-cart-visibility.md) — Keep products visible on mobile; Buy now skips cart navigation and opens delivery.
+- [Checkout arrival alert](checkout-arrival-alert.md) — Use a repeating Pushover notification, not a phone call, for the start of delivery entry.
+- [Payment brand asset contrast](payment-brand-assets.md) — Google Pay’s light/dark SVG names refer to the button background, not the lettering color.
+- [Store consolidation](second-store-boundaries.md) — Everyday app removed; preserve DriveGuard, required images, and archived Everyday data without recreating a separate store.
+- [Catalog package management](catalog-package-management.md) — Adding catalog dependencies can rewrite workspace policy comments and pin existing ranges; preserve both.
+- [Preview path verification](preview-path-verification.md) — Test the exact preview-bar path; the screenshot helper may use a different trailing-slash form.
+- [Imported preview setup](imported-preview-setup.md) — Starting imported source does not restore the original database records or sign-in accounts.
+- [Imported Git history](imported-git-history.md) — A valid shallow import can fail its first GitHub push; backups may lack the same ancestors.

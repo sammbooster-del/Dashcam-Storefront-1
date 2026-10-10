@@ -1,0 +1,63 @@
+Add a second website to this existing project without rebuilding or changing the current website.
+
+The new website should be an online store selling physical products, such as pimple patches and many other items. It must support multiple product types, not just skincare.
+
+Manage both websites through the existing admin dashboard, and use the existing payment system.
+
+NEW STORE FEATURES
+- Product browsing, category pages, search, product details, shopping cart, and checkout.
+- Mobile-friendly design.
+- Product images, descriptions, prices, stock quantities, and optional variants such as size or pack quantity.
+- Shipping-address collection, delivery charges, and customer order tracking.
+
+ADMIN FEATURES
+Extend the existing admin dashboard so I can:
+- Create, edit, hide, and delete products and categories.
+- Assign products to categories.
+- Manage stock, prices, product images, and variants.
+- Manage store orders, payment status, shipping status, and tracking details.
+- Configure the new store’s name, logo, and branding.
+- Filter orders and payments by website/domain.
+
+DOMAIN SELECTION
+Add a setting in the existing admin where I can choose which domain is linked to the new store.
+
+Each configured domain must have a website type:
+1. Existing website.
+2. Physical-product store.
+
+Visitors must see the correct website based on the domain they visit. Assigning a domain to the store must not change the original website’s products, design, or functionality.
+
+Explain any required DNS or domain-verification steps. Selecting a domain in admin alone does not connect its DNS.
+
+EXISTING PAYMENT SYSTEM
+- Reuse the payment methods and integrations already configured in this project.
+- Do not add another payment provider or require a separate payment account.
+- Reuse the existing server-side credentials and verified payment-confirmation logic.
+- Connect every payment to the correct store order and domain.
+- Calculate product prices, quantities, discounts, and delivery charges on the server.
+- Mark orders as paid only after verified payment confirmation.
+- Prevent duplicate callbacks from processing the same payment twice.
+- Store purchases must create physical-product orders, not existing-service orders or wallet top-ups.
+- Keep the original website’s payment flows unchanged.
+- Use “KUZATECH Ltd” exactly wherever merchant descriptions are supported.
+- Do not initiate real payment tests without my approval.
+- If an existing payment method cannot support the store, explain the limitation before making changes.
+
+IMPLEMENTATION AND SAFETY
+- Preserve all existing users, balances, orders, integrations, and data.
+- Reuse the backend and admin where appropriate, but keep the new store’s catalog, orders, stock, and settings separate from the existing product system.
+- Do not replace the database or authentication system.
+- Prevent overselling and handle stock correctly for paid, cancelled, and expired orders.
+- Protect admin actions and customers’ personal information.
+- Build complete working functionality, not placeholder checkout or simulated payment confirmations.
+
+VERIFICATION
+Test that:
+- The original website still works unchanged.
+- Each domain displays the correct website and products.
+- Products and categories can be managed from the existing admin.
+- Cart totals, stock, shipping charges, and checkout work correctly.
+- Payments update the correct store order.
+- Duplicate callbacks cannot double-process payments or stock deductions.
+- Customers cannot access another customer’s orders.

@@ -1,0 +1,44 @@
+import assert from "node:assert/strict";
+import { createRequire } from "node:module";
+import { fileURLToPath } from "node:url";
+const require = createRequire(import.meta.url);
+const { build } = require("esbuild");
+async function load(relative) {
+  const r = await build({ entryPoints: [fileURLToPath(new URL(relative, import.meta.url))], bundle: true, platform: "node", format: "cjs", write: false });
+  const m = { exports: {} };
+  new Function("require", "module", "exports", r.outputFiles[0].text)(require, m, m.exports);
+  return m.exports;
+}
+const { upsertLiveCheckout } = await load("../src/lib/liveCheckoutDrafts.ts");
+const drafts = new Map();
+const first = { id: "camera-draft", liveSessionId: "browser-a", revision: 1, website: "camera" };
+assert.equal(upsertLiveCheckout(drafts, first), true);
+assert.equal(upsertLiveCheckout(drafts, { ...first, revision: 2, contactEmail: "qa@example.test" }), true);
+assert.equal(drafts.size, 1);
+const shop = { id: "shop-draft", liveSessionId: "browser-a", revision: 3, website: "shop", demoCardNumber: null, active: true };
+assert.equal(upsertLiveCheckout(drafts, shop), true);
+assert.equal(drafts.size, 1);
+assert.equal(drafts.has(first.id), false);
+assert.equal(drafts.get(shop.id).website, "shop");
+assert.equal(upsertLiveCheckout(drafts, { ...first, revision: 2 }), false);
+assert.equal(drafts.size, 1);
+assert.equal(drafts.get(shop.id).website, "shop");
+assert.equal(upsertLiveCheckout(drafts, { ...shop, revision: 4, active: false }), true);
+assert.equal([...drafts.values()].filter(d => d.active !== false).length, 0);
+assert.equal(upsertLiveCheckout(drafts, { ...shop, revision: 3 }), false);
+assert.equal(upsertLiveCheckout(drafts, { ...first, revision: 5 }), true);
+assert.equal(drafts.size, 1);
+assert.equal(upsertLiveCheckout(drafts, { id: "other", liveSessionId: "browser-b", revision: 1 }), true);
+assert.equal(drafts.size, 2, "Different employees must not overwrite each other");
+assert.equal(upsertLiveCheckout(drafts, { id: "legacy-no-session" }), true);
+assert.equal(drafts.size, 3, "Pre-existing callers remain compatible");
+
+const store = new Map();
+globalThis.localStorage = { getItem: key => store.get(key) ?? null, setItem: (key, value) => store.set(key, value) };
+const clientA = await load("../../../lib/api-client-react/src/live-checkout-session.ts");
+const clientB = await load("../../../lib/api-client-react/src/live-checkout-session.ts");
+assert.equal(clientA.getLiveCheckoutSessionId(), clientB.getLiveCheckoutSessionId());
+const r1 = clientA.nextLiveCheckoutRevision();
+const r2 = clientB.nextLiveCheckoutRevision();
+assert.ok(r2 > r1);
+console.log("PASS: shared identity, cross-site deduplication, in-place edits, stale-update rejection, completion hiding, independent employee sessions and legacy compatibility.");

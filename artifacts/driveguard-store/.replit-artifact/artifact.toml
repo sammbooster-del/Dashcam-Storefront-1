@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "DriveGuard Store"
+description = "A responsive dashcam storefront with a featured sample product, shopping cart, and non-processing simulated card checkout."
+version = "1.0.0"
+id = "artifacts/driveguard-store"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 24248
+
+[services.development]
+run = "pnpm --filter @workspace/driveguard-store run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/driveguard-store", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/driveguard-store/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24248"
+BASE_PATH = "/"
