@@ -56,3 +56,21 @@ test("embedded thumbnail references are allowed but arbitrary CID references are
   assert.match(content.html, /src="cid:product-10"/);
   assert.doesNotMatch(content.html, /onerror/);
 });
+
+test("confirmed and paid is limited to explicitly requested development previews", () => {
+  const original = process.env.NODE_ENV;
+  try {
+    process.env.NODE_ENV = "development";
+    const preview = renderOrderConfirmation(order, "Everyday Finds", "customer", { previewPaid: true });
+    assert.equal(preview.subject, "Everyday Finds — Order confirmed & paid #321");
+    assert.match(preview.html, /Order confirmed &amp; paid/);
+    assert.match(preview.text, /Your order is confirmed & paid/);
+    process.env.NODE_ENV = "production";
+    const live = renderOrderConfirmation(order, "Everyday Finds", "customer", { previewPaid: true });
+    assert.equal(live.subject, "Everyday Finds — Order confirmed #321");
+    assert.doesNotMatch(live.html, /paid/i);
+  } finally {
+    if (original === undefined) delete process.env.NODE_ENV;
+    else process.env.NODE_ENV = original;
+  }
+});

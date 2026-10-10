@@ -6,7 +6,7 @@ const money = (cents: number) => new Intl.NumberFormat("en-US", { style: "curren
 const escapeHtml = (value: string) => value.replace(/[&<>"']/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]!);
 export const validEmail = (value: string) => value.length <= 254 && /^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(value);
 
-export type EmailPresentation = { storeUrl?: string; productImages?: Record<number, string> };
+export type EmailPresentation = { storeUrl?: string; productImages?: Record<number, string>; previewPaid?: boolean };
 
 export function emailImageUrl(value: string | undefined, storeUrl?: string) {
   if (!value) return undefined;
@@ -17,10 +17,14 @@ export function emailImageUrl(value: string | undefined, storeUrl?: string) {
 }
 
 export function renderOrderConfirmation(order: EmailOrder, brand: string, audience: "customer" | "team", presentation: EmailPresentation = {}) {
-  const subject = `${brand.replace(/[\r\n]/g, " ")} — ${audience === "team" ? "New confirmed order" : "Order confirmed"} #${order.id}`;
+  // A paid-looking status is only for explicitly requested internal previews.
+  // Production must never infer payment from a simulated order approval.
+  const previewPaid = presentation.previewPaid === true && process.env.NODE_ENV === "development";
+  const status = previewPaid ? "confirmed & paid" : "confirmed";
+  const subject = `${brand.replace(/[\r\n]/g, " ")} — ${audience === "team" ? `New ${status} order` : `Order ${status}`} #${order.id}`;
   const address = order.shippingAddress;
   const lines = [
-    audience === "customer" ? "Your order is confirmed." : "An order has been confirmed.",
+    audience === "customer" ? `Your order is ${status}.` : `An order has been ${status}.`,
     `Order #${order.id}`, "",
     ...order.items.map(item => `${item.name} × ${item.quantity} — ${money(item.unitPriceCents * item.quantity)}`),
     "", `Subtotal: ${money(order.subtotalCents)}`, `Shipping: ${money(order.shippingCents)}`,
@@ -62,14 +66,14 @@ export function renderOrderConfirmation(order: EmailOrder, brand: string, audien
 <title>${escapeHtml(subject)}</title>
 <style>@media only screen and (max-width:600px){.outer-pad{padding:20px 10px!important}.content-pad{padding-left:20px!important;padding-right:20px!important}.email-heading{font-size:29px!important}}</style></head>
 <body style="margin:0;padding:0;background:#f5f3ed;font-family:Arial,Helvetica,sans-serif;color:#233c32;-webkit-text-size-adjust:100%;">
-<div style="display:none;max-height:0;max-width:0;overflow:hidden;opacity:0;mso-hide:all;">Order #${order.id} is confirmed. ${itemCount} ${itemCount === 1 ? "item" : "items"} &middot; ${money(order.totalCents)}. Your order details are inside.</div>
+<div style="display:none;max-height:0;max-width:0;overflow:hidden;opacity:0;mso-hide:all;">Order #${order.id} is ${escapeHtml(status)}. ${itemCount} ${itemCount === 1 ? "item" : "items"} &middot; ${money(order.totalCents)}. Your order details are inside.</div>
 <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background:#f5f3ed;"><tr><td class="outer-pad" align="center" style="padding:36px 16px;">
   <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" style="width:100%;max-width:600px;">
     <tr><td align="center" style="padding:0 12px 24px;font-family:Georgia,'Times New Roman',serif;font-size:27px;font-weight:700;color:#233c32;">${safeBrand}</td></tr>
     <tr><td>
       <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background:#ffffff;border:1px solid #e5e8e0;border-radius:16px;">
         <tr><td class="content-pad" style="padding:32px 32px 28px;background:#eaf0e8;border-radius:16px 16px 0 0;">
-          <p style="margin:0 0 15px;font-size:11px;font-weight:700;letter-spacing:1.7px;text-transform:uppercase;color:#426250;">Order confirmed</p>
+          <p style="margin:0 0 15px;font-size:11px;font-weight:700;letter-spacing:1.7px;text-transform:uppercase;color:#426250;">Order ${escapeHtml(status)}</p>
           <h1 class="email-heading" style="margin:0 0 12px;font-family:Georgia,'Times New Roman',serif;font-size:34px;line-height:1.18;font-weight:400;color:#233c32;">${audience === "customer" ? "Thank you for your order." : "A new order is confirmed."}</h1>
           <p style="margin:0;font-size:14px;line-height:23px;color:#536a5b;">${audience === "customer" ? `We’ve received your order with ${safeBrand}. Here’s a summary of the items you selected.` : "Review the items and customer details below."}</p>
         </td></tr>

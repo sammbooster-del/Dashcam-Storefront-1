@@ -38,3 +38,9 @@ Product thumbnails in confirmations must remain viewable independently of the we
 **Why:** Email clients fetch remote images through their own proxies, which may be blocked or unidentified by the site's country check. A confirmed customer's email should not lose its product photos for that reason.
 
 **How to apply:** Embed compact thumbnails of locally hosted product photos in the email. Do not weaken the regional API restriction to make email images load.
+
+The owner requested “Confirmed & paid” wording for internal testing; keep simulated paid wording limited to development previews.
+
+**Why:** The checkout does not process real payments, and the request was explicitly framed as testing.
+
+**How to apply:** Preview labels must not change payment, inventory, or shipping state. Live confirmations must not claim payment based only on simulated approval.

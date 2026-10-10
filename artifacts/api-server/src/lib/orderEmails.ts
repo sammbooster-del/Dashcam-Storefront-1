@@ -90,6 +90,7 @@ export async function processOrderEmails(deliver: SendEmail = sendEmail, store: 
         const content = renderOrderConfirmation(order, settings.brandName, job.audience, {
           storeUrl: process.env.ORDER_EMAIL_STORE_URL,
           productImages: images,
+          previewPaid: process.env.NODE_ENV === "development",
         });
         const providerId = await deliver({
             from: `${settings.brandName.replace(/[<>\r\n]/g, "")} <${settings.orderEmailFrom}>`,
