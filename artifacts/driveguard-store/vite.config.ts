@@ -57,7 +57,9 @@ export default defineConfig({
         'attached_assets',
       ),
     },
-    dedupe: ['react', 'react-dom'],
+    // Shared generated hooks must use the same context as the app provider,
+    // even when pnpm installs separate peer-dependency instances.
+    dedupe: ['react', 'react-dom', '@tanstack/react-query'],
   },
   root: path.resolve(import.meta.dirname),
   build: {
