@@ -5,7 +5,7 @@ description: Audience and sending-domain decisions for DriveGuard order confirma
 
 Send separate order-confirmation emails to both the customer and the team. The team notification address also receives replies and can be a personal mailbox.
 
-**Why:** The owner explicitly chose both audiences and does not yet have a business mailbox.
+**Why:** The owner explicitly chose both audiences and initially used a personal team mailbox.
 
 **How to apply:** Keep team recipients out of the customer email's recipient list. These messages confirm an order, not a real charge or inventory reservation.
 
@@ -32,3 +32,9 @@ Order confirmations do not change the externally shared verification-code proces
 **Why:** The email request concerns confirmed orders, not generating or sending the team's existing verification codes.
 
 **How to apply:** Do not generate or email OTPs, card values, CVCs or bank credentials. Keep the existing verification flow unchanged.
+
+Product thumbnails in confirmations must remain viewable independently of the website's regional access restriction.
+
+**Why:** Email clients fetch remote images through their own proxies, which may be blocked or unidentified by the site's country check. A confirmed customer's email should not lose its product photos for that reason.
+
+**How to apply:** Embed compact thumbnails of locally hosted product photos in the email. Do not weaken the regional API restriction to make email images load.

@@ -1,8 +1,9 @@
 import { ReplitConnectors } from "@replit/connectors-sdk";
-import { and, eq, lte, or, sql } from "drizzle-orm";
-import { db, demoOrdersTable, orderEmailJobsTable, storeSettingsTable } from "@workspace/db";
+import { and, eq, inArray, lte, or, sql } from "drizzle-orm";
+import { db, demoOrdersTable, orderEmailJobsTable, storeProductsTable, storeSettingsTable } from "@workspace/db";
 import { logger } from "./logger";
 import { renderOrderConfirmation, validEmail } from "./orderEmailTemplate";
+import { prepareEmailImages, type InlineEmailImage } from "./orderEmailImages";
 
 type Transaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
 const MAX_ATTEMPTS = 5;
@@ -39,7 +40,7 @@ export async function queueOrderConfirmation(tx: Transaction, orderId: number) {
 }
 
 let running = false;
-type SendEmail = (payload: { from: string; to: string[]; reply_to: string; subject: string; text: string; html: string }, idempotencyKey: string) => Promise<string>;
+type SendEmail = (payload: { from: string; to: string[]; reply_to: string; subject: string; text: string; html: string; attachments?: InlineEmailImage[] }, idempotencyKey: string) => Promise<string>;
 const sendEmail: SendEmail = async (payload, idempotencyKey) => {
   const response = await withTimeout(new ReplitConnectors().proxy("resend", "/emails", {
     method: "POST", headers: { "Content-Type": "application/json", "Idempotency-Key": idempotencyKey },
@@ -81,10 +82,19 @@ export async function processOrderEmails(deliver: SendEmail = sendEmail, store: 
         }
         const to = job.audience === "customer" ? order.contactEmail : settings.orderEmailTeam;
         if (!to || !validEmail(to)) throw new Error("Recipient email is missing or invalid.");
-        const content = renderOrderConfirmation(order, settings.brandName, job.audience);
+        const productIds = [...new Set(order.items.map(item => item.productId))];
+        const products = productIds.length ? await store.select({
+          id: storeProductsTable.id, imageUrl: storeProductsTable.imageUrl,
+        }).from(storeProductsTable).where(inArray(storeProductsTable.id, productIds)) : [];
+        const { images, attachments } = await prepareEmailImages(products);
+        const content = renderOrderConfirmation(order, settings.brandName, job.audience, {
+          storeUrl: process.env.ORDER_EMAIL_STORE_URL,
+          productImages: images,
+        });
         const providerId = await deliver({
             from: `${settings.brandName.replace(/[<>\r\n]/g, "")} <${settings.orderEmailFrom}>`,
             to: [to], reply_to: settings.orderEmailTeam, ...content,
+            ...(attachments.length ? { attachments } : {}),
           }, job.id);
         await store.update(orderEmailJobsTable).set({
           state: "sent", providerId, lastError: null, updatedAt: new Date(),

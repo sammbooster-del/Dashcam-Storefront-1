@@ -1,0 +1,16 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "jApDmD2JeE9_1e4cOsRLU"
+uri = "file://generated-artifacts/order-email-desktop.jpg"
+type = "image"
+title = "Everyday Finds order-confirmation preview"
+description = "Updated confirmation email with seven compact product photos, order totals, and a continue-shopping button. No email was sent for this preview."
+logical_id = "b510bacc-6769-49a6-a8e7-3d5bb915644e"
+content_hash = "sha256:54918e33ec24d355a3926ca3509d52fea532e95e4b22a2dbc6219fe5fa505d17"
+size = 79131
+mtime_ms = 1791663996783
+storage_uri = "gcs://replit-rams-assets-pike/rams/assets/repl:ca9c7873-0c41-4351-8df6-d833baaeab72/b510bacc-6769-49a6-a8e7-3d5bb915644e/df20858a-3812-4ce9-a44b-7bfa5908de7e"
+storage_version_token = "1791664057144406"
+content_type = "image/jpeg"

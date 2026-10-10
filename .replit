@@ -23,6 +23,7 @@ timeoutMs = 20000
 
 [userenv.shared]
 STORE_ADMIN_EMAIL = "sammbooster@gmail.com"
+ORDER_EMAIL_STORE_URL = "https://everydayfinds.world"
 
 [nix]
 channel = "stable-25_05"
