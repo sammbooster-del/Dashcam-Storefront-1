@@ -15,6 +15,12 @@ Treat the website domain and email sending domain independently, and keep the se
 
 **How to apply:** A website domain change alone must not replace the sender. Verify the new sender domain in Resend before enabling it; no actual mailbox is needed for sending when replies go to the configured team address.
 
+The new store sending domain is linked to a different Resend account with a different API key. Replace the existing connection's credentials rather than adding the domain to the old account.
+
+**Why:** The owner explicitly clarified this account separation repeatedly.
+
+**How to apply:** Have the owner update the existing Resend connection securely, then verify domain access through that connection before changing the sender. Do not request credentials in chat.
+
 Order confirmations do not change the externally shared verification-code process.
 
 **Why:** The email request concerns confirmed orders, not generating or sending the team's existing verification codes.
