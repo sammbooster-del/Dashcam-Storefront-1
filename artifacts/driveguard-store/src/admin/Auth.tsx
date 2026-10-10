@@ -102,8 +102,8 @@ export function StoreClerkProvider({ children }: { children: ReactNode }) {
     signInUrl={`${basePath}/sign-in`}
     signUpUrl={`${basePath}/sign-up`}
     localization={{
-      signIn: { start: { title: 'Welcome back', subtitle: 'Sign in to manage DriveGuard' } },
-      signUp: { start: { title: 'Create your account', subtitle: 'Sign up to request access to DriveGuard' } },
+      signIn: { start: { title: 'Welcome back', subtitle: 'Sign in to manage Everyday Finds' } },
+      signUp: { start: { title: 'Create your account', subtitle: 'Sign up to request access to Everyday Finds' } },
     }}
     routerPush={to => setLocation(stripBase(to))}
     routerReplace={to => setLocation(stripBase(to), { replace: true })}
@@ -119,7 +119,7 @@ function AuthShell({ children }: { children: ReactNode }) {
       <Link href="/" className="mb-9 inline-flex items-center gap-2 text-sm font-semibold text-[#444] hover:text-[#c92525]"><ArrowLeft size={16} /> Back to store</Link>
       <div className="mb-6 flex items-center gap-3">
         <span className="grid h-10 w-10 place-items-center rounded-sm bg-[#c92525] text-white"><ShieldCheck size={24} /></span>
-        <div><p className="text-xl font-extrabold tracking-tight">DriveGuard</p><p className="text-xs font-medium text-[#666]">Store management</p></div>
+        <div><p className="text-xl font-extrabold tracking-tight">Everyday Finds</p><p className="text-xs font-medium text-[#666]">Store management</p></div>
       </div>
       {children}
       <p className="mt-7 flex items-center justify-center gap-2 text-center text-xs text-[#666]"><LockKeyhole size={14} /> Access to store controls requires approval.</p>
@@ -151,5 +151,5 @@ export function AdminAccess() {
     <button type="button" className="red-button mt-6" onClick={() => admin.refetch()}>Try again</button>
     <div className="mt-5 flex items-center justify-center gap-5 text-sm"><button type="button" className="underline" onClick={() => signOut({ redirectUrl: basePath || '/' })}>Sign out</button><Link href="/" className="underline">Return to store</Link></div>
   </div></div>;
-  return <><div className="flex items-center justify-between bg-[#252525] px-5 py-2 text-xs text-white"><span>DriveGuard admin</span><button type="button" onClick={() => signOut({ redirectUrl: basePath || '/' })} className="font-bold underline underline-offset-4">Sign out</button></div><AdminPage /></>;
+  return <><div className="flex items-center justify-between bg-[#252525] px-5 py-2 text-xs text-white"><span>Everyday Finds admin</span><button type="button" onClick={() => signOut({ redirectUrl: basePath || '/' })} className="font-bold underline underline-offset-4">Sign out</button></div><AdminPage /></>;
 }

@@ -636,7 +636,7 @@ export default function AdminPage() {
         <div className="dg-top-right"><span className="dg-live-dot" /> Management workspace <span className="dg-avatar">DG</span></div>
       </header>
       <div className="dg-content">
-        <div className="dg-page-heading"><div><p className="dg-eyebrow">DriveGuard / Management</p><h1>{pageTitle}</h1><p>{pageSub}</p></div>
+        <div className="dg-page-heading"><div><p className="dg-eyebrow">Everyday Finds / Management</p><h1>{pageTitle}</h1><p>{pageSub}</p></div>
           {section === 'products' ? <button className="dg-primary" type="button" onClick={() => setEditor(null)} data-testid="button-admin-add-product"><Plus size={16} /> Add product</button>
             : section === 'overview' ? <button type="button" className="dg-secondary" onClick={() => { setNotice(null); void refresh(); }} disabled={refreshing} data-testid="button-admin-refresh"><RefreshCw size={15} /> {refreshing ? 'Refreshing…' : 'Refresh data'}</button> : null}
         </div>

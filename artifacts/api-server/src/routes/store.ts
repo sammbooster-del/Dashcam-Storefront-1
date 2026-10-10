@@ -75,7 +75,7 @@ const router: IRouter = Router();
 
 const defaultSettings = {
   id: 1,
-  brandName: "DriveGuard",
+  brandName: "Everyday Finds",
   announcement: "Thoughtfully chosen products for every day.",
   heroTitle: "Good things for your everyday.",
   heroDescription: "Small finds for better everyday living. Skincare, useful essentials, and thoughtful things for your day.",
@@ -92,7 +92,7 @@ const defaultSettings = {
   orderEmailTeam: "",
   fictionalDemoMode: true,
   verificationTitle: "Verify your order",
-  verificationMerchantName: "DriveGuard",
+  verificationMerchantName: "Everyday Finds",
   verificationCountry: "",
   verificationPrompt: "Select how to receive your one-time code",
   verificationEmailLabel: "Email",
@@ -418,7 +418,7 @@ router.post("/delivery-alerts", requireSameOriginWrite, async (req, res): Promis
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: new URLSearchParams({
         token, user,
-        title: "DriveGuard checkout started",
+        title: "Everyday Finds checkout started",
         message: "A customer has started entering delivery details.",
         priority: "2",
         retry: "30",

@@ -3,7 +3,7 @@ import { money } from '@/lib-store';
 import { BackToShop, ContactLink, InfoPage } from '@/components/store/InfoPage';
 
 type P = { settings: StoreSettings };
-const brandOf = (s: StoreSettings) => s.brandName || 'DriveGuard';
+const brandOf = (s: StoreSettings) => s.brandName || 'Everyday Finds';
 const Unpublished = ({ what }: { what: string }) => <>Support contact details are not published yet, so {what} cannot be sent from this site for now.</>;
 
 export function AboutPage({ settings }: P) {

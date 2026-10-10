@@ -12,7 +12,7 @@ const INFO_LINKS = [{ href: '/about', label: 'About' }, { href: '/contact', labe
 export function StoreLayout({ children, products, settings, cartCount }: { children: ReactNode; products: Product[]; settings: StoreSettings; cartCount: number }) {
   const [loc] = useLocation();
   const cats = buildCategories(products);
-  const brand = settings.brandName || 'DriveGuard';
+  const brand = settings.brandName || 'Everyday Finds';
   const orderHelp = settings.supportEmail ? `mailto:${settings.supportEmail}?subject=${encodeURIComponent('Order help')}` : undefined;
   return (
     <div className="grain flex min-h-[100dvh] flex-col">
