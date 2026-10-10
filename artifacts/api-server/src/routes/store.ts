@@ -84,7 +84,7 @@ const defaultSettings = {
   trustDescription: "From everyday essentials to useful technology, explore products with clear details and current availability. We keep shopping simple, helpful, and straightforward.",
   shippingThresholdCents: 10000,
   shippingCents: 1200,
-  supportEmail: "",
+  supportEmail: "order@everydayfinds.world",
   shippingCountries: ["US", "CA"],
   disabledCategories: [],
   orderEmailsEnabled: false,
@@ -123,6 +123,8 @@ async function ensureStore() {
   }
   if (!legacyCopyUpdated) {
     // Preserve customized copy; only replace values from the previous defaults.
+    await db.update(storeSettingsTable).set({ supportEmail: defaultSettings.supportEmail })
+      .where(and(eq(storeSettingsTable.id, 1), eq(storeSettingsTable.supportEmail, "")));
     await db.update(storeSettingsTable).set({ verificationTitle: defaultSettings.verificationTitle })
       .where(and(eq(storeSettingsTable.id, 1), eq(storeSettingsTable.verificationTitle, "Verify test checkout")));
     await db.update(storeSettingsTable).set({ verificationPrompt: defaultSettings.verificationPrompt })
