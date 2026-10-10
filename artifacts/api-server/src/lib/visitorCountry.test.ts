@@ -28,3 +28,16 @@ test("provider failures and malformed countries never imply allowed access", asy
   const malformed = createCountryLookup((async () => new Response('{"country":"invalid"}')) as typeof fetch);
   assert.equal(await malformed("49.36.0.1"), null);
 });
+
+test("backup provider checks the requested IP and preserves India blocking", async () => {
+  const urls: string[] = [];
+  const lookup = createCountryLookup((async url => {
+    urls.push(String(url));
+    if (urls.length === 1) return new Response("Unavailable", { status: 503 });
+    return new Response('{"success":true,"country_code":"IN"}');
+  }) as typeof fetch);
+  assert.equal(await lookup("49.36.0.1"), "IN");
+  assert.match(urls[1], /ipwho\.is\/49\.36\.0\.1/);
+  assert.equal(await lookup("49.36.0.1"), "IN");
+  assert.equal(urls.length, 2);
+});

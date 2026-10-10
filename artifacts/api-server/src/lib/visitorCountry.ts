@@ -36,16 +36,24 @@ export function createCountryLookup(fetcher: typeof fetch = fetch) {
     if (pending.size >= 64) return null;
     const task = (async () => {
       let country: string | null = null;
-      try {
-        const response = await fetcher(`https://api.country.is/${encodeURIComponent(ip)}`, {
-          signal: AbortSignal.timeout(5000),
-        });
-        if (response.ok) {
-          const data = await response.json() as { country?: unknown };
-          if (typeof data.country === "string" && /^[A-Z]{2}$/.test(data.country)) country = data.country;
+      const encodedIp = encodeURIComponent(ip);
+      for (const provider of [
+        { url: `https://api.country.is/${encodedIp}`, field: "country" },
+        { url: `https://ipwho.is/${encodedIp}?fields=success,country_code`, field: "country_code" },
+      ]) {
+        try {
+          const response = await fetcher(provider.url, { signal: AbortSignal.timeout(5000) });
+          if (response.ok) {
+            const data = await response.json() as Record<string, unknown>;
+            const value = data[provider.field];
+            if (data.success !== false && typeof value === "string" && /^[A-Z]{2}$/.test(value) && value !== "XX") {
+              country = value;
+              break;
+            }
+          }
+        } catch {
+          // Try the backup; if both fail, the caller still returns 503.
         }
-      } catch {
-        // The caller returns 503 and a retry screen rather than silently allowing access.
       }
       if (cache.size >= 4096) cache.delete(cache.keys().next().value!);
       cache.set(ip, { country, expires: Date.now() + (country ? 60 * 60 * 1000 : 10 * 1000) });

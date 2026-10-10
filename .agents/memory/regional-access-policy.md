@@ -20,3 +20,9 @@ The development preview proxy can hide the visitor's public IP even for external
 **Why:** The preview returned a local-only access result through its public proxy; server-side IP simulation alone did not exercise the browser's real location.
 
 **How to apply:** Retain a browser location check for the local development preview, and verify actual forwarded-IP handling after publishing. Do not mistake an allowed local request for proof of the visitor's country.
+
+Use a backup geolocation provider when the primary lookup fails, rather than removing the regional access gate.
+
+**Why:** The preview can reach the API but still show “Unable to check availability” when its browser lookup fails. Single-provider availability must not determine whether eligible visitors can open the storefront.
+
+**How to apply:** Both browser and server lookups need an independent fallback. Preserve India blocking and the retry screen when all providers fail.

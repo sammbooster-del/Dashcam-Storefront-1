@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { CountryCode } from '@workspace/api-client-react';
+import { lookupVisitorCountry } from './lib/visitorCountryLookup';
 
 const names = new Intl.DisplayNames(['en'], { type: 'region' });
 export const countryName = (code: string) => names.of(code) ?? code;
@@ -20,16 +21,9 @@ function browserCountry(): CountryCode | null {
 let countryRequest: Promise<CountryCode | null> | undefined;
 export async function visitorCountry() {
   const result = await (countryRequest ??= (async () => {
-    const controller = new AbortController();
-    const timeout = window.setTimeout(() => controller.abort(), 5000);
-    try {
-      // Only the country is used. The visitor's IP is never stored by the app.
-      const response = await fetch('https://api.country.is/', { signal: controller.signal });
-      if (!response.ok) return null;
-      const data = await response.json();
-      return allCountries.find(code => code === data.country) ?? null;
-    } catch { return null; }
-    finally { window.clearTimeout(timeout); }
+    // Only the country is used. The visitor's IP is never stored by the app.
+    const country = await lookupVisitorCountry();
+    return allCountries.find(code => code === country) ?? null;
   })());
   if (!result) countryRequest = undefined;
   return result;
