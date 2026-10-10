@@ -5,6 +5,7 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { CountryCode } from './countryCode';
 
 export interface StoreSettings {
   brandName: string;
@@ -17,6 +18,8 @@ export interface StoreSettings {
   shippingThresholdCents: number;
   shippingCents: number;
   supportEmail: string;
+  /** @minItems 1 */
+  shippingCountries: CountryCode[];
   fictionalDemoMode: boolean;
   verificationTitle: string;
   verificationMerchantName: string;

@@ -33,6 +33,8 @@ import {
 } from 'lucide-react';
 import { KNOWN_CATEGORY_EXAMPLES, buildCategories, categoryLabel } from '@/lib-categories';
 import './AdminPage.css';
+import { CheckoutCountriesEditor } from './CheckoutCountriesEditor';
+import { countryName } from '@/lib-countries';
 
 type Section = 'overview' | 'products' | 'orders' | 'settings';
 type ProductDraft = Omit<ProductInput, 'priceCents' | 'stock'> & { price: string; stock: string };
@@ -57,6 +59,7 @@ const settingsDraft = (settings: StoreSettingsInput): SettingsDraft => ({
   trustTitle: settings.trustTitle, trustDescription: settings.trustDescription,
   shippingThreshold: dollars(settings.shippingThresholdCents), shipping: dollars(settings.shippingCents),
   supportEmail: settings.supportEmail,
+  shippingCountries: settings.shippingCountries ?? ['US', 'CA'],
   orderEmailsEnabled: settings.orderEmailsEnabled ?? false,
   orderEmailFrom: settings.orderEmailFrom ?? '',
   orderEmailTeam: settings.orderEmailTeam ?? '',
@@ -317,6 +320,7 @@ function SettingsEditor({ initial, onSave, pending }: { initial: StoreSettingsIn
         heroImageUrl: draft.heroImageUrl.trim(), trustTitle: draft.trustTitle.trim(),
         trustDescription: draft.trustDescription.trim(), shippingThresholdCents: toCents(draft.shippingThreshold),
         shippingCents: toCents(draft.shipping), supportEmail: draft.supportEmail.trim(),
+        shippingCountries: draft.shippingCountries ?? ['US', 'CA'],
         orderEmailsEnabled: draft.orderEmailsEnabled,
         orderEmailFrom: (draft.orderEmailFrom ?? '').trim(),
         orderEmailTeam: (draft.orderEmailTeam ?? '').trim(),
@@ -357,6 +361,7 @@ function SettingsEditor({ initial, onSave, pending }: { initial: StoreSettingsIn
           <MoneyField label="Standard shipping" name="shipping-cost" value={draft.shipping} onChange={value => set('shipping', value)} max={100000} />
         </div>
         <div style={{ marginTop: 16 }}><Field label="Support email" name="support-email" value={draft.supportEmail} onChange={value => set('supportEmail', value)} type="email" maxLength={254} placeholder="help@yourstore.com" /></div>
+        <CheckoutCountriesEditor value={draft.shippingCountries ?? ['US', 'CA']} onChange={countries => set('shippingCountries', countries)} />
       </section>
       <section className="dg-panel dg-form-section"><h2>Order confirmation emails</h2><p>Send separate confirmations to the customer and your team when an order is approved or fulfilled. Card details and verification codes are never included.</p>
         <Switch id="order-emails-enabled" label="Send confirmation emails" detail="Uses your connected Resend account." checked={draft.orderEmailsEnabled ?? false} onChange={() => set('orderEmailsEnabled', !draft.orderEmailsEnabled)} />
@@ -425,7 +430,7 @@ function liveBillingAddress(address?: DemoCheckoutDraft['billingAddress']) {
     address.line1,
     address.line2,
     [address.city, address.region, address.postalCode].filter(Boolean).join(' '),
-    address.country === 'CA' ? 'Canada' : 'United States',
+    countryName(address.country),
   ].filter(Boolean).join('\n');
 }
 
@@ -434,7 +439,7 @@ function AddressBlock({ label, address }: { label: string; address?: OrderAddres
     <h4>{label}</h4>
     {address ? <p className="whitespace-pre-line" data-testid={`text-admin-${label.toLowerCase().replace(' ', '-')}`}>
       {address.fullName}{'\n'}{address.line1}{address.line2 ? `\n${address.line2}` : ''}{'\n'}
-      {address.city}, {address.region} {address.postalCode}{'\n'}{address.country === 'US' ? 'United States' : 'Canada'}
+      {address.city}, {address.region} {address.postalCode}{'\n'}{countryName(address.country)}
     </p> : <p>Not collected for this order.</p>}
   </div>;
 }

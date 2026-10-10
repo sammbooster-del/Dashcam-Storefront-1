@@ -24,7 +24,7 @@ export interface DemoOrderInput {
   /** @maxLength 254 */
   contactEmail: string;
   /**
-     * @minLength 10
+     * @minLength 7
      * @maxLength 30
      */
   contactPhone: string;

@@ -85,6 +85,7 @@ const defaultSettings = {
   shippingThresholdCents: 10000,
   shippingCents: 1200,
   supportEmail: "",
+  shippingCountries: ["US", "CA"],
   orderEmailsEnabled: false,
   orderEmailFrom: "",
   orderEmailTeam: "",
@@ -242,22 +243,24 @@ function normalizeAddress(address: NonNullable<DemoOrder["shippingAddress"]>) {
   };
 }
 
-function validAddress(address: NonNullable<DemoOrder["shippingAddress"]>) {
-  return Boolean(address.fullName && address.line1 && address.city && address.region) &&
+function validAddress(address: NonNullable<DemoOrder["shippingAddress"]>, countries: string[]) {
+  return countries.includes(address.country) && Boolean(address.fullName && address.line1 && address.city) &&
     (address.country === "US"
-      ? /^\d{5}(?:-\d{4})?$/.test(address.postalCode)
-      : /^[A-Z]\d[A-Z] ?\d[A-Z]\d$/.test(address.postalCode));
+      ? address.region.length >= 2 && /^\d{5}(?:-\d{4})?$/.test(address.postalCode)
+      : address.country === "CA" ? address.region.length >= 2 && /^[A-Z]\d[A-Z] ?\d[A-Z]\d$/.test(address.postalCode)
+      : address.postalCode.length <= 20);
 }
 
 function normalizePhone(phone: string) {
   const digits = phone.replace(/\D/g, "");
-  return digits.length === 10 ? `+1${digits}` : `+${digits}`;
+  return !phone.startsWith("+") && digits.length === 10 ? `+1${digits}` : `+${digits}`;
 }
 
-function validPhone(phone: string) {
+function validPhone(phone: string, country: string) {
   const digits = phone.replace(/\D/g, "");
   return /^[+()\d.\s-]+$/.test(phone) &&
-    (digits.length === 10 || (digits.length === 11 && digits.startsWith("1")));
+    (phone.startsWith("+") ? /^[1-9]\d{6,14}$/.test(digits)
+      : (country === "US" || country === "CA") && (digits.length === 10 || (digits.length === 11 && digits.startsWith("1"))));
 }
 
 type DemoDraft = {
@@ -470,14 +473,14 @@ router.post("/demo-orders", async (req, res): Promise<void> => {
   }
   const contactEmail = parsed.data.contactEmail.trim().toLowerCase();
   const contactPhone = parsed.data.contactPhone.trim();
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail) || !validPhone(contactPhone)) {
-    res.status(400).json({ error: "Enter a valid email and US or Canadian phone number" });
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail) || !validPhone(contactPhone, parsed.data.shippingAddress.country)) {
+    res.status(400).json({ error: "Enter a valid email and phone number with country code" });
     return;
   }
   const shippingAddress = normalizeAddress(parsed.data.shippingAddress);
   const billingAddress = normalizeAddress(parsed.data.billingAddress);
-  if (!validAddress(shippingAddress) || !validAddress(billingAddress)) {
-    res.status(400).json({ error: "Enter valid US or Canadian shipping and billing addresses" });
+  if (!validAddress(shippingAddress, settings.shippingCountries) || !validAddress(billingAddress, settings.shippingCountries)) {
+    res.status(400).json({ error: "Enter valid shipping and billing addresses in an enabled checkout country" });
     return;
   }
   if (settings.fictionalDemoMode
@@ -799,6 +802,10 @@ router.put("/admin/settings", async (req, res): Promise<void> => {
   }
   await ensureStore();
   const [current] = await db.select().from(storeSettingsTable).where(eq(storeSettingsTable.id, 1));
+  if (parsed.data.shippingCountries && new Set(parsed.data.shippingCountries).size !== parsed.data.shippingCountries.length) {
+    res.status(400).json({ error: "Choose unique checkout countries." });
+    return;
+  }
   const emailEnabled = parsed.data.orderEmailsEnabled ?? current.orderEmailsEnabled;
   const emailFrom = (parsed.data.orderEmailFrom ?? current.orderEmailFrom).trim().toLowerCase();
   const emailTeam = (parsed.data.orderEmailTeam ?? current.orderEmailTeam).trim().toLowerCase();

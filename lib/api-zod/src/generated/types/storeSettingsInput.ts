@@ -5,6 +5,7 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { CountryCode } from './countryCode';
 
 export interface StoreSettingsInput {
   /**
@@ -39,6 +40,11 @@ export interface StoreSettingsInput {
   shippingCents: number;
   /** @maxLength 254 */
   supportEmail: string;
+  /**
+     * @minItems 1
+     * @maxItems 249
+     */
+  shippingCountries?: CountryCode[];
   orderEmailsEnabled?: boolean;
   /** @maxLength 254 */
   orderEmailFrom?: string;

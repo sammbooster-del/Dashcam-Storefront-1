@@ -1,6 +1,7 @@
 import { pgTable, integer, text, boolean } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
+import { sql } from "drizzle-orm";
 
 export const storeSettingsTable = pgTable("store_settings", {
   id: integer("id").primaryKey(),
@@ -14,6 +15,7 @@ export const storeSettingsTable = pgTable("store_settings", {
   shippingThresholdCents: integer("shipping_threshold_cents").notNull(),
   shippingCents: integer("shipping_cents").notNull(),
   supportEmail: text("support_email").notNull(),
+  shippingCountries: text("shipping_countries").array().notNull().default(sql`ARRAY['US', 'CA']::text[]`),
   orderEmailsEnabled: boolean("order_emails_enabled").notNull().default(false),
   orderEmailFrom: text("order_email_from").notNull().default(""),
   orderEmailTeam: text("order_email_team").notNull().default(""),

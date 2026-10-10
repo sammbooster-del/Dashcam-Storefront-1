@@ -5,7 +5,7 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-import type { DemoBillingAddressCountry } from './demoBillingAddressCountry';
+import type { CountryCode } from './countryCode';
 
 export interface DemoBillingAddress {
   /** @maxLength 100 */
@@ -18,7 +18,7 @@ export interface DemoBillingAddress {
   city: string;
   /** @maxLength 80 */
   region: string;
-  /** @maxLength 10 */
+  /** @maxLength 20 */
   postalCode: string;
-  country: DemoBillingAddressCountry;
+  country: CountryCode;
 }

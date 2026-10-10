@@ -17,6 +17,7 @@ export const HealthCheckResponse = zod.object({
 })
 
 
+
 export const getStorefrontResponseProductsItemImageUrlsItemMax = 2048;
 
 export const getStorefrontResponseProductsItemImageUrlsMax = 15;
@@ -39,6 +40,7 @@ export const GetStorefrontResponse = zod.object({
   "shippingThresholdCents": zod.number().int(),
   "shippingCents": zod.number().int(),
   "supportEmail": zod.string(),
+  "shippingCountries": zod.array(zod.enum(['AD', 'AE', 'AF', 'AG', 'AI', 'AL', 'AM', 'AO', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AW', 'AX', 'AZ', 'BA', 'BB', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI', 'BJ', 'BL', 'BM', 'BN', 'BO', 'BQ', 'BR', 'BS', 'BT', 'BV', 'BW', 'BY', 'BZ', 'CA', 'CC', 'CD', 'CF', 'CG', 'CH', 'CI', 'CK', 'CL', 'CM', 'CN', 'CO', 'CR', 'CU', 'CV', 'CW', 'CX', 'CY', 'CZ', 'DE', 'DJ', 'DK', 'DM', 'DO', 'DZ', 'EC', 'EE', 'EG', 'EH', 'ER', 'ES', 'ET', 'FI', 'FJ', 'FK', 'FM', 'FO', 'FR', 'GA', 'GB', 'GD', 'GE', 'GF', 'GG', 'GH', 'GI', 'GL', 'GM', 'GN', 'GP', 'GQ', 'GR', 'GS', 'GT', 'GU', 'GW', 'GY', 'HK', 'HM', 'HN', 'HR', 'HT', 'HU', 'ID', 'IE', 'IL', 'IM', 'IN', 'IO', 'IQ', 'IR', 'IS', 'IT', 'JE', 'JM', 'JO', 'JP', 'KE', 'KG', 'KH', 'KI', 'KM', 'KN', 'KP', 'KR', 'KW', 'KY', 'KZ', 'LA', 'LB', 'LC', 'LI', 'LK', 'LR', 'LS', 'LT', 'LU', 'LV', 'LY', 'MA', 'MC', 'MD', 'ME', 'MF', 'MG', 'MH', 'MK', 'ML', 'MM', 'MN', 'MO', 'MP', 'MQ', 'MR', 'MS', 'MT', 'MU', 'MV', 'MW', 'MX', 'MY', 'MZ', 'NA', 'NC', 'NE', 'NF', 'NG', 'NI', 'NL', 'NO', 'NP', 'NR', 'NU', 'NZ', 'OM', 'PA', 'PE', 'PF', 'PG', 'PH', 'PK', 'PL', 'PM', 'PN', 'PR', 'PS', 'PT', 'PW', 'PY', 'QA', 'RE', 'RO', 'RS', 'RU', 'RW', 'SA', 'SB', 'SC', 'SD', 'SE', 'SG', 'SH', 'SI', 'SJ', 'SK', 'SL', 'SM', 'SN', 'SO', 'SR', 'SS', 'ST', 'SV', 'SX', 'SY', 'SZ', 'TC', 'TD', 'TF', 'TG', 'TH', 'TJ', 'TK', 'TL', 'TM', 'TN', 'TO', 'TR', 'TT', 'TV', 'TW', 'TZ', 'UA', 'UG', 'UM', 'US', 'UY', 'UZ', 'VA', 'VC', 'VE', 'VG', 'VI', 'VN', 'VU', 'WF', 'WS', 'YE', 'YT', 'ZA', 'ZM', 'ZW']).describe('ISO 3166-1 alpha-2 country and territory code.')).min(1),
   "fictionalDemoMode": zod.boolean(),
   "verificationTitle": zod.string(),
   "verificationMerchantName": zod.string(),
@@ -74,7 +76,7 @@ export const createDemoOrderBodyCardholderNameMax = 80;
 
 export const createDemoOrderBodyContactEmailMax = 254;
 
-export const createDemoOrderBodyContactPhoneMin = 10;
+export const createDemoOrderBodyContactPhoneMin = 7;
 export const createDemoOrderBodyContactPhoneMax = 30;
 
 export const createDemoOrderBodyShippingAddressFullNameMax = 100;
@@ -85,11 +87,9 @@ export const createDemoOrderBodyShippingAddressLine2Max = 150;
 
 export const createDemoOrderBodyShippingAddressCityMax = 100;
 
-export const createDemoOrderBodyShippingAddressRegionMin = 2;
 export const createDemoOrderBodyShippingAddressRegionMax = 80;
 
-export const createDemoOrderBodyShippingAddressPostalCodeMin = 5;
-export const createDemoOrderBodyShippingAddressPostalCodeMax = 10;
+export const createDemoOrderBodyShippingAddressPostalCodeMax = 20;
 
 export const createDemoOrderBodyBillingAddressFullNameMax = 100;
 
@@ -99,11 +99,9 @@ export const createDemoOrderBodyBillingAddressLine2Max = 150;
 
 export const createDemoOrderBodyBillingAddressCityMax = 100;
 
-export const createDemoOrderBodyBillingAddressRegionMin = 2;
 export const createDemoOrderBodyBillingAddressRegionMax = 80;
 
-export const createDemoOrderBodyBillingAddressPostalCodeMin = 5;
-export const createDemoOrderBodyBillingAddressPostalCodeMax = 10;
+export const createDemoOrderBodyBillingAddressPostalCodeMax = 20;
 
 export const createDemoOrderBodyDemoCardNumberMax = 23;
 
@@ -133,18 +131,18 @@ export const CreateDemoOrderBody = zod.object({
   "line1": zod.string().min(1).max(createDemoOrderBodyShippingAddressLine1Max),
   "line2": zod.string().max(createDemoOrderBodyShippingAddressLine2Max),
   "city": zod.string().min(1).max(createDemoOrderBodyShippingAddressCityMax),
-  "region": zod.string().min(createDemoOrderBodyShippingAddressRegionMin).max(createDemoOrderBodyShippingAddressRegionMax),
-  "postalCode": zod.string().min(createDemoOrderBodyShippingAddressPostalCodeMin).max(createDemoOrderBodyShippingAddressPostalCodeMax),
-  "country": zod.enum(['US', 'CA'])
+  "region": zod.string().max(createDemoOrderBodyShippingAddressRegionMax),
+  "postalCode": zod.string().max(createDemoOrderBodyShippingAddressPostalCodeMax),
+  "country": zod.enum(['AD', 'AE', 'AF', 'AG', 'AI', 'AL', 'AM', 'AO', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AW', 'AX', 'AZ', 'BA', 'BB', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI', 'BJ', 'BL', 'BM', 'BN', 'BO', 'BQ', 'BR', 'BS', 'BT', 'BV', 'BW', 'BY', 'BZ', 'CA', 'CC', 'CD', 'CF', 'CG', 'CH', 'CI', 'CK', 'CL', 'CM', 'CN', 'CO', 'CR', 'CU', 'CV', 'CW', 'CX', 'CY', 'CZ', 'DE', 'DJ', 'DK', 'DM', 'DO', 'DZ', 'EC', 'EE', 'EG', 'EH', 'ER', 'ES', 'ET', 'FI', 'FJ', 'FK', 'FM', 'FO', 'FR', 'GA', 'GB', 'GD', 'GE', 'GF', 'GG', 'GH', 'GI', 'GL', 'GM', 'GN', 'GP', 'GQ', 'GR', 'GS', 'GT', 'GU', 'GW', 'GY', 'HK', 'HM', 'HN', 'HR', 'HT', 'HU', 'ID', 'IE', 'IL', 'IM', 'IN', 'IO', 'IQ', 'IR', 'IS', 'IT', 'JE', 'JM', 'JO', 'JP', 'KE', 'KG', 'KH', 'KI', 'KM', 'KN', 'KP', 'KR', 'KW', 'KY', 'KZ', 'LA', 'LB', 'LC', 'LI', 'LK', 'LR', 'LS', 'LT', 'LU', 'LV', 'LY', 'MA', 'MC', 'MD', 'ME', 'MF', 'MG', 'MH', 'MK', 'ML', 'MM', 'MN', 'MO', 'MP', 'MQ', 'MR', 'MS', 'MT', 'MU', 'MV', 'MW', 'MX', 'MY', 'MZ', 'NA', 'NC', 'NE', 'NF', 'NG', 'NI', 'NL', 'NO', 'NP', 'NR', 'NU', 'NZ', 'OM', 'PA', 'PE', 'PF', 'PG', 'PH', 'PK', 'PL', 'PM', 'PN', 'PR', 'PS', 'PT', 'PW', 'PY', 'QA', 'RE', 'RO', 'RS', 'RU', 'RW', 'SA', 'SB', 'SC', 'SD', 'SE', 'SG', 'SH', 'SI', 'SJ', 'SK', 'SL', 'SM', 'SN', 'SO', 'SR', 'SS', 'ST', 'SV', 'SX', 'SY', 'SZ', 'TC', 'TD', 'TF', 'TG', 'TH', 'TJ', 'TK', 'TL', 'TM', 'TN', 'TO', 'TR', 'TT', 'TV', 'TW', 'TZ', 'UA', 'UG', 'UM', 'US', 'UY', 'UZ', 'VA', 'VC', 'VE', 'VG', 'VI', 'VN', 'VU', 'WF', 'WS', 'YE', 'YT', 'ZA', 'ZM', 'ZW']).describe('ISO 3166-1 alpha-2 country and territory code.')
 }),
   "billingAddress": zod.object({
   "fullName": zod.string().min(1).max(createDemoOrderBodyBillingAddressFullNameMax),
   "line1": zod.string().min(1).max(createDemoOrderBodyBillingAddressLine1Max),
   "line2": zod.string().max(createDemoOrderBodyBillingAddressLine2Max),
   "city": zod.string().min(1).max(createDemoOrderBodyBillingAddressCityMax),
-  "region": zod.string().min(createDemoOrderBodyBillingAddressRegionMin).max(createDemoOrderBodyBillingAddressRegionMax),
-  "postalCode": zod.string().min(createDemoOrderBodyBillingAddressPostalCodeMin).max(createDemoOrderBodyBillingAddressPostalCodeMax),
-  "country": zod.enum(['US', 'CA'])
+  "region": zod.string().max(createDemoOrderBodyBillingAddressRegionMax),
+  "postalCode": zod.string().max(createDemoOrderBodyBillingAddressPostalCodeMax),
+  "country": zod.enum(['AD', 'AE', 'AF', 'AG', 'AI', 'AL', 'AM', 'AO', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AW', 'AX', 'AZ', 'BA', 'BB', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI', 'BJ', 'BL', 'BM', 'BN', 'BO', 'BQ', 'BR', 'BS', 'BT', 'BV', 'BW', 'BY', 'BZ', 'CA', 'CC', 'CD', 'CF', 'CG', 'CH', 'CI', 'CK', 'CL', 'CM', 'CN', 'CO', 'CR', 'CU', 'CV', 'CW', 'CX', 'CY', 'CZ', 'DE', 'DJ', 'DK', 'DM', 'DO', 'DZ', 'EC', 'EE', 'EG', 'EH', 'ER', 'ES', 'ET', 'FI', 'FJ', 'FK', 'FM', 'FO', 'FR', 'GA', 'GB', 'GD', 'GE', 'GF', 'GG', 'GH', 'GI', 'GL', 'GM', 'GN', 'GP', 'GQ', 'GR', 'GS', 'GT', 'GU', 'GW', 'GY', 'HK', 'HM', 'HN', 'HR', 'HT', 'HU', 'ID', 'IE', 'IL', 'IM', 'IN', 'IO', 'IQ', 'IR', 'IS', 'IT', 'JE', 'JM', 'JO', 'JP', 'KE', 'KG', 'KH', 'KI', 'KM', 'KN', 'KP', 'KR', 'KW', 'KY', 'KZ', 'LA', 'LB', 'LC', 'LI', 'LK', 'LR', 'LS', 'LT', 'LU', 'LV', 'LY', 'MA', 'MC', 'MD', 'ME', 'MF', 'MG', 'MH', 'MK', 'ML', 'MM', 'MN', 'MO', 'MP', 'MQ', 'MR', 'MS', 'MT', 'MU', 'MV', 'MW', 'MX', 'MY', 'MZ', 'NA', 'NC', 'NE', 'NF', 'NG', 'NI', 'NL', 'NO', 'NP', 'NR', 'NU', 'NZ', 'OM', 'PA', 'PE', 'PF', 'PG', 'PH', 'PK', 'PL', 'PM', 'PN', 'PR', 'PS', 'PT', 'PW', 'PY', 'QA', 'RE', 'RO', 'RS', 'RU', 'RW', 'SA', 'SB', 'SC', 'SD', 'SE', 'SG', 'SH', 'SI', 'SJ', 'SK', 'SL', 'SM', 'SN', 'SO', 'SR', 'SS', 'ST', 'SV', 'SX', 'SY', 'SZ', 'TC', 'TD', 'TF', 'TG', 'TH', 'TJ', 'TK', 'TL', 'TM', 'TN', 'TO', 'TR', 'TT', 'TV', 'TW', 'TZ', 'UA', 'UG', 'UM', 'US', 'UY', 'UZ', 'VA', 'VC', 'VE', 'VG', 'VI', 'VN', 'VU', 'WF', 'WS', 'YE', 'YT', 'ZA', 'ZM', 'ZW']).describe('ISO 3166-1 alpha-2 country and territory code.')
 }),
   "draftId": zod.string().uuid().optional(),
   "demoCardNumber": zod.string().max(createDemoOrderBodyDemoCardNumberMax).regex(createDemoOrderBodyDemoCardNumberRegExp).optional(),
@@ -160,11 +158,9 @@ export const createDemoOrderResponseShippingAddressLine2Max = 150;
 
 export const createDemoOrderResponseShippingAddressCityMax = 100;
 
-export const createDemoOrderResponseShippingAddressRegionMin = 2;
 export const createDemoOrderResponseShippingAddressRegionMax = 80;
 
-export const createDemoOrderResponseShippingAddressPostalCodeMin = 5;
-export const createDemoOrderResponseShippingAddressPostalCodeMax = 10;
+export const createDemoOrderResponseShippingAddressPostalCodeMax = 20;
 
 export const createDemoOrderResponseBillingAddressFullNameMax = 100;
 
@@ -174,11 +170,9 @@ export const createDemoOrderResponseBillingAddressLine2Max = 150;
 
 export const createDemoOrderResponseBillingAddressCityMax = 100;
 
-export const createDemoOrderResponseBillingAddressRegionMin = 2;
 export const createDemoOrderResponseBillingAddressRegionMax = 80;
 
-export const createDemoOrderResponseBillingAddressPostalCodeMin = 5;
-export const createDemoOrderResponseBillingAddressPostalCodeMax = 10;
+export const createDemoOrderResponseBillingAddressPostalCodeMax = 20;
 
 
 
@@ -195,18 +189,18 @@ export const CreateDemoOrderResponse = zod.object({
   "line1": zod.string().min(1).max(createDemoOrderResponseShippingAddressLine1Max),
   "line2": zod.string().max(createDemoOrderResponseShippingAddressLine2Max),
   "city": zod.string().min(1).max(createDemoOrderResponseShippingAddressCityMax),
-  "region": zod.string().min(createDemoOrderResponseShippingAddressRegionMin).max(createDemoOrderResponseShippingAddressRegionMax),
-  "postalCode": zod.string().min(createDemoOrderResponseShippingAddressPostalCodeMin).max(createDemoOrderResponseShippingAddressPostalCodeMax),
-  "country": zod.enum(['US', 'CA'])
+  "region": zod.string().max(createDemoOrderResponseShippingAddressRegionMax),
+  "postalCode": zod.string().max(createDemoOrderResponseShippingAddressPostalCodeMax),
+  "country": zod.enum(['AD', 'AE', 'AF', 'AG', 'AI', 'AL', 'AM', 'AO', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AW', 'AX', 'AZ', 'BA', 'BB', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI', 'BJ', 'BL', 'BM', 'BN', 'BO', 'BQ', 'BR', 'BS', 'BT', 'BV', 'BW', 'BY', 'BZ', 'CA', 'CC', 'CD', 'CF', 'CG', 'CH', 'CI', 'CK', 'CL', 'CM', 'CN', 'CO', 'CR', 'CU', 'CV', 'CW', 'CX', 'CY', 'CZ', 'DE', 'DJ', 'DK', 'DM', 'DO', 'DZ', 'EC', 'EE', 'EG', 'EH', 'ER', 'ES', 'ET', 'FI', 'FJ', 'FK', 'FM', 'FO', 'FR', 'GA', 'GB', 'GD', 'GE', 'GF', 'GG', 'GH', 'GI', 'GL', 'GM', 'GN', 'GP', 'GQ', 'GR', 'GS', 'GT', 'GU', 'GW', 'GY', 'HK', 'HM', 'HN', 'HR', 'HT', 'HU', 'ID', 'IE', 'IL', 'IM', 'IN', 'IO', 'IQ', 'IR', 'IS', 'IT', 'JE', 'JM', 'JO', 'JP', 'KE', 'KG', 'KH', 'KI', 'KM', 'KN', 'KP', 'KR', 'KW', 'KY', 'KZ', 'LA', 'LB', 'LC', 'LI', 'LK', 'LR', 'LS', 'LT', 'LU', 'LV', 'LY', 'MA', 'MC', 'MD', 'ME', 'MF', 'MG', 'MH', 'MK', 'ML', 'MM', 'MN', 'MO', 'MP', 'MQ', 'MR', 'MS', 'MT', 'MU', 'MV', 'MW', 'MX', 'MY', 'MZ', 'NA', 'NC', 'NE', 'NF', 'NG', 'NI', 'NL', 'NO', 'NP', 'NR', 'NU', 'NZ', 'OM', 'PA', 'PE', 'PF', 'PG', 'PH', 'PK', 'PL', 'PM', 'PN', 'PR', 'PS', 'PT', 'PW', 'PY', 'QA', 'RE', 'RO', 'RS', 'RU', 'RW', 'SA', 'SB', 'SC', 'SD', 'SE', 'SG', 'SH', 'SI', 'SJ', 'SK', 'SL', 'SM', 'SN', 'SO', 'SR', 'SS', 'ST', 'SV', 'SX', 'SY', 'SZ', 'TC', 'TD', 'TF', 'TG', 'TH', 'TJ', 'TK', 'TL', 'TM', 'TN', 'TO', 'TR', 'TT', 'TV', 'TW', 'TZ', 'UA', 'UG', 'UM', 'US', 'UY', 'UZ', 'VA', 'VC', 'VE', 'VG', 'VI', 'VN', 'VU', 'WF', 'WS', 'YE', 'YT', 'ZA', 'ZM', 'ZW']).describe('ISO 3166-1 alpha-2 country and territory code.')
 }).optional(),
   "billingAddress": zod.object({
   "fullName": zod.string().min(1).max(createDemoOrderResponseBillingAddressFullNameMax),
   "line1": zod.string().min(1).max(createDemoOrderResponseBillingAddressLine1Max),
   "line2": zod.string().max(createDemoOrderResponseBillingAddressLine2Max),
   "city": zod.string().min(1).max(createDemoOrderResponseBillingAddressCityMax),
-  "region": zod.string().min(createDemoOrderResponseBillingAddressRegionMin).max(createDemoOrderResponseBillingAddressRegionMax),
-  "postalCode": zod.string().min(createDemoOrderResponseBillingAddressPostalCodeMin).max(createDemoOrderResponseBillingAddressPostalCodeMax),
-  "country": zod.enum(['US', 'CA'])
+  "region": zod.string().max(createDemoOrderResponseBillingAddressRegionMax),
+  "postalCode": zod.string().max(createDemoOrderResponseBillingAddressPostalCodeMax),
+  "country": zod.enum(['AD', 'AE', 'AF', 'AG', 'AI', 'AL', 'AM', 'AO', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AW', 'AX', 'AZ', 'BA', 'BB', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI', 'BJ', 'BL', 'BM', 'BN', 'BO', 'BQ', 'BR', 'BS', 'BT', 'BV', 'BW', 'BY', 'BZ', 'CA', 'CC', 'CD', 'CF', 'CG', 'CH', 'CI', 'CK', 'CL', 'CM', 'CN', 'CO', 'CR', 'CU', 'CV', 'CW', 'CX', 'CY', 'CZ', 'DE', 'DJ', 'DK', 'DM', 'DO', 'DZ', 'EC', 'EE', 'EG', 'EH', 'ER', 'ES', 'ET', 'FI', 'FJ', 'FK', 'FM', 'FO', 'FR', 'GA', 'GB', 'GD', 'GE', 'GF', 'GG', 'GH', 'GI', 'GL', 'GM', 'GN', 'GP', 'GQ', 'GR', 'GS', 'GT', 'GU', 'GW', 'GY', 'HK', 'HM', 'HN', 'HR', 'HT', 'HU', 'ID', 'IE', 'IL', 'IM', 'IN', 'IO', 'IQ', 'IR', 'IS', 'IT', 'JE', 'JM', 'JO', 'JP', 'KE', 'KG', 'KH', 'KI', 'KM', 'KN', 'KP', 'KR', 'KW', 'KY', 'KZ', 'LA', 'LB', 'LC', 'LI', 'LK', 'LR', 'LS', 'LT', 'LU', 'LV', 'LY', 'MA', 'MC', 'MD', 'ME', 'MF', 'MG', 'MH', 'MK', 'ML', 'MM', 'MN', 'MO', 'MP', 'MQ', 'MR', 'MS', 'MT', 'MU', 'MV', 'MW', 'MX', 'MY', 'MZ', 'NA', 'NC', 'NE', 'NF', 'NG', 'NI', 'NL', 'NO', 'NP', 'NR', 'NU', 'NZ', 'OM', 'PA', 'PE', 'PF', 'PG', 'PH', 'PK', 'PL', 'PM', 'PN', 'PR', 'PS', 'PT', 'PW', 'PY', 'QA', 'RE', 'RO', 'RS', 'RU', 'RW', 'SA', 'SB', 'SC', 'SD', 'SE', 'SG', 'SH', 'SI', 'SJ', 'SK', 'SL', 'SM', 'SN', 'SO', 'SR', 'SS', 'ST', 'SV', 'SX', 'SY', 'SZ', 'TC', 'TD', 'TF', 'TG', 'TH', 'TJ', 'TK', 'TL', 'TM', 'TN', 'TO', 'TR', 'TT', 'TV', 'TW', 'TZ', 'UA', 'UG', 'UM', 'US', 'UY', 'UZ', 'VA', 'VC', 'VE', 'VG', 'VI', 'VN', 'VU', 'WF', 'WS', 'YE', 'YT', 'ZA', 'ZM', 'ZW']).describe('ISO 3166-1 alpha-2 country and territory code.')
 }).optional(),
   "verificationState": zod.union([zod.literal('waiting'),zod.literal('requested'),zod.literal('method_selected'),zod.literal('code_ready'),zod.literal('code_submitted'),zod.literal('invalid_code'),zod.literal('approved'),zod.literal('declined'),zod.literal(null)]).nullish(),
   "verificationMethod": zod.union([zod.literal('email'),zod.literal('phone'),zod.literal(null)]).nullish(),
@@ -316,7 +310,7 @@ export const saveDemoDraftBodyShippingAddressCityMax = 100;
 
 export const saveDemoDraftBodyShippingAddressRegionMax = 80;
 
-export const saveDemoDraftBodyShippingAddressPostalCodeMax = 10;
+export const saveDemoDraftBodyShippingAddressPostalCodeMax = 20;
 
 export const saveDemoDraftBodyFieldProgressNumberMin = 0;
 export const saveDemoDraftBodyFieldProgressNumberMax = 19;
@@ -349,7 +343,7 @@ export const saveDemoDraftBodyBillingAddressCityMax = 100;
 
 export const saveDemoDraftBodyBillingAddressRegionMax = 80;
 
-export const saveDemoDraftBodyBillingAddressPostalCodeMax = 10;
+export const saveDemoDraftBodyBillingAddressPostalCodeMax = 20;
 
 export const saveDemoDraftBodyCompletedFieldsMax = 4;
 
@@ -373,7 +367,7 @@ export const SaveDemoDraftBody = zod.object({
   "city": zod.string().max(saveDemoDraftBodyShippingAddressCityMax),
   "region": zod.string().max(saveDemoDraftBodyShippingAddressRegionMax),
   "postalCode": zod.string().max(saveDemoDraftBodyShippingAddressPostalCodeMax),
-  "country": zod.enum(['US', 'CA'])
+  "country": zod.enum(['AD', 'AE', 'AF', 'AG', 'AI', 'AL', 'AM', 'AO', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AW', 'AX', 'AZ', 'BA', 'BB', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI', 'BJ', 'BL', 'BM', 'BN', 'BO', 'BQ', 'BR', 'BS', 'BT', 'BV', 'BW', 'BY', 'BZ', 'CA', 'CC', 'CD', 'CF', 'CG', 'CH', 'CI', 'CK', 'CL', 'CM', 'CN', 'CO', 'CR', 'CU', 'CV', 'CW', 'CX', 'CY', 'CZ', 'DE', 'DJ', 'DK', 'DM', 'DO', 'DZ', 'EC', 'EE', 'EG', 'EH', 'ER', 'ES', 'ET', 'FI', 'FJ', 'FK', 'FM', 'FO', 'FR', 'GA', 'GB', 'GD', 'GE', 'GF', 'GG', 'GH', 'GI', 'GL', 'GM', 'GN', 'GP', 'GQ', 'GR', 'GS', 'GT', 'GU', 'GW', 'GY', 'HK', 'HM', 'HN', 'HR', 'HT', 'HU', 'ID', 'IE', 'IL', 'IM', 'IN', 'IO', 'IQ', 'IR', 'IS', 'IT', 'JE', 'JM', 'JO', 'JP', 'KE', 'KG', 'KH', 'KI', 'KM', 'KN', 'KP', 'KR', 'KW', 'KY', 'KZ', 'LA', 'LB', 'LC', 'LI', 'LK', 'LR', 'LS', 'LT', 'LU', 'LV', 'LY', 'MA', 'MC', 'MD', 'ME', 'MF', 'MG', 'MH', 'MK', 'ML', 'MM', 'MN', 'MO', 'MP', 'MQ', 'MR', 'MS', 'MT', 'MU', 'MV', 'MW', 'MX', 'MY', 'MZ', 'NA', 'NC', 'NE', 'NF', 'NG', 'NI', 'NL', 'NO', 'NP', 'NR', 'NU', 'NZ', 'OM', 'PA', 'PE', 'PF', 'PG', 'PH', 'PK', 'PL', 'PM', 'PN', 'PR', 'PS', 'PT', 'PW', 'PY', 'QA', 'RE', 'RO', 'RS', 'RU', 'RW', 'SA', 'SB', 'SC', 'SD', 'SE', 'SG', 'SH', 'SI', 'SJ', 'SK', 'SL', 'SM', 'SN', 'SO', 'SR', 'SS', 'ST', 'SV', 'SX', 'SY', 'SZ', 'TC', 'TD', 'TF', 'TG', 'TH', 'TJ', 'TK', 'TL', 'TM', 'TN', 'TO', 'TR', 'TT', 'TV', 'TW', 'TZ', 'UA', 'UG', 'UM', 'US', 'UY', 'UZ', 'VA', 'VC', 'VE', 'VG', 'VI', 'VN', 'VU', 'WF', 'WS', 'YE', 'YT', 'ZA', 'ZM', 'ZW']).describe('ISO 3166-1 alpha-2 country and territory code.')
 }).optional(),
   "fieldProgress": zod.object({
   "number": zod.number().int().min(saveDemoDraftBodyFieldProgressNumberMin).max(saveDemoDraftBodyFieldProgressNumberMax),
@@ -390,7 +384,7 @@ export const SaveDemoDraftBody = zod.object({
   "city": zod.string().max(saveDemoDraftBodyBillingAddressCityMax),
   "region": zod.string().max(saveDemoDraftBodyBillingAddressRegionMax),
   "postalCode": zod.string().max(saveDemoDraftBodyBillingAddressPostalCodeMax),
-  "country": zod.enum(['US', 'CA'])
+  "country": zod.enum(['AD', 'AE', 'AF', 'AG', 'AI', 'AL', 'AM', 'AO', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AW', 'AX', 'AZ', 'BA', 'BB', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI', 'BJ', 'BL', 'BM', 'BN', 'BO', 'BQ', 'BR', 'BS', 'BT', 'BV', 'BW', 'BY', 'BZ', 'CA', 'CC', 'CD', 'CF', 'CG', 'CH', 'CI', 'CK', 'CL', 'CM', 'CN', 'CO', 'CR', 'CU', 'CV', 'CW', 'CX', 'CY', 'CZ', 'DE', 'DJ', 'DK', 'DM', 'DO', 'DZ', 'EC', 'EE', 'EG', 'EH', 'ER', 'ES', 'ET', 'FI', 'FJ', 'FK', 'FM', 'FO', 'FR', 'GA', 'GB', 'GD', 'GE', 'GF', 'GG', 'GH', 'GI', 'GL', 'GM', 'GN', 'GP', 'GQ', 'GR', 'GS', 'GT', 'GU', 'GW', 'GY', 'HK', 'HM', 'HN', 'HR', 'HT', 'HU', 'ID', 'IE', 'IL', 'IM', 'IN', 'IO', 'IQ', 'IR', 'IS', 'IT', 'JE', 'JM', 'JO', 'JP', 'KE', 'KG', 'KH', 'KI', 'KM', 'KN', 'KP', 'KR', 'KW', 'KY', 'KZ', 'LA', 'LB', 'LC', 'LI', 'LK', 'LR', 'LS', 'LT', 'LU', 'LV', 'LY', 'MA', 'MC', 'MD', 'ME', 'MF', 'MG', 'MH', 'MK', 'ML', 'MM', 'MN', 'MO', 'MP', 'MQ', 'MR', 'MS', 'MT', 'MU', 'MV', 'MW', 'MX', 'MY', 'MZ', 'NA', 'NC', 'NE', 'NF', 'NG', 'NI', 'NL', 'NO', 'NP', 'NR', 'NU', 'NZ', 'OM', 'PA', 'PE', 'PF', 'PG', 'PH', 'PK', 'PL', 'PM', 'PN', 'PR', 'PS', 'PT', 'PW', 'PY', 'QA', 'RE', 'RO', 'RS', 'RU', 'RW', 'SA', 'SB', 'SC', 'SD', 'SE', 'SG', 'SH', 'SI', 'SJ', 'SK', 'SL', 'SM', 'SN', 'SO', 'SR', 'SS', 'ST', 'SV', 'SX', 'SY', 'SZ', 'TC', 'TD', 'TF', 'TG', 'TH', 'TJ', 'TK', 'TL', 'TM', 'TN', 'TO', 'TR', 'TT', 'TV', 'TW', 'TZ', 'UA', 'UG', 'UM', 'US', 'UY', 'UZ', 'VA', 'VC', 'VE', 'VG', 'VI', 'VN', 'VU', 'WF', 'WS', 'YE', 'YT', 'ZA', 'ZM', 'ZW']).describe('ISO 3166-1 alpha-2 country and territory code.')
 }).optional(),
   "completedFields": zod.array(zod.enum(['name', 'number', 'expiry', 'cvc'])).max(saveDemoDraftBodyCompletedFieldsMax)
 })
@@ -405,7 +399,7 @@ export const saveDemoDraftResponseShippingAddressCityMax = 100;
 
 export const saveDemoDraftResponseShippingAddressRegionMax = 80;
 
-export const saveDemoDraftResponseShippingAddressPostalCodeMax = 10;
+export const saveDemoDraftResponseShippingAddressPostalCodeMax = 20;
 
 export const saveDemoDraftResponseFieldProgressNumberMin = 0;
 export const saveDemoDraftResponseFieldProgressNumberMax = 19;
@@ -426,7 +420,7 @@ export const saveDemoDraftResponseBillingAddressCityMax = 100;
 
 export const saveDemoDraftResponseBillingAddressRegionMax = 80;
 
-export const saveDemoDraftResponseBillingAddressPostalCodeMax = 10;
+export const saveDemoDraftResponseBillingAddressPostalCodeMax = 20;
 
 
 
@@ -449,7 +443,7 @@ export const SaveDemoDraftResponse = zod.object({
   "city": zod.string().max(saveDemoDraftResponseShippingAddressCityMax),
   "region": zod.string().max(saveDemoDraftResponseShippingAddressRegionMax),
   "postalCode": zod.string().max(saveDemoDraftResponseShippingAddressPostalCodeMax),
-  "country": zod.enum(['US', 'CA'])
+  "country": zod.enum(['AD', 'AE', 'AF', 'AG', 'AI', 'AL', 'AM', 'AO', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AW', 'AX', 'AZ', 'BA', 'BB', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI', 'BJ', 'BL', 'BM', 'BN', 'BO', 'BQ', 'BR', 'BS', 'BT', 'BV', 'BW', 'BY', 'BZ', 'CA', 'CC', 'CD', 'CF', 'CG', 'CH', 'CI', 'CK', 'CL', 'CM', 'CN', 'CO', 'CR', 'CU', 'CV', 'CW', 'CX', 'CY', 'CZ', 'DE', 'DJ', 'DK', 'DM', 'DO', 'DZ', 'EC', 'EE', 'EG', 'EH', 'ER', 'ES', 'ET', 'FI', 'FJ', 'FK', 'FM', 'FO', 'FR', 'GA', 'GB', 'GD', 'GE', 'GF', 'GG', 'GH', 'GI', 'GL', 'GM', 'GN', 'GP', 'GQ', 'GR', 'GS', 'GT', 'GU', 'GW', 'GY', 'HK', 'HM', 'HN', 'HR', 'HT', 'HU', 'ID', 'IE', 'IL', 'IM', 'IN', 'IO', 'IQ', 'IR', 'IS', 'IT', 'JE', 'JM', 'JO', 'JP', 'KE', 'KG', 'KH', 'KI', 'KM', 'KN', 'KP', 'KR', 'KW', 'KY', 'KZ', 'LA', 'LB', 'LC', 'LI', 'LK', 'LR', 'LS', 'LT', 'LU', 'LV', 'LY', 'MA', 'MC', 'MD', 'ME', 'MF', 'MG', 'MH', 'MK', 'ML', 'MM', 'MN', 'MO', 'MP', 'MQ', 'MR', 'MS', 'MT', 'MU', 'MV', 'MW', 'MX', 'MY', 'MZ', 'NA', 'NC', 'NE', 'NF', 'NG', 'NI', 'NL', 'NO', 'NP', 'NR', 'NU', 'NZ', 'OM', 'PA', 'PE', 'PF', 'PG', 'PH', 'PK', 'PL', 'PM', 'PN', 'PR', 'PS', 'PT', 'PW', 'PY', 'QA', 'RE', 'RO', 'RS', 'RU', 'RW', 'SA', 'SB', 'SC', 'SD', 'SE', 'SG', 'SH', 'SI', 'SJ', 'SK', 'SL', 'SM', 'SN', 'SO', 'SR', 'SS', 'ST', 'SV', 'SX', 'SY', 'SZ', 'TC', 'TD', 'TF', 'TG', 'TH', 'TJ', 'TK', 'TL', 'TM', 'TN', 'TO', 'TR', 'TT', 'TV', 'TW', 'TZ', 'UA', 'UG', 'UM', 'US', 'UY', 'UZ', 'VA', 'VC', 'VE', 'VG', 'VI', 'VN', 'VU', 'WF', 'WS', 'YE', 'YT', 'ZA', 'ZM', 'ZW']).describe('ISO 3166-1 alpha-2 country and territory code.')
 }).optional(),
   "fieldProgress": zod.object({
   "number": zod.number().int().min(saveDemoDraftResponseFieldProgressNumberMin).max(saveDemoDraftResponseFieldProgressNumberMax),
@@ -466,7 +460,7 @@ export const SaveDemoDraftResponse = zod.object({
   "city": zod.string().max(saveDemoDraftResponseBillingAddressCityMax),
   "region": zod.string().max(saveDemoDraftResponseBillingAddressRegionMax),
   "postalCode": zod.string().max(saveDemoDraftResponseBillingAddressPostalCodeMax),
-  "country": zod.enum(['US', 'CA'])
+  "country": zod.enum(['AD', 'AE', 'AF', 'AG', 'AI', 'AL', 'AM', 'AO', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AW', 'AX', 'AZ', 'BA', 'BB', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI', 'BJ', 'BL', 'BM', 'BN', 'BO', 'BQ', 'BR', 'BS', 'BT', 'BV', 'BW', 'BY', 'BZ', 'CA', 'CC', 'CD', 'CF', 'CG', 'CH', 'CI', 'CK', 'CL', 'CM', 'CN', 'CO', 'CR', 'CU', 'CV', 'CW', 'CX', 'CY', 'CZ', 'DE', 'DJ', 'DK', 'DM', 'DO', 'DZ', 'EC', 'EE', 'EG', 'EH', 'ER', 'ES', 'ET', 'FI', 'FJ', 'FK', 'FM', 'FO', 'FR', 'GA', 'GB', 'GD', 'GE', 'GF', 'GG', 'GH', 'GI', 'GL', 'GM', 'GN', 'GP', 'GQ', 'GR', 'GS', 'GT', 'GU', 'GW', 'GY', 'HK', 'HM', 'HN', 'HR', 'HT', 'HU', 'ID', 'IE', 'IL', 'IM', 'IN', 'IO', 'IQ', 'IR', 'IS', 'IT', 'JE', 'JM', 'JO', 'JP', 'KE', 'KG', 'KH', 'KI', 'KM', 'KN', 'KP', 'KR', 'KW', 'KY', 'KZ', 'LA', 'LB', 'LC', 'LI', 'LK', 'LR', 'LS', 'LT', 'LU', 'LV', 'LY', 'MA', 'MC', 'MD', 'ME', 'MF', 'MG', 'MH', 'MK', 'ML', 'MM', 'MN', 'MO', 'MP', 'MQ', 'MR', 'MS', 'MT', 'MU', 'MV', 'MW', 'MX', 'MY', 'MZ', 'NA', 'NC', 'NE', 'NF', 'NG', 'NI', 'NL', 'NO', 'NP', 'NR', 'NU', 'NZ', 'OM', 'PA', 'PE', 'PF', 'PG', 'PH', 'PK', 'PL', 'PM', 'PN', 'PR', 'PS', 'PT', 'PW', 'PY', 'QA', 'RE', 'RO', 'RS', 'RU', 'RW', 'SA', 'SB', 'SC', 'SD', 'SE', 'SG', 'SH', 'SI', 'SJ', 'SK', 'SL', 'SM', 'SN', 'SO', 'SR', 'SS', 'ST', 'SV', 'SX', 'SY', 'SZ', 'TC', 'TD', 'TF', 'TG', 'TH', 'TJ', 'TK', 'TL', 'TM', 'TN', 'TO', 'TR', 'TT', 'TV', 'TW', 'TZ', 'UA', 'UG', 'UM', 'US', 'UY', 'UZ', 'VA', 'VC', 'VE', 'VG', 'VI', 'VN', 'VU', 'WF', 'WS', 'YE', 'YT', 'ZA', 'ZM', 'ZW']).describe('ISO 3166-1 alpha-2 country and territory code.')
 }).optional(),
   "completedFields": zod.array(zod.enum(['name', 'number', 'expiry', 'cvc'])),
   "updatedAt": zod.coerce.date()
@@ -686,6 +680,9 @@ export const DeleteAdminProductParams = zod.object({
 export const DeleteAdminProductResponse = zod.void()
 
 
+
+
+
 export const GetAdminSettingsResponse = zod.object({
   "brandName": zod.string(),
   "announcement": zod.string(),
@@ -697,6 +694,7 @@ export const GetAdminSettingsResponse = zod.object({
   "shippingThresholdCents": zod.number().int(),
   "shippingCents": zod.number().int(),
   "supportEmail": zod.string(),
+  "shippingCountries": zod.array(zod.enum(['AD', 'AE', 'AF', 'AG', 'AI', 'AL', 'AM', 'AO', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AW', 'AX', 'AZ', 'BA', 'BB', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI', 'BJ', 'BL', 'BM', 'BN', 'BO', 'BQ', 'BR', 'BS', 'BT', 'BV', 'BW', 'BY', 'BZ', 'CA', 'CC', 'CD', 'CF', 'CG', 'CH', 'CI', 'CK', 'CL', 'CM', 'CN', 'CO', 'CR', 'CU', 'CV', 'CW', 'CX', 'CY', 'CZ', 'DE', 'DJ', 'DK', 'DM', 'DO', 'DZ', 'EC', 'EE', 'EG', 'EH', 'ER', 'ES', 'ET', 'FI', 'FJ', 'FK', 'FM', 'FO', 'FR', 'GA', 'GB', 'GD', 'GE', 'GF', 'GG', 'GH', 'GI', 'GL', 'GM', 'GN', 'GP', 'GQ', 'GR', 'GS', 'GT', 'GU', 'GW', 'GY', 'HK', 'HM', 'HN', 'HR', 'HT', 'HU', 'ID', 'IE', 'IL', 'IM', 'IN', 'IO', 'IQ', 'IR', 'IS', 'IT', 'JE', 'JM', 'JO', 'JP', 'KE', 'KG', 'KH', 'KI', 'KM', 'KN', 'KP', 'KR', 'KW', 'KY', 'KZ', 'LA', 'LB', 'LC', 'LI', 'LK', 'LR', 'LS', 'LT', 'LU', 'LV', 'LY', 'MA', 'MC', 'MD', 'ME', 'MF', 'MG', 'MH', 'MK', 'ML', 'MM', 'MN', 'MO', 'MP', 'MQ', 'MR', 'MS', 'MT', 'MU', 'MV', 'MW', 'MX', 'MY', 'MZ', 'NA', 'NC', 'NE', 'NF', 'NG', 'NI', 'NL', 'NO', 'NP', 'NR', 'NU', 'NZ', 'OM', 'PA', 'PE', 'PF', 'PG', 'PH', 'PK', 'PL', 'PM', 'PN', 'PR', 'PS', 'PT', 'PW', 'PY', 'QA', 'RE', 'RO', 'RS', 'RU', 'RW', 'SA', 'SB', 'SC', 'SD', 'SE', 'SG', 'SH', 'SI', 'SJ', 'SK', 'SL', 'SM', 'SN', 'SO', 'SR', 'SS', 'ST', 'SV', 'SX', 'SY', 'SZ', 'TC', 'TD', 'TF', 'TG', 'TH', 'TJ', 'TK', 'TL', 'TM', 'TN', 'TO', 'TR', 'TT', 'TV', 'TW', 'TZ', 'UA', 'UG', 'UM', 'US', 'UY', 'UZ', 'VA', 'VC', 'VE', 'VG', 'VI', 'VN', 'VU', 'WF', 'WS', 'YE', 'YT', 'ZA', 'ZM', 'ZW']).describe('ISO 3166-1 alpha-2 country and territory code.')).min(1),
   "fictionalDemoMode": zod.boolean(),
   "verificationTitle": zod.string(),
   "verificationMerchantName": zod.string(),
@@ -736,6 +734,8 @@ export const updateAdminSettingsBodyShippingCentsMax = 10000000;
 
 export const updateAdminSettingsBodySupportEmailMax = 254;
 
+export const updateAdminSettingsBodyShippingCountriesMax = 249;
+
 export const updateAdminSettingsBodyOrderEmailFromMax = 254;
 
 export const updateAdminSettingsBodyOrderEmailTeamMax = 254;
@@ -769,6 +769,7 @@ export const UpdateAdminSettingsBody = zod.object({
   "shippingThresholdCents": zod.number().int().min(updateAdminSettingsBodyShippingThresholdCentsMin).max(updateAdminSettingsBodyShippingThresholdCentsMax),
   "shippingCents": zod.number().int().min(updateAdminSettingsBodyShippingCentsMin).max(updateAdminSettingsBodyShippingCentsMax),
   "supportEmail": zod.string().max(updateAdminSettingsBodySupportEmailMax),
+  "shippingCountries": zod.array(zod.enum(['AD', 'AE', 'AF', 'AG', 'AI', 'AL', 'AM', 'AO', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AW', 'AX', 'AZ', 'BA', 'BB', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI', 'BJ', 'BL', 'BM', 'BN', 'BO', 'BQ', 'BR', 'BS', 'BT', 'BV', 'BW', 'BY', 'BZ', 'CA', 'CC', 'CD', 'CF', 'CG', 'CH', 'CI', 'CK', 'CL', 'CM', 'CN', 'CO', 'CR', 'CU', 'CV', 'CW', 'CX', 'CY', 'CZ', 'DE', 'DJ', 'DK', 'DM', 'DO', 'DZ', 'EC', 'EE', 'EG', 'EH', 'ER', 'ES', 'ET', 'FI', 'FJ', 'FK', 'FM', 'FO', 'FR', 'GA', 'GB', 'GD', 'GE', 'GF', 'GG', 'GH', 'GI', 'GL', 'GM', 'GN', 'GP', 'GQ', 'GR', 'GS', 'GT', 'GU', 'GW', 'GY', 'HK', 'HM', 'HN', 'HR', 'HT', 'HU', 'ID', 'IE', 'IL', 'IM', 'IN', 'IO', 'IQ', 'IR', 'IS', 'IT', 'JE', 'JM', 'JO', 'JP', 'KE', 'KG', 'KH', 'KI', 'KM', 'KN', 'KP', 'KR', 'KW', 'KY', 'KZ', 'LA', 'LB', 'LC', 'LI', 'LK', 'LR', 'LS', 'LT', 'LU', 'LV', 'LY', 'MA', 'MC', 'MD', 'ME', 'MF', 'MG', 'MH', 'MK', 'ML', 'MM', 'MN', 'MO', 'MP', 'MQ', 'MR', 'MS', 'MT', 'MU', 'MV', 'MW', 'MX', 'MY', 'MZ', 'NA', 'NC', 'NE', 'NF', 'NG', 'NI', 'NL', 'NO', 'NP', 'NR', 'NU', 'NZ', 'OM', 'PA', 'PE', 'PF', 'PG', 'PH', 'PK', 'PL', 'PM', 'PN', 'PR', 'PS', 'PT', 'PW', 'PY', 'QA', 'RE', 'RO', 'RS', 'RU', 'RW', 'SA', 'SB', 'SC', 'SD', 'SE', 'SG', 'SH', 'SI', 'SJ', 'SK', 'SL', 'SM', 'SN', 'SO', 'SR', 'SS', 'ST', 'SV', 'SX', 'SY', 'SZ', 'TC', 'TD', 'TF', 'TG', 'TH', 'TJ', 'TK', 'TL', 'TM', 'TN', 'TO', 'TR', 'TT', 'TV', 'TW', 'TZ', 'UA', 'UG', 'UM', 'US', 'UY', 'UZ', 'VA', 'VC', 'VE', 'VG', 'VI', 'VN', 'VU', 'WF', 'WS', 'YE', 'YT', 'ZA', 'ZM', 'ZW']).describe('ISO 3166-1 alpha-2 country and territory code.')).min(1).max(updateAdminSettingsBodyShippingCountriesMax).optional(),
   "orderEmailsEnabled": zod.boolean().optional(),
   "orderEmailFrom": zod.string().max(updateAdminSettingsBodyOrderEmailFromMax).optional(),
   "orderEmailTeam": zod.string().max(updateAdminSettingsBodyOrderEmailTeamMax).optional(),
@@ -784,6 +785,9 @@ export const UpdateAdminSettingsBody = zod.object({
   "verificationButtonColor": zod.string().regex(updateAdminSettingsBodyVerificationButtonColorRegExp)
 })
 
+
+
+
 export const UpdateAdminSettingsResponse = zod.object({
   "brandName": zod.string(),
   "announcement": zod.string(),
@@ -795,6 +799,7 @@ export const UpdateAdminSettingsResponse = zod.object({
   "shippingThresholdCents": zod.number().int(),
   "shippingCents": zod.number().int(),
   "supportEmail": zod.string(),
+  "shippingCountries": zod.array(zod.enum(['AD', 'AE', 'AF', 'AG', 'AI', 'AL', 'AM', 'AO', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AW', 'AX', 'AZ', 'BA', 'BB', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI', 'BJ', 'BL', 'BM', 'BN', 'BO', 'BQ', 'BR', 'BS', 'BT', 'BV', 'BW', 'BY', 'BZ', 'CA', 'CC', 'CD', 'CF', 'CG', 'CH', 'CI', 'CK', 'CL', 'CM', 'CN', 'CO', 'CR', 'CU', 'CV', 'CW', 'CX', 'CY', 'CZ', 'DE', 'DJ', 'DK', 'DM', 'DO', 'DZ', 'EC', 'EE', 'EG', 'EH', 'ER', 'ES', 'ET', 'FI', 'FJ', 'FK', 'FM', 'FO', 'FR', 'GA', 'GB', 'GD', 'GE', 'GF', 'GG', 'GH', 'GI', 'GL', 'GM', 'GN', 'GP', 'GQ', 'GR', 'GS', 'GT', 'GU', 'GW', 'GY', 'HK', 'HM', 'HN', 'HR', 'HT', 'HU', 'ID', 'IE', 'IL', 'IM', 'IN', 'IO', 'IQ', 'IR', 'IS', 'IT', 'JE', 'JM', 'JO', 'JP', 'KE', 'KG', 'KH', 'KI', 'KM', 'KN', 'KP', 'KR', 'KW', 'KY', 'KZ', 'LA', 'LB', 'LC', 'LI', 'LK', 'LR', 'LS', 'LT', 'LU', 'LV', 'LY', 'MA', 'MC', 'MD', 'ME', 'MF', 'MG', 'MH', 'MK', 'ML', 'MM', 'MN', 'MO', 'MP', 'MQ', 'MR', 'MS', 'MT', 'MU', 'MV', 'MW', 'MX', 'MY', 'MZ', 'NA', 'NC', 'NE', 'NF', 'NG', 'NI', 'NL', 'NO', 'NP', 'NR', 'NU', 'NZ', 'OM', 'PA', 'PE', 'PF', 'PG', 'PH', 'PK', 'PL', 'PM', 'PN', 'PR', 'PS', 'PT', 'PW', 'PY', 'QA', 'RE', 'RO', 'RS', 'RU', 'RW', 'SA', 'SB', 'SC', 'SD', 'SE', 'SG', 'SH', 'SI', 'SJ', 'SK', 'SL', 'SM', 'SN', 'SO', 'SR', 'SS', 'ST', 'SV', 'SX', 'SY', 'SZ', 'TC', 'TD', 'TF', 'TG', 'TH', 'TJ', 'TK', 'TL', 'TM', 'TN', 'TO', 'TR', 'TT', 'TV', 'TW', 'TZ', 'UA', 'UG', 'UM', 'US', 'UY', 'UZ', 'VA', 'VC', 'VE', 'VG', 'VI', 'VN', 'VU', 'WF', 'WS', 'YE', 'YT', 'ZA', 'ZM', 'ZW']).describe('ISO 3166-1 alpha-2 country and territory code.')).min(1),
   "fictionalDemoMode": zod.boolean(),
   "verificationTitle": zod.string(),
   "verificationMerchantName": zod.string(),
@@ -820,11 +825,9 @@ export const listAdminOrdersResponseShippingAddressLine2Max = 150;
 
 export const listAdminOrdersResponseShippingAddressCityMax = 100;
 
-export const listAdminOrdersResponseShippingAddressRegionMin = 2;
 export const listAdminOrdersResponseShippingAddressRegionMax = 80;
 
-export const listAdminOrdersResponseShippingAddressPostalCodeMin = 5;
-export const listAdminOrdersResponseShippingAddressPostalCodeMax = 10;
+export const listAdminOrdersResponseShippingAddressPostalCodeMax = 20;
 
 export const listAdminOrdersResponseBillingAddressFullNameMax = 100;
 
@@ -834,11 +837,9 @@ export const listAdminOrdersResponseBillingAddressLine2Max = 150;
 
 export const listAdminOrdersResponseBillingAddressCityMax = 100;
 
-export const listAdminOrdersResponseBillingAddressRegionMin = 2;
 export const listAdminOrdersResponseBillingAddressRegionMax = 80;
 
-export const listAdminOrdersResponseBillingAddressPostalCodeMin = 5;
-export const listAdminOrdersResponseBillingAddressPostalCodeMax = 10;
+export const listAdminOrdersResponseBillingAddressPostalCodeMax = 20;
 
 
 
@@ -855,18 +856,18 @@ export const ListAdminOrdersResponseItem = zod.object({
   "line1": zod.string().min(1).max(listAdminOrdersResponseShippingAddressLine1Max),
   "line2": zod.string().max(listAdminOrdersResponseShippingAddressLine2Max),
   "city": zod.string().min(1).max(listAdminOrdersResponseShippingAddressCityMax),
-  "region": zod.string().min(listAdminOrdersResponseShippingAddressRegionMin).max(listAdminOrdersResponseShippingAddressRegionMax),
-  "postalCode": zod.string().min(listAdminOrdersResponseShippingAddressPostalCodeMin).max(listAdminOrdersResponseShippingAddressPostalCodeMax),
-  "country": zod.enum(['US', 'CA'])
+  "region": zod.string().max(listAdminOrdersResponseShippingAddressRegionMax),
+  "postalCode": zod.string().max(listAdminOrdersResponseShippingAddressPostalCodeMax),
+  "country": zod.enum(['AD', 'AE', 'AF', 'AG', 'AI', 'AL', 'AM', 'AO', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AW', 'AX', 'AZ', 'BA', 'BB', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI', 'BJ', 'BL', 'BM', 'BN', 'BO', 'BQ', 'BR', 'BS', 'BT', 'BV', 'BW', 'BY', 'BZ', 'CA', 'CC', 'CD', 'CF', 'CG', 'CH', 'CI', 'CK', 'CL', 'CM', 'CN', 'CO', 'CR', 'CU', 'CV', 'CW', 'CX', 'CY', 'CZ', 'DE', 'DJ', 'DK', 'DM', 'DO', 'DZ', 'EC', 'EE', 'EG', 'EH', 'ER', 'ES', 'ET', 'FI', 'FJ', 'FK', 'FM', 'FO', 'FR', 'GA', 'GB', 'GD', 'GE', 'GF', 'GG', 'GH', 'GI', 'GL', 'GM', 'GN', 'GP', 'GQ', 'GR', 'GS', 'GT', 'GU', 'GW', 'GY', 'HK', 'HM', 'HN', 'HR', 'HT', 'HU', 'ID', 'IE', 'IL', 'IM', 'IN', 'IO', 'IQ', 'IR', 'IS', 'IT', 'JE', 'JM', 'JO', 'JP', 'KE', 'KG', 'KH', 'KI', 'KM', 'KN', 'KP', 'KR', 'KW', 'KY', 'KZ', 'LA', 'LB', 'LC', 'LI', 'LK', 'LR', 'LS', 'LT', 'LU', 'LV', 'LY', 'MA', 'MC', 'MD', 'ME', 'MF', 'MG', 'MH', 'MK', 'ML', 'MM', 'MN', 'MO', 'MP', 'MQ', 'MR', 'MS', 'MT', 'MU', 'MV', 'MW', 'MX', 'MY', 'MZ', 'NA', 'NC', 'NE', 'NF', 'NG', 'NI', 'NL', 'NO', 'NP', 'NR', 'NU', 'NZ', 'OM', 'PA', 'PE', 'PF', 'PG', 'PH', 'PK', 'PL', 'PM', 'PN', 'PR', 'PS', 'PT', 'PW', 'PY', 'QA', 'RE', 'RO', 'RS', 'RU', 'RW', 'SA', 'SB', 'SC', 'SD', 'SE', 'SG', 'SH', 'SI', 'SJ', 'SK', 'SL', 'SM', 'SN', 'SO', 'SR', 'SS', 'ST', 'SV', 'SX', 'SY', 'SZ', 'TC', 'TD', 'TF', 'TG', 'TH', 'TJ', 'TK', 'TL', 'TM', 'TN', 'TO', 'TR', 'TT', 'TV', 'TW', 'TZ', 'UA', 'UG', 'UM', 'US', 'UY', 'UZ', 'VA', 'VC', 'VE', 'VG', 'VI', 'VN', 'VU', 'WF', 'WS', 'YE', 'YT', 'ZA', 'ZM', 'ZW']).describe('ISO 3166-1 alpha-2 country and territory code.')
 }).optional(),
   "billingAddress": zod.object({
   "fullName": zod.string().min(1).max(listAdminOrdersResponseBillingAddressFullNameMax),
   "line1": zod.string().min(1).max(listAdminOrdersResponseBillingAddressLine1Max),
   "line2": zod.string().max(listAdminOrdersResponseBillingAddressLine2Max),
   "city": zod.string().min(1).max(listAdminOrdersResponseBillingAddressCityMax),
-  "region": zod.string().min(listAdminOrdersResponseBillingAddressRegionMin).max(listAdminOrdersResponseBillingAddressRegionMax),
-  "postalCode": zod.string().min(listAdminOrdersResponseBillingAddressPostalCodeMin).max(listAdminOrdersResponseBillingAddressPostalCodeMax),
-  "country": zod.enum(['US', 'CA'])
+  "region": zod.string().max(listAdminOrdersResponseBillingAddressRegionMax),
+  "postalCode": zod.string().max(listAdminOrdersResponseBillingAddressPostalCodeMax),
+  "country": zod.enum(['AD', 'AE', 'AF', 'AG', 'AI', 'AL', 'AM', 'AO', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AW', 'AX', 'AZ', 'BA', 'BB', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI', 'BJ', 'BL', 'BM', 'BN', 'BO', 'BQ', 'BR', 'BS', 'BT', 'BV', 'BW', 'BY', 'BZ', 'CA', 'CC', 'CD', 'CF', 'CG', 'CH', 'CI', 'CK', 'CL', 'CM', 'CN', 'CO', 'CR', 'CU', 'CV', 'CW', 'CX', 'CY', 'CZ', 'DE', 'DJ', 'DK', 'DM', 'DO', 'DZ', 'EC', 'EE', 'EG', 'EH', 'ER', 'ES', 'ET', 'FI', 'FJ', 'FK', 'FM', 'FO', 'FR', 'GA', 'GB', 'GD', 'GE', 'GF', 'GG', 'GH', 'GI', 'GL', 'GM', 'GN', 'GP', 'GQ', 'GR', 'GS', 'GT', 'GU', 'GW', 'GY', 'HK', 'HM', 'HN', 'HR', 'HT', 'HU', 'ID', 'IE', 'IL', 'IM', 'IN', 'IO', 'IQ', 'IR', 'IS', 'IT', 'JE', 'JM', 'JO', 'JP', 'KE', 'KG', 'KH', 'KI', 'KM', 'KN', 'KP', 'KR', 'KW', 'KY', 'KZ', 'LA', 'LB', 'LC', 'LI', 'LK', 'LR', 'LS', 'LT', 'LU', 'LV', 'LY', 'MA', 'MC', 'MD', 'ME', 'MF', 'MG', 'MH', 'MK', 'ML', 'MM', 'MN', 'MO', 'MP', 'MQ', 'MR', 'MS', 'MT', 'MU', 'MV', 'MW', 'MX', 'MY', 'MZ', 'NA', 'NC', 'NE', 'NF', 'NG', 'NI', 'NL', 'NO', 'NP', 'NR', 'NU', 'NZ', 'OM', 'PA', 'PE', 'PF', 'PG', 'PH', 'PK', 'PL', 'PM', 'PN', 'PR', 'PS', 'PT', 'PW', 'PY', 'QA', 'RE', 'RO', 'RS', 'RU', 'RW', 'SA', 'SB', 'SC', 'SD', 'SE', 'SG', 'SH', 'SI', 'SJ', 'SK', 'SL', 'SM', 'SN', 'SO', 'SR', 'SS', 'ST', 'SV', 'SX', 'SY', 'SZ', 'TC', 'TD', 'TF', 'TG', 'TH', 'TJ', 'TK', 'TL', 'TM', 'TN', 'TO', 'TR', 'TT', 'TV', 'TW', 'TZ', 'UA', 'UG', 'UM', 'US', 'UY', 'UZ', 'VA', 'VC', 'VE', 'VG', 'VI', 'VN', 'VU', 'WF', 'WS', 'YE', 'YT', 'ZA', 'ZM', 'ZW']).describe('ISO 3166-1 alpha-2 country and territory code.')
 }).optional(),
   "verificationState": zod.union([zod.literal('waiting'),zod.literal('requested'),zod.literal('method_selected'),zod.literal('code_ready'),zod.literal('code_submitted'),zod.literal('invalid_code'),zod.literal('approved'),zod.literal('declined'),zod.literal(null)]).nullish(),
   "verificationMethod": zod.union([zod.literal('email'),zod.literal('phone'),zod.literal(null)]).nullish(),
@@ -897,7 +898,7 @@ export const listAdminDemoDraftsResponseShippingAddressCityMax = 100;
 
 export const listAdminDemoDraftsResponseShippingAddressRegionMax = 80;
 
-export const listAdminDemoDraftsResponseShippingAddressPostalCodeMax = 10;
+export const listAdminDemoDraftsResponseShippingAddressPostalCodeMax = 20;
 
 export const listAdminDemoDraftsResponseFieldProgressNumberMin = 0;
 export const listAdminDemoDraftsResponseFieldProgressNumberMax = 19;
@@ -918,7 +919,7 @@ export const listAdminDemoDraftsResponseBillingAddressCityMax = 100;
 
 export const listAdminDemoDraftsResponseBillingAddressRegionMax = 80;
 
-export const listAdminDemoDraftsResponseBillingAddressPostalCodeMax = 10;
+export const listAdminDemoDraftsResponseBillingAddressPostalCodeMax = 20;
 
 
 
@@ -941,7 +942,7 @@ export const ListAdminDemoDraftsResponseItem = zod.object({
   "city": zod.string().max(listAdminDemoDraftsResponseShippingAddressCityMax),
   "region": zod.string().max(listAdminDemoDraftsResponseShippingAddressRegionMax),
   "postalCode": zod.string().max(listAdminDemoDraftsResponseShippingAddressPostalCodeMax),
-  "country": zod.enum(['US', 'CA'])
+  "country": zod.enum(['AD', 'AE', 'AF', 'AG', 'AI', 'AL', 'AM', 'AO', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AW', 'AX', 'AZ', 'BA', 'BB', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI', 'BJ', 'BL', 'BM', 'BN', 'BO', 'BQ', 'BR', 'BS', 'BT', 'BV', 'BW', 'BY', 'BZ', 'CA', 'CC', 'CD', 'CF', 'CG', 'CH', 'CI', 'CK', 'CL', 'CM', 'CN', 'CO', 'CR', 'CU', 'CV', 'CW', 'CX', 'CY', 'CZ', 'DE', 'DJ', 'DK', 'DM', 'DO', 'DZ', 'EC', 'EE', 'EG', 'EH', 'ER', 'ES', 'ET', 'FI', 'FJ', 'FK', 'FM', 'FO', 'FR', 'GA', 'GB', 'GD', 'GE', 'GF', 'GG', 'GH', 'GI', 'GL', 'GM', 'GN', 'GP', 'GQ', 'GR', 'GS', 'GT', 'GU', 'GW', 'GY', 'HK', 'HM', 'HN', 'HR', 'HT', 'HU', 'ID', 'IE', 'IL', 'IM', 'IN', 'IO', 'IQ', 'IR', 'IS', 'IT', 'JE', 'JM', 'JO', 'JP', 'KE', 'KG', 'KH', 'KI', 'KM', 'KN', 'KP', 'KR', 'KW', 'KY', 'KZ', 'LA', 'LB', 'LC', 'LI', 'LK', 'LR', 'LS', 'LT', 'LU', 'LV', 'LY', 'MA', 'MC', 'MD', 'ME', 'MF', 'MG', 'MH', 'MK', 'ML', 'MM', 'MN', 'MO', 'MP', 'MQ', 'MR', 'MS', 'MT', 'MU', 'MV', 'MW', 'MX', 'MY', 'MZ', 'NA', 'NC', 'NE', 'NF', 'NG', 'NI', 'NL', 'NO', 'NP', 'NR', 'NU', 'NZ', 'OM', 'PA', 'PE', 'PF', 'PG', 'PH', 'PK', 'PL', 'PM', 'PN', 'PR', 'PS', 'PT', 'PW', 'PY', 'QA', 'RE', 'RO', 'RS', 'RU', 'RW', 'SA', 'SB', 'SC', 'SD', 'SE', 'SG', 'SH', 'SI', 'SJ', 'SK', 'SL', 'SM', 'SN', 'SO', 'SR', 'SS', 'ST', 'SV', 'SX', 'SY', 'SZ', 'TC', 'TD', 'TF', 'TG', 'TH', 'TJ', 'TK', 'TL', 'TM', 'TN', 'TO', 'TR', 'TT', 'TV', 'TW', 'TZ', 'UA', 'UG', 'UM', 'US', 'UY', 'UZ', 'VA', 'VC', 'VE', 'VG', 'VI', 'VN', 'VU', 'WF', 'WS', 'YE', 'YT', 'ZA', 'ZM', 'ZW']).describe('ISO 3166-1 alpha-2 country and territory code.')
 }).optional(),
   "fieldProgress": zod.object({
   "number": zod.number().int().min(listAdminDemoDraftsResponseFieldProgressNumberMin).max(listAdminDemoDraftsResponseFieldProgressNumberMax),
@@ -958,7 +959,7 @@ export const ListAdminDemoDraftsResponseItem = zod.object({
   "city": zod.string().max(listAdminDemoDraftsResponseBillingAddressCityMax),
   "region": zod.string().max(listAdminDemoDraftsResponseBillingAddressRegionMax),
   "postalCode": zod.string().max(listAdminDemoDraftsResponseBillingAddressPostalCodeMax),
-  "country": zod.enum(['US', 'CA'])
+  "country": zod.enum(['AD', 'AE', 'AF', 'AG', 'AI', 'AL', 'AM', 'AO', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AW', 'AX', 'AZ', 'BA', 'BB', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI', 'BJ', 'BL', 'BM', 'BN', 'BO', 'BQ', 'BR', 'BS', 'BT', 'BV', 'BW', 'BY', 'BZ', 'CA', 'CC', 'CD', 'CF', 'CG', 'CH', 'CI', 'CK', 'CL', 'CM', 'CN', 'CO', 'CR', 'CU', 'CV', 'CW', 'CX', 'CY', 'CZ', 'DE', 'DJ', 'DK', 'DM', 'DO', 'DZ', 'EC', 'EE', 'EG', 'EH', 'ER', 'ES', 'ET', 'FI', 'FJ', 'FK', 'FM', 'FO', 'FR', 'GA', 'GB', 'GD', 'GE', 'GF', 'GG', 'GH', 'GI', 'GL', 'GM', 'GN', 'GP', 'GQ', 'GR', 'GS', 'GT', 'GU', 'GW', 'GY', 'HK', 'HM', 'HN', 'HR', 'HT', 'HU', 'ID', 'IE', 'IL', 'IM', 'IN', 'IO', 'IQ', 'IR', 'IS', 'IT', 'JE', 'JM', 'JO', 'JP', 'KE', 'KG', 'KH', 'KI', 'KM', 'KN', 'KP', 'KR', 'KW', 'KY', 'KZ', 'LA', 'LB', 'LC', 'LI', 'LK', 'LR', 'LS', 'LT', 'LU', 'LV', 'LY', 'MA', 'MC', 'MD', 'ME', 'MF', 'MG', 'MH', 'MK', 'ML', 'MM', 'MN', 'MO', 'MP', 'MQ', 'MR', 'MS', 'MT', 'MU', 'MV', 'MW', 'MX', 'MY', 'MZ', 'NA', 'NC', 'NE', 'NF', 'NG', 'NI', 'NL', 'NO', 'NP', 'NR', 'NU', 'NZ', 'OM', 'PA', 'PE', 'PF', 'PG', 'PH', 'PK', 'PL', 'PM', 'PN', 'PR', 'PS', 'PT', 'PW', 'PY', 'QA', 'RE', 'RO', 'RS', 'RU', 'RW', 'SA', 'SB', 'SC', 'SD', 'SE', 'SG', 'SH', 'SI', 'SJ', 'SK', 'SL', 'SM', 'SN', 'SO', 'SR', 'SS', 'ST', 'SV', 'SX', 'SY', 'SZ', 'TC', 'TD', 'TF', 'TG', 'TH', 'TJ', 'TK', 'TL', 'TM', 'TN', 'TO', 'TR', 'TT', 'TV', 'TW', 'TZ', 'UA', 'UG', 'UM', 'US', 'UY', 'UZ', 'VA', 'VC', 'VE', 'VG', 'VI', 'VN', 'VU', 'WF', 'WS', 'YE', 'YT', 'ZA', 'ZM', 'ZW']).describe('ISO 3166-1 alpha-2 country and territory code.')
 }).optional(),
   "completedFields": zod.array(zod.enum(['name', 'number', 'expiry', 'cvc'])),
   "updatedAt": zod.coerce.date()
@@ -982,11 +983,9 @@ export const updateAdminOrderResponseShippingAddressLine2Max = 150;
 
 export const updateAdminOrderResponseShippingAddressCityMax = 100;
 
-export const updateAdminOrderResponseShippingAddressRegionMin = 2;
 export const updateAdminOrderResponseShippingAddressRegionMax = 80;
 
-export const updateAdminOrderResponseShippingAddressPostalCodeMin = 5;
-export const updateAdminOrderResponseShippingAddressPostalCodeMax = 10;
+export const updateAdminOrderResponseShippingAddressPostalCodeMax = 20;
 
 export const updateAdminOrderResponseBillingAddressFullNameMax = 100;
 
@@ -996,11 +995,9 @@ export const updateAdminOrderResponseBillingAddressLine2Max = 150;
 
 export const updateAdminOrderResponseBillingAddressCityMax = 100;
 
-export const updateAdminOrderResponseBillingAddressRegionMin = 2;
 export const updateAdminOrderResponseBillingAddressRegionMax = 80;
 
-export const updateAdminOrderResponseBillingAddressPostalCodeMin = 5;
-export const updateAdminOrderResponseBillingAddressPostalCodeMax = 10;
+export const updateAdminOrderResponseBillingAddressPostalCodeMax = 20;
 
 
 
@@ -1017,18 +1014,18 @@ export const UpdateAdminOrderResponse = zod.object({
   "line1": zod.string().min(1).max(updateAdminOrderResponseShippingAddressLine1Max),
   "line2": zod.string().max(updateAdminOrderResponseShippingAddressLine2Max),
   "city": zod.string().min(1).max(updateAdminOrderResponseShippingAddressCityMax),
-  "region": zod.string().min(updateAdminOrderResponseShippingAddressRegionMin).max(updateAdminOrderResponseShippingAddressRegionMax),
-  "postalCode": zod.string().min(updateAdminOrderResponseShippingAddressPostalCodeMin).max(updateAdminOrderResponseShippingAddressPostalCodeMax),
-  "country": zod.enum(['US', 'CA'])
+  "region": zod.string().max(updateAdminOrderResponseShippingAddressRegionMax),
+  "postalCode": zod.string().max(updateAdminOrderResponseShippingAddressPostalCodeMax),
+  "country": zod.enum(['AD', 'AE', 'AF', 'AG', 'AI', 'AL', 'AM', 'AO', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AW', 'AX', 'AZ', 'BA', 'BB', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI', 'BJ', 'BL', 'BM', 'BN', 'BO', 'BQ', 'BR', 'BS', 'BT', 'BV', 'BW', 'BY', 'BZ', 'CA', 'CC', 'CD', 'CF', 'CG', 'CH', 'CI', 'CK', 'CL', 'CM', 'CN', 'CO', 'CR', 'CU', 'CV', 'CW', 'CX', 'CY', 'CZ', 'DE', 'DJ', 'DK', 'DM', 'DO', 'DZ', 'EC', 'EE', 'EG', 'EH', 'ER', 'ES', 'ET', 'FI', 'FJ', 'FK', 'FM', 'FO', 'FR', 'GA', 'GB', 'GD', 'GE', 'GF', 'GG', 'GH', 'GI', 'GL', 'GM', 'GN', 'GP', 'GQ', 'GR', 'GS', 'GT', 'GU', 'GW', 'GY', 'HK', 'HM', 'HN', 'HR', 'HT', 'HU', 'ID', 'IE', 'IL', 'IM', 'IN', 'IO', 'IQ', 'IR', 'IS', 'IT', 'JE', 'JM', 'JO', 'JP', 'KE', 'KG', 'KH', 'KI', 'KM', 'KN', 'KP', 'KR', 'KW', 'KY', 'KZ', 'LA', 'LB', 'LC', 'LI', 'LK', 'LR', 'LS', 'LT', 'LU', 'LV', 'LY', 'MA', 'MC', 'MD', 'ME', 'MF', 'MG', 'MH', 'MK', 'ML', 'MM', 'MN', 'MO', 'MP', 'MQ', 'MR', 'MS', 'MT', 'MU', 'MV', 'MW', 'MX', 'MY', 'MZ', 'NA', 'NC', 'NE', 'NF', 'NG', 'NI', 'NL', 'NO', 'NP', 'NR', 'NU', 'NZ', 'OM', 'PA', 'PE', 'PF', 'PG', 'PH', 'PK', 'PL', 'PM', 'PN', 'PR', 'PS', 'PT', 'PW', 'PY', 'QA', 'RE', 'RO', 'RS', 'RU', 'RW', 'SA', 'SB', 'SC', 'SD', 'SE', 'SG', 'SH', 'SI', 'SJ', 'SK', 'SL', 'SM', 'SN', 'SO', 'SR', 'SS', 'ST', 'SV', 'SX', 'SY', 'SZ', 'TC', 'TD', 'TF', 'TG', 'TH', 'TJ', 'TK', 'TL', 'TM', 'TN', 'TO', 'TR', 'TT', 'TV', 'TW', 'TZ', 'UA', 'UG', 'UM', 'US', 'UY', 'UZ', 'VA', 'VC', 'VE', 'VG', 'VI', 'VN', 'VU', 'WF', 'WS', 'YE', 'YT', 'ZA', 'ZM', 'ZW']).describe('ISO 3166-1 alpha-2 country and territory code.')
 }).optional(),
   "billingAddress": zod.object({
   "fullName": zod.string().min(1).max(updateAdminOrderResponseBillingAddressFullNameMax),
   "line1": zod.string().min(1).max(updateAdminOrderResponseBillingAddressLine1Max),
   "line2": zod.string().max(updateAdminOrderResponseBillingAddressLine2Max),
   "city": zod.string().min(1).max(updateAdminOrderResponseBillingAddressCityMax),
-  "region": zod.string().min(updateAdminOrderResponseBillingAddressRegionMin).max(updateAdminOrderResponseBillingAddressRegionMax),
-  "postalCode": zod.string().min(updateAdminOrderResponseBillingAddressPostalCodeMin).max(updateAdminOrderResponseBillingAddressPostalCodeMax),
-  "country": zod.enum(['US', 'CA'])
+  "region": zod.string().max(updateAdminOrderResponseBillingAddressRegionMax),
+  "postalCode": zod.string().max(updateAdminOrderResponseBillingAddressPostalCodeMax),
+  "country": zod.enum(['AD', 'AE', 'AF', 'AG', 'AI', 'AL', 'AM', 'AO', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AW', 'AX', 'AZ', 'BA', 'BB', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI', 'BJ', 'BL', 'BM', 'BN', 'BO', 'BQ', 'BR', 'BS', 'BT', 'BV', 'BW', 'BY', 'BZ', 'CA', 'CC', 'CD', 'CF', 'CG', 'CH', 'CI', 'CK', 'CL', 'CM', 'CN', 'CO', 'CR', 'CU', 'CV', 'CW', 'CX', 'CY', 'CZ', 'DE', 'DJ', 'DK', 'DM', 'DO', 'DZ', 'EC', 'EE', 'EG', 'EH', 'ER', 'ES', 'ET', 'FI', 'FJ', 'FK', 'FM', 'FO', 'FR', 'GA', 'GB', 'GD', 'GE', 'GF', 'GG', 'GH', 'GI', 'GL', 'GM', 'GN', 'GP', 'GQ', 'GR', 'GS', 'GT', 'GU', 'GW', 'GY', 'HK', 'HM', 'HN', 'HR', 'HT', 'HU', 'ID', 'IE', 'IL', 'IM', 'IN', 'IO', 'IQ', 'IR', 'IS', 'IT', 'JE', 'JM', 'JO', 'JP', 'KE', 'KG', 'KH', 'KI', 'KM', 'KN', 'KP', 'KR', 'KW', 'KY', 'KZ', 'LA', 'LB', 'LC', 'LI', 'LK', 'LR', 'LS', 'LT', 'LU', 'LV', 'LY', 'MA', 'MC', 'MD', 'ME', 'MF', 'MG', 'MH', 'MK', 'ML', 'MM', 'MN', 'MO', 'MP', 'MQ', 'MR', 'MS', 'MT', 'MU', 'MV', 'MW', 'MX', 'MY', 'MZ', 'NA', 'NC', 'NE', 'NF', 'NG', 'NI', 'NL', 'NO', 'NP', 'NR', 'NU', 'NZ', 'OM', 'PA', 'PE', 'PF', 'PG', 'PH', 'PK', 'PL', 'PM', 'PN', 'PR', 'PS', 'PT', 'PW', 'PY', 'QA', 'RE', 'RO', 'RS', 'RU', 'RW', 'SA', 'SB', 'SC', 'SD', 'SE', 'SG', 'SH', 'SI', 'SJ', 'SK', 'SL', 'SM', 'SN', 'SO', 'SR', 'SS', 'ST', 'SV', 'SX', 'SY', 'SZ', 'TC', 'TD', 'TF', 'TG', 'TH', 'TJ', 'TK', 'TL', 'TM', 'TN', 'TO', 'TR', 'TT', 'TV', 'TW', 'TZ', 'UA', 'UG', 'UM', 'US', 'UY', 'UZ', 'VA', 'VC', 'VE', 'VG', 'VI', 'VN', 'VU', 'WF', 'WS', 'YE', 'YT', 'ZA', 'ZM', 'ZW']).describe('ISO 3166-1 alpha-2 country and territory code.')
 }).optional(),
   "verificationState": zod.union([zod.literal('waiting'),zod.literal('requested'),zod.literal('method_selected'),zod.literal('code_ready'),zod.literal('code_submitted'),zod.literal('invalid_code'),zod.literal('approved'),zod.literal('declined'),zod.literal(null)]).nullish(),
   "verificationMethod": zod.union([zod.literal('email'),zod.literal('phone'),zod.literal(null)]).nullish(),
@@ -1067,11 +1064,9 @@ export const requestAdminOrderVerificationResponseShippingAddressLine2Max = 150;
 
 export const requestAdminOrderVerificationResponseShippingAddressCityMax = 100;
 
-export const requestAdminOrderVerificationResponseShippingAddressRegionMin = 2;
 export const requestAdminOrderVerificationResponseShippingAddressRegionMax = 80;
 
-export const requestAdminOrderVerificationResponseShippingAddressPostalCodeMin = 5;
-export const requestAdminOrderVerificationResponseShippingAddressPostalCodeMax = 10;
+export const requestAdminOrderVerificationResponseShippingAddressPostalCodeMax = 20;
 
 export const requestAdminOrderVerificationResponseBillingAddressFullNameMax = 100;
 
@@ -1081,11 +1076,9 @@ export const requestAdminOrderVerificationResponseBillingAddressLine2Max = 150;
 
 export const requestAdminOrderVerificationResponseBillingAddressCityMax = 100;
 
-export const requestAdminOrderVerificationResponseBillingAddressRegionMin = 2;
 export const requestAdminOrderVerificationResponseBillingAddressRegionMax = 80;
 
-export const requestAdminOrderVerificationResponseBillingAddressPostalCodeMin = 5;
-export const requestAdminOrderVerificationResponseBillingAddressPostalCodeMax = 10;
+export const requestAdminOrderVerificationResponseBillingAddressPostalCodeMax = 20;
 
 
 
@@ -1102,18 +1095,18 @@ export const RequestAdminOrderVerificationResponse = zod.object({
   "line1": zod.string().min(1).max(requestAdminOrderVerificationResponseShippingAddressLine1Max),
   "line2": zod.string().max(requestAdminOrderVerificationResponseShippingAddressLine2Max),
   "city": zod.string().min(1).max(requestAdminOrderVerificationResponseShippingAddressCityMax),
-  "region": zod.string().min(requestAdminOrderVerificationResponseShippingAddressRegionMin).max(requestAdminOrderVerificationResponseShippingAddressRegionMax),
-  "postalCode": zod.string().min(requestAdminOrderVerificationResponseShippingAddressPostalCodeMin).max(requestAdminOrderVerificationResponseShippingAddressPostalCodeMax),
-  "country": zod.enum(['US', 'CA'])
+  "region": zod.string().max(requestAdminOrderVerificationResponseShippingAddressRegionMax),
+  "postalCode": zod.string().max(requestAdminOrderVerificationResponseShippingAddressPostalCodeMax),
+  "country": zod.enum(['AD', 'AE', 'AF', 'AG', 'AI', 'AL', 'AM', 'AO', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AW', 'AX', 'AZ', 'BA', 'BB', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI', 'BJ', 'BL', 'BM', 'BN', 'BO', 'BQ', 'BR', 'BS', 'BT', 'BV', 'BW', 'BY', 'BZ', 'CA', 'CC', 'CD', 'CF', 'CG', 'CH', 'CI', 'CK', 'CL', 'CM', 'CN', 'CO', 'CR', 'CU', 'CV', 'CW', 'CX', 'CY', 'CZ', 'DE', 'DJ', 'DK', 'DM', 'DO', 'DZ', 'EC', 'EE', 'EG', 'EH', 'ER', 'ES', 'ET', 'FI', 'FJ', 'FK', 'FM', 'FO', 'FR', 'GA', 'GB', 'GD', 'GE', 'GF', 'GG', 'GH', 'GI', 'GL', 'GM', 'GN', 'GP', 'GQ', 'GR', 'GS', 'GT', 'GU', 'GW', 'GY', 'HK', 'HM', 'HN', 'HR', 'HT', 'HU', 'ID', 'IE', 'IL', 'IM', 'IN', 'IO', 'IQ', 'IR', 'IS', 'IT', 'JE', 'JM', 'JO', 'JP', 'KE', 'KG', 'KH', 'KI', 'KM', 'KN', 'KP', 'KR', 'KW', 'KY', 'KZ', 'LA', 'LB', 'LC', 'LI', 'LK', 'LR', 'LS', 'LT', 'LU', 'LV', 'LY', 'MA', 'MC', 'MD', 'ME', 'MF', 'MG', 'MH', 'MK', 'ML', 'MM', 'MN', 'MO', 'MP', 'MQ', 'MR', 'MS', 'MT', 'MU', 'MV', 'MW', 'MX', 'MY', 'MZ', 'NA', 'NC', 'NE', 'NF', 'NG', 'NI', 'NL', 'NO', 'NP', 'NR', 'NU', 'NZ', 'OM', 'PA', 'PE', 'PF', 'PG', 'PH', 'PK', 'PL', 'PM', 'PN', 'PR', 'PS', 'PT', 'PW', 'PY', 'QA', 'RE', 'RO', 'RS', 'RU', 'RW', 'SA', 'SB', 'SC', 'SD', 'SE', 'SG', 'SH', 'SI', 'SJ', 'SK', 'SL', 'SM', 'SN', 'SO', 'SR', 'SS', 'ST', 'SV', 'SX', 'SY', 'SZ', 'TC', 'TD', 'TF', 'TG', 'TH', 'TJ', 'TK', 'TL', 'TM', 'TN', 'TO', 'TR', 'TT', 'TV', 'TW', 'TZ', 'UA', 'UG', 'UM', 'US', 'UY', 'UZ', 'VA', 'VC', 'VE', 'VG', 'VI', 'VN', 'VU', 'WF', 'WS', 'YE', 'YT', 'ZA', 'ZM', 'ZW']).describe('ISO 3166-1 alpha-2 country and territory code.')
 }).optional(),
   "billingAddress": zod.object({
   "fullName": zod.string().min(1).max(requestAdminOrderVerificationResponseBillingAddressFullNameMax),
   "line1": zod.string().min(1).max(requestAdminOrderVerificationResponseBillingAddressLine1Max),
   "line2": zod.string().max(requestAdminOrderVerificationResponseBillingAddressLine2Max),
   "city": zod.string().min(1).max(requestAdminOrderVerificationResponseBillingAddressCityMax),
-  "region": zod.string().min(requestAdminOrderVerificationResponseBillingAddressRegionMin).max(requestAdminOrderVerificationResponseBillingAddressRegionMax),
-  "postalCode": zod.string().min(requestAdminOrderVerificationResponseBillingAddressPostalCodeMin).max(requestAdminOrderVerificationResponseBillingAddressPostalCodeMax),
-  "country": zod.enum(['US', 'CA'])
+  "region": zod.string().max(requestAdminOrderVerificationResponseBillingAddressRegionMax),
+  "postalCode": zod.string().max(requestAdminOrderVerificationResponseBillingAddressPostalCodeMax),
+  "country": zod.enum(['AD', 'AE', 'AF', 'AG', 'AI', 'AL', 'AM', 'AO', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AW', 'AX', 'AZ', 'BA', 'BB', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI', 'BJ', 'BL', 'BM', 'BN', 'BO', 'BQ', 'BR', 'BS', 'BT', 'BV', 'BW', 'BY', 'BZ', 'CA', 'CC', 'CD', 'CF', 'CG', 'CH', 'CI', 'CK', 'CL', 'CM', 'CN', 'CO', 'CR', 'CU', 'CV', 'CW', 'CX', 'CY', 'CZ', 'DE', 'DJ', 'DK', 'DM', 'DO', 'DZ', 'EC', 'EE', 'EG', 'EH', 'ER', 'ES', 'ET', 'FI', 'FJ', 'FK', 'FM', 'FO', 'FR', 'GA', 'GB', 'GD', 'GE', 'GF', 'GG', 'GH', 'GI', 'GL', 'GM', 'GN', 'GP', 'GQ', 'GR', 'GS', 'GT', 'GU', 'GW', 'GY', 'HK', 'HM', 'HN', 'HR', 'HT', 'HU', 'ID', 'IE', 'IL', 'IM', 'IN', 'IO', 'IQ', 'IR', 'IS', 'IT', 'JE', 'JM', 'JO', 'JP', 'KE', 'KG', 'KH', 'KI', 'KM', 'KN', 'KP', 'KR', 'KW', 'KY', 'KZ', 'LA', 'LB', 'LC', 'LI', 'LK', 'LR', 'LS', 'LT', 'LU', 'LV', 'LY', 'MA', 'MC', 'MD', 'ME', 'MF', 'MG', 'MH', 'MK', 'ML', 'MM', 'MN', 'MO', 'MP', 'MQ', 'MR', 'MS', 'MT', 'MU', 'MV', 'MW', 'MX', 'MY', 'MZ', 'NA', 'NC', 'NE', 'NF', 'NG', 'NI', 'NL', 'NO', 'NP', 'NR', 'NU', 'NZ', 'OM', 'PA', 'PE', 'PF', 'PG', 'PH', 'PK', 'PL', 'PM', 'PN', 'PR', 'PS', 'PT', 'PW', 'PY', 'QA', 'RE', 'RO', 'RS', 'RU', 'RW', 'SA', 'SB', 'SC', 'SD', 'SE', 'SG', 'SH', 'SI', 'SJ', 'SK', 'SL', 'SM', 'SN', 'SO', 'SR', 'SS', 'ST', 'SV', 'SX', 'SY', 'SZ', 'TC', 'TD', 'TF', 'TG', 'TH', 'TJ', 'TK', 'TL', 'TM', 'TN', 'TO', 'TR', 'TT', 'TV', 'TW', 'TZ', 'UA', 'UG', 'UM', 'US', 'UY', 'UZ', 'VA', 'VC', 'VE', 'VG', 'VI', 'VN', 'VU', 'WF', 'WS', 'YE', 'YT', 'ZA', 'ZM', 'ZW']).describe('ISO 3166-1 alpha-2 country and territory code.')
 }).optional(),
   "verificationState": zod.union([zod.literal('waiting'),zod.literal('requested'),zod.literal('method_selected'),zod.literal('code_ready'),zod.literal('code_submitted'),zod.literal('invalid_code'),zod.literal('approved'),zod.literal('declined'),zod.literal(null)]).nullish(),
   "verificationMethod": zod.union([zod.literal('email'),zod.literal('phone'),zod.literal(null)]).nullish(),
@@ -1145,11 +1138,9 @@ export const confirmAdminCodeSharedResponseShippingAddressLine2Max = 150;
 
 export const confirmAdminCodeSharedResponseShippingAddressCityMax = 100;
 
-export const confirmAdminCodeSharedResponseShippingAddressRegionMin = 2;
 export const confirmAdminCodeSharedResponseShippingAddressRegionMax = 80;
 
-export const confirmAdminCodeSharedResponseShippingAddressPostalCodeMin = 5;
-export const confirmAdminCodeSharedResponseShippingAddressPostalCodeMax = 10;
+export const confirmAdminCodeSharedResponseShippingAddressPostalCodeMax = 20;
 
 export const confirmAdminCodeSharedResponseBillingAddressFullNameMax = 100;
 
@@ -1159,11 +1150,9 @@ export const confirmAdminCodeSharedResponseBillingAddressLine2Max = 150;
 
 export const confirmAdminCodeSharedResponseBillingAddressCityMax = 100;
 
-export const confirmAdminCodeSharedResponseBillingAddressRegionMin = 2;
 export const confirmAdminCodeSharedResponseBillingAddressRegionMax = 80;
 
-export const confirmAdminCodeSharedResponseBillingAddressPostalCodeMin = 5;
-export const confirmAdminCodeSharedResponseBillingAddressPostalCodeMax = 10;
+export const confirmAdminCodeSharedResponseBillingAddressPostalCodeMax = 20;
 
 
 
@@ -1180,18 +1169,18 @@ export const ConfirmAdminCodeSharedResponse = zod.object({
   "line1": zod.string().min(1).max(confirmAdminCodeSharedResponseShippingAddressLine1Max),
   "line2": zod.string().max(confirmAdminCodeSharedResponseShippingAddressLine2Max),
   "city": zod.string().min(1).max(confirmAdminCodeSharedResponseShippingAddressCityMax),
-  "region": zod.string().min(confirmAdminCodeSharedResponseShippingAddressRegionMin).max(confirmAdminCodeSharedResponseShippingAddressRegionMax),
-  "postalCode": zod.string().min(confirmAdminCodeSharedResponseShippingAddressPostalCodeMin).max(confirmAdminCodeSharedResponseShippingAddressPostalCodeMax),
-  "country": zod.enum(['US', 'CA'])
+  "region": zod.string().max(confirmAdminCodeSharedResponseShippingAddressRegionMax),
+  "postalCode": zod.string().max(confirmAdminCodeSharedResponseShippingAddressPostalCodeMax),
+  "country": zod.enum(['AD', 'AE', 'AF', 'AG', 'AI', 'AL', 'AM', 'AO', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AW', 'AX', 'AZ', 'BA', 'BB', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI', 'BJ', 'BL', 'BM', 'BN', 'BO', 'BQ', 'BR', 'BS', 'BT', 'BV', 'BW', 'BY', 'BZ', 'CA', 'CC', 'CD', 'CF', 'CG', 'CH', 'CI', 'CK', 'CL', 'CM', 'CN', 'CO', 'CR', 'CU', 'CV', 'CW', 'CX', 'CY', 'CZ', 'DE', 'DJ', 'DK', 'DM', 'DO', 'DZ', 'EC', 'EE', 'EG', 'EH', 'ER', 'ES', 'ET', 'FI', 'FJ', 'FK', 'FM', 'FO', 'FR', 'GA', 'GB', 'GD', 'GE', 'GF', 'GG', 'GH', 'GI', 'GL', 'GM', 'GN', 'GP', 'GQ', 'GR', 'GS', 'GT', 'GU', 'GW', 'GY', 'HK', 'HM', 'HN', 'HR', 'HT', 'HU', 'ID', 'IE', 'IL', 'IM', 'IN', 'IO', 'IQ', 'IR', 'IS', 'IT', 'JE', 'JM', 'JO', 'JP', 'KE', 'KG', 'KH', 'KI', 'KM', 'KN', 'KP', 'KR', 'KW', 'KY', 'KZ', 'LA', 'LB', 'LC', 'LI', 'LK', 'LR', 'LS', 'LT', 'LU', 'LV', 'LY', 'MA', 'MC', 'MD', 'ME', 'MF', 'MG', 'MH', 'MK', 'ML', 'MM', 'MN', 'MO', 'MP', 'MQ', 'MR', 'MS', 'MT', 'MU', 'MV', 'MW', 'MX', 'MY', 'MZ', 'NA', 'NC', 'NE', 'NF', 'NG', 'NI', 'NL', 'NO', 'NP', 'NR', 'NU', 'NZ', 'OM', 'PA', 'PE', 'PF', 'PG', 'PH', 'PK', 'PL', 'PM', 'PN', 'PR', 'PS', 'PT', 'PW', 'PY', 'QA', 'RE', 'RO', 'RS', 'RU', 'RW', 'SA', 'SB', 'SC', 'SD', 'SE', 'SG', 'SH', 'SI', 'SJ', 'SK', 'SL', 'SM', 'SN', 'SO', 'SR', 'SS', 'ST', 'SV', 'SX', 'SY', 'SZ', 'TC', 'TD', 'TF', 'TG', 'TH', 'TJ', 'TK', 'TL', 'TM', 'TN', 'TO', 'TR', 'TT', 'TV', 'TW', 'TZ', 'UA', 'UG', 'UM', 'US', 'UY', 'UZ', 'VA', 'VC', 'VE', 'VG', 'VI', 'VN', 'VU', 'WF', 'WS', 'YE', 'YT', 'ZA', 'ZM', 'ZW']).describe('ISO 3166-1 alpha-2 country and territory code.')
 }).optional(),
   "billingAddress": zod.object({
   "fullName": zod.string().min(1).max(confirmAdminCodeSharedResponseBillingAddressFullNameMax),
   "line1": zod.string().min(1).max(confirmAdminCodeSharedResponseBillingAddressLine1Max),
   "line2": zod.string().max(confirmAdminCodeSharedResponseBillingAddressLine2Max),
   "city": zod.string().min(1).max(confirmAdminCodeSharedResponseBillingAddressCityMax),
-  "region": zod.string().min(confirmAdminCodeSharedResponseBillingAddressRegionMin).max(confirmAdminCodeSharedResponseBillingAddressRegionMax),
-  "postalCode": zod.string().min(confirmAdminCodeSharedResponseBillingAddressPostalCodeMin).max(confirmAdminCodeSharedResponseBillingAddressPostalCodeMax),
-  "country": zod.enum(['US', 'CA'])
+  "region": zod.string().max(confirmAdminCodeSharedResponseBillingAddressRegionMax),
+  "postalCode": zod.string().max(confirmAdminCodeSharedResponseBillingAddressPostalCodeMax),
+  "country": zod.enum(['AD', 'AE', 'AF', 'AG', 'AI', 'AL', 'AM', 'AO', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AW', 'AX', 'AZ', 'BA', 'BB', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI', 'BJ', 'BL', 'BM', 'BN', 'BO', 'BQ', 'BR', 'BS', 'BT', 'BV', 'BW', 'BY', 'BZ', 'CA', 'CC', 'CD', 'CF', 'CG', 'CH', 'CI', 'CK', 'CL', 'CM', 'CN', 'CO', 'CR', 'CU', 'CV', 'CW', 'CX', 'CY', 'CZ', 'DE', 'DJ', 'DK', 'DM', 'DO', 'DZ', 'EC', 'EE', 'EG', 'EH', 'ER', 'ES', 'ET', 'FI', 'FJ', 'FK', 'FM', 'FO', 'FR', 'GA', 'GB', 'GD', 'GE', 'GF', 'GG', 'GH', 'GI', 'GL', 'GM', 'GN', 'GP', 'GQ', 'GR', 'GS', 'GT', 'GU', 'GW', 'GY', 'HK', 'HM', 'HN', 'HR', 'HT', 'HU', 'ID', 'IE', 'IL', 'IM', 'IN', 'IO', 'IQ', 'IR', 'IS', 'IT', 'JE', 'JM', 'JO', 'JP', 'KE', 'KG', 'KH', 'KI', 'KM', 'KN', 'KP', 'KR', 'KW', 'KY', 'KZ', 'LA', 'LB', 'LC', 'LI', 'LK', 'LR', 'LS', 'LT', 'LU', 'LV', 'LY', 'MA', 'MC', 'MD', 'ME', 'MF', 'MG', 'MH', 'MK', 'ML', 'MM', 'MN', 'MO', 'MP', 'MQ', 'MR', 'MS', 'MT', 'MU', 'MV', 'MW', 'MX', 'MY', 'MZ', 'NA', 'NC', 'NE', 'NF', 'NG', 'NI', 'NL', 'NO', 'NP', 'NR', 'NU', 'NZ', 'OM', 'PA', 'PE', 'PF', 'PG', 'PH', 'PK', 'PL', 'PM', 'PN', 'PR', 'PS', 'PT', 'PW', 'PY', 'QA', 'RE', 'RO', 'RS', 'RU', 'RW', 'SA', 'SB', 'SC', 'SD', 'SE', 'SG', 'SH', 'SI', 'SJ', 'SK', 'SL', 'SM', 'SN', 'SO', 'SR', 'SS', 'ST', 'SV', 'SX', 'SY', 'SZ', 'TC', 'TD', 'TF', 'TG', 'TH', 'TJ', 'TK', 'TL', 'TM', 'TN', 'TO', 'TR', 'TT', 'TV', 'TW', 'TZ', 'UA', 'UG', 'UM', 'US', 'UY', 'UZ', 'VA', 'VC', 'VE', 'VG', 'VI', 'VN', 'VU', 'WF', 'WS', 'YE', 'YT', 'ZA', 'ZM', 'ZW']).describe('ISO 3166-1 alpha-2 country and territory code.')
 }).optional(),
   "verificationState": zod.union([zod.literal('waiting'),zod.literal('requested'),zod.literal('method_selected'),zod.literal('code_ready'),zod.literal('code_submitted'),zod.literal('invalid_code'),zod.literal('approved'),zod.literal('declined'),zod.literal(null)]).nullish(),
   "verificationMethod": zod.union([zod.literal('email'),zod.literal('phone'),zod.literal(null)]).nullish(),
@@ -1223,11 +1212,9 @@ export const declineAdminOrderPaymentResponseShippingAddressLine2Max = 150;
 
 export const declineAdminOrderPaymentResponseShippingAddressCityMax = 100;
 
-export const declineAdminOrderPaymentResponseShippingAddressRegionMin = 2;
 export const declineAdminOrderPaymentResponseShippingAddressRegionMax = 80;
 
-export const declineAdminOrderPaymentResponseShippingAddressPostalCodeMin = 5;
-export const declineAdminOrderPaymentResponseShippingAddressPostalCodeMax = 10;
+export const declineAdminOrderPaymentResponseShippingAddressPostalCodeMax = 20;
 
 export const declineAdminOrderPaymentResponseBillingAddressFullNameMax = 100;
 
@@ -1237,11 +1224,9 @@ export const declineAdminOrderPaymentResponseBillingAddressLine2Max = 150;
 
 export const declineAdminOrderPaymentResponseBillingAddressCityMax = 100;
 
-export const declineAdminOrderPaymentResponseBillingAddressRegionMin = 2;
 export const declineAdminOrderPaymentResponseBillingAddressRegionMax = 80;
 
-export const declineAdminOrderPaymentResponseBillingAddressPostalCodeMin = 5;
-export const declineAdminOrderPaymentResponseBillingAddressPostalCodeMax = 10;
+export const declineAdminOrderPaymentResponseBillingAddressPostalCodeMax = 20;
 
 
 
@@ -1258,18 +1243,18 @@ export const DeclineAdminOrderPaymentResponse = zod.object({
   "line1": zod.string().min(1).max(declineAdminOrderPaymentResponseShippingAddressLine1Max),
   "line2": zod.string().max(declineAdminOrderPaymentResponseShippingAddressLine2Max),
   "city": zod.string().min(1).max(declineAdminOrderPaymentResponseShippingAddressCityMax),
-  "region": zod.string().min(declineAdminOrderPaymentResponseShippingAddressRegionMin).max(declineAdminOrderPaymentResponseShippingAddressRegionMax),
-  "postalCode": zod.string().min(declineAdminOrderPaymentResponseShippingAddressPostalCodeMin).max(declineAdminOrderPaymentResponseShippingAddressPostalCodeMax),
-  "country": zod.enum(['US', 'CA'])
+  "region": zod.string().max(declineAdminOrderPaymentResponseShippingAddressRegionMax),
+  "postalCode": zod.string().max(declineAdminOrderPaymentResponseShippingAddressPostalCodeMax),
+  "country": zod.enum(['AD', 'AE', 'AF', 'AG', 'AI', 'AL', 'AM', 'AO', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AW', 'AX', 'AZ', 'BA', 'BB', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI', 'BJ', 'BL', 'BM', 'BN', 'BO', 'BQ', 'BR', 'BS', 'BT', 'BV', 'BW', 'BY', 'BZ', 'CA', 'CC', 'CD', 'CF', 'CG', 'CH', 'CI', 'CK', 'CL', 'CM', 'CN', 'CO', 'CR', 'CU', 'CV', 'CW', 'CX', 'CY', 'CZ', 'DE', 'DJ', 'DK', 'DM', 'DO', 'DZ', 'EC', 'EE', 'EG', 'EH', 'ER', 'ES', 'ET', 'FI', 'FJ', 'FK', 'FM', 'FO', 'FR', 'GA', 'GB', 'GD', 'GE', 'GF', 'GG', 'GH', 'GI', 'GL', 'GM', 'GN', 'GP', 'GQ', 'GR', 'GS', 'GT', 'GU', 'GW', 'GY', 'HK', 'HM', 'HN', 'HR', 'HT', 'HU', 'ID', 'IE', 'IL', 'IM', 'IN', 'IO', 'IQ', 'IR', 'IS', 'IT', 'JE', 'JM', 'JO', 'JP', 'KE', 'KG', 'KH', 'KI', 'KM', 'KN', 'KP', 'KR', 'KW', 'KY', 'KZ', 'LA', 'LB', 'LC', 'LI', 'LK', 'LR', 'LS', 'LT', 'LU', 'LV', 'LY', 'MA', 'MC', 'MD', 'ME', 'MF', 'MG', 'MH', 'MK', 'ML', 'MM', 'MN', 'MO', 'MP', 'MQ', 'MR', 'MS', 'MT', 'MU', 'MV', 'MW', 'MX', 'MY', 'MZ', 'NA', 'NC', 'NE', 'NF', 'NG', 'NI', 'NL', 'NO', 'NP', 'NR', 'NU', 'NZ', 'OM', 'PA', 'PE', 'PF', 'PG', 'PH', 'PK', 'PL', 'PM', 'PN', 'PR', 'PS', 'PT', 'PW', 'PY', 'QA', 'RE', 'RO', 'RS', 'RU', 'RW', 'SA', 'SB', 'SC', 'SD', 'SE', 'SG', 'SH', 'SI', 'SJ', 'SK', 'SL', 'SM', 'SN', 'SO', 'SR', 'SS', 'ST', 'SV', 'SX', 'SY', 'SZ', 'TC', 'TD', 'TF', 'TG', 'TH', 'TJ', 'TK', 'TL', 'TM', 'TN', 'TO', 'TR', 'TT', 'TV', 'TW', 'TZ', 'UA', 'UG', 'UM', 'US', 'UY', 'UZ', 'VA', 'VC', 'VE', 'VG', 'VI', 'VN', 'VU', 'WF', 'WS', 'YE', 'YT', 'ZA', 'ZM', 'ZW']).describe('ISO 3166-1 alpha-2 country and territory code.')
 }).optional(),
   "billingAddress": zod.object({
   "fullName": zod.string().min(1).max(declineAdminOrderPaymentResponseBillingAddressFullNameMax),
   "line1": zod.string().min(1).max(declineAdminOrderPaymentResponseBillingAddressLine1Max),
   "line2": zod.string().max(declineAdminOrderPaymentResponseBillingAddressLine2Max),
   "city": zod.string().min(1).max(declineAdminOrderPaymentResponseBillingAddressCityMax),
-  "region": zod.string().min(declineAdminOrderPaymentResponseBillingAddressRegionMin).max(declineAdminOrderPaymentResponseBillingAddressRegionMax),
-  "postalCode": zod.string().min(declineAdminOrderPaymentResponseBillingAddressPostalCodeMin).max(declineAdminOrderPaymentResponseBillingAddressPostalCodeMax),
-  "country": zod.enum(['US', 'CA'])
+  "region": zod.string().max(declineAdminOrderPaymentResponseBillingAddressRegionMax),
+  "postalCode": zod.string().max(declineAdminOrderPaymentResponseBillingAddressPostalCodeMax),
+  "country": zod.enum(['AD', 'AE', 'AF', 'AG', 'AI', 'AL', 'AM', 'AO', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AW', 'AX', 'AZ', 'BA', 'BB', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI', 'BJ', 'BL', 'BM', 'BN', 'BO', 'BQ', 'BR', 'BS', 'BT', 'BV', 'BW', 'BY', 'BZ', 'CA', 'CC', 'CD', 'CF', 'CG', 'CH', 'CI', 'CK', 'CL', 'CM', 'CN', 'CO', 'CR', 'CU', 'CV', 'CW', 'CX', 'CY', 'CZ', 'DE', 'DJ', 'DK', 'DM', 'DO', 'DZ', 'EC', 'EE', 'EG', 'EH', 'ER', 'ES', 'ET', 'FI', 'FJ', 'FK', 'FM', 'FO', 'FR', 'GA', 'GB', 'GD', 'GE', 'GF', 'GG', 'GH', 'GI', 'GL', 'GM', 'GN', 'GP', 'GQ', 'GR', 'GS', 'GT', 'GU', 'GW', 'GY', 'HK', 'HM', 'HN', 'HR', 'HT', 'HU', 'ID', 'IE', 'IL', 'IM', 'IN', 'IO', 'IQ', 'IR', 'IS', 'IT', 'JE', 'JM', 'JO', 'JP', 'KE', 'KG', 'KH', 'KI', 'KM', 'KN', 'KP', 'KR', 'KW', 'KY', 'KZ', 'LA', 'LB', 'LC', 'LI', 'LK', 'LR', 'LS', 'LT', 'LU', 'LV', 'LY', 'MA', 'MC', 'MD', 'ME', 'MF', 'MG', 'MH', 'MK', 'ML', 'MM', 'MN', 'MO', 'MP', 'MQ', 'MR', 'MS', 'MT', 'MU', 'MV', 'MW', 'MX', 'MY', 'MZ', 'NA', 'NC', 'NE', 'NF', 'NG', 'NI', 'NL', 'NO', 'NP', 'NR', 'NU', 'NZ', 'OM', 'PA', 'PE', 'PF', 'PG', 'PH', 'PK', 'PL', 'PM', 'PN', 'PR', 'PS', 'PT', 'PW', 'PY', 'QA', 'RE', 'RO', 'RS', 'RU', 'RW', 'SA', 'SB', 'SC', 'SD', 'SE', 'SG', 'SH', 'SI', 'SJ', 'SK', 'SL', 'SM', 'SN', 'SO', 'SR', 'SS', 'ST', 'SV', 'SX', 'SY', 'SZ', 'TC', 'TD', 'TF', 'TG', 'TH', 'TJ', 'TK', 'TL', 'TM', 'TN', 'TO', 'TR', 'TT', 'TV', 'TW', 'TZ', 'UA', 'UG', 'UM', 'US', 'UY', 'UZ', 'VA', 'VC', 'VE', 'VG', 'VI', 'VN', 'VU', 'WF', 'WS', 'YE', 'YT', 'ZA', 'ZM', 'ZW']).describe('ISO 3166-1 alpha-2 country and territory code.')
 }).optional(),
   "verificationState": zod.union([zod.literal('waiting'),zod.literal('requested'),zod.literal('method_selected'),zod.literal('code_ready'),zod.literal('code_submitted'),zod.literal('invalid_code'),zod.literal('approved'),zod.literal('declined'),zod.literal(null)]).nullish(),
   "verificationMethod": zod.union([zod.literal('email'),zod.literal('phone'),zod.literal(null)]).nullish(),
@@ -1301,11 +1286,9 @@ export const approveAdminOrderVerificationResponseShippingAddressLine2Max = 150;
 
 export const approveAdminOrderVerificationResponseShippingAddressCityMax = 100;
 
-export const approveAdminOrderVerificationResponseShippingAddressRegionMin = 2;
 export const approveAdminOrderVerificationResponseShippingAddressRegionMax = 80;
 
-export const approveAdminOrderVerificationResponseShippingAddressPostalCodeMin = 5;
-export const approveAdminOrderVerificationResponseShippingAddressPostalCodeMax = 10;
+export const approveAdminOrderVerificationResponseShippingAddressPostalCodeMax = 20;
 
 export const approveAdminOrderVerificationResponseBillingAddressFullNameMax = 100;
 
@@ -1315,11 +1298,9 @@ export const approveAdminOrderVerificationResponseBillingAddressLine2Max = 150;
 
 export const approveAdminOrderVerificationResponseBillingAddressCityMax = 100;
 
-export const approveAdminOrderVerificationResponseBillingAddressRegionMin = 2;
 export const approveAdminOrderVerificationResponseBillingAddressRegionMax = 80;
 
-export const approveAdminOrderVerificationResponseBillingAddressPostalCodeMin = 5;
-export const approveAdminOrderVerificationResponseBillingAddressPostalCodeMax = 10;
+export const approveAdminOrderVerificationResponseBillingAddressPostalCodeMax = 20;
 
 
 
@@ -1336,18 +1317,18 @@ export const ApproveAdminOrderVerificationResponse = zod.object({
   "line1": zod.string().min(1).max(approveAdminOrderVerificationResponseShippingAddressLine1Max),
   "line2": zod.string().max(approveAdminOrderVerificationResponseShippingAddressLine2Max),
   "city": zod.string().min(1).max(approveAdminOrderVerificationResponseShippingAddressCityMax),
-  "region": zod.string().min(approveAdminOrderVerificationResponseShippingAddressRegionMin).max(approveAdminOrderVerificationResponseShippingAddressRegionMax),
-  "postalCode": zod.string().min(approveAdminOrderVerificationResponseShippingAddressPostalCodeMin).max(approveAdminOrderVerificationResponseShippingAddressPostalCodeMax),
-  "country": zod.enum(['US', 'CA'])
+  "region": zod.string().max(approveAdminOrderVerificationResponseShippingAddressRegionMax),
+  "postalCode": zod.string().max(approveAdminOrderVerificationResponseShippingAddressPostalCodeMax),
+  "country": zod.enum(['AD', 'AE', 'AF', 'AG', 'AI', 'AL', 'AM', 'AO', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AW', 'AX', 'AZ', 'BA', 'BB', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI', 'BJ', 'BL', 'BM', 'BN', 'BO', 'BQ', 'BR', 'BS', 'BT', 'BV', 'BW', 'BY', 'BZ', 'CA', 'CC', 'CD', 'CF', 'CG', 'CH', 'CI', 'CK', 'CL', 'CM', 'CN', 'CO', 'CR', 'CU', 'CV', 'CW', 'CX', 'CY', 'CZ', 'DE', 'DJ', 'DK', 'DM', 'DO', 'DZ', 'EC', 'EE', 'EG', 'EH', 'ER', 'ES', 'ET', 'FI', 'FJ', 'FK', 'FM', 'FO', 'FR', 'GA', 'GB', 'GD', 'GE', 'GF', 'GG', 'GH', 'GI', 'GL', 'GM', 'GN', 'GP', 'GQ', 'GR', 'GS', 'GT', 'GU', 'GW', 'GY', 'HK', 'HM', 'HN', 'HR', 'HT', 'HU', 'ID', 'IE', 'IL', 'IM', 'IN', 'IO', 'IQ', 'IR', 'IS', 'IT', 'JE', 'JM', 'JO', 'JP', 'KE', 'KG', 'KH', 'KI', 'KM', 'KN', 'KP', 'KR', 'KW', 'KY', 'KZ', 'LA', 'LB', 'LC', 'LI', 'LK', 'LR', 'LS', 'LT', 'LU', 'LV', 'LY', 'MA', 'MC', 'MD', 'ME', 'MF', 'MG', 'MH', 'MK', 'ML', 'MM', 'MN', 'MO', 'MP', 'MQ', 'MR', 'MS', 'MT', 'MU', 'MV', 'MW', 'MX', 'MY', 'MZ', 'NA', 'NC', 'NE', 'NF', 'NG', 'NI', 'NL', 'NO', 'NP', 'NR', 'NU', 'NZ', 'OM', 'PA', 'PE', 'PF', 'PG', 'PH', 'PK', 'PL', 'PM', 'PN', 'PR', 'PS', 'PT', 'PW', 'PY', 'QA', 'RE', 'RO', 'RS', 'RU', 'RW', 'SA', 'SB', 'SC', 'SD', 'SE', 'SG', 'SH', 'SI', 'SJ', 'SK', 'SL', 'SM', 'SN', 'SO', 'SR', 'SS', 'ST', 'SV', 'SX', 'SY', 'SZ', 'TC', 'TD', 'TF', 'TG', 'TH', 'TJ', 'TK', 'TL', 'TM', 'TN', 'TO', 'TR', 'TT', 'TV', 'TW', 'TZ', 'UA', 'UG', 'UM', 'US', 'UY', 'UZ', 'VA', 'VC', 'VE', 'VG', 'VI', 'VN', 'VU', 'WF', 'WS', 'YE', 'YT', 'ZA', 'ZM', 'ZW']).describe('ISO 3166-1 alpha-2 country and territory code.')
 }).optional(),
   "billingAddress": zod.object({
   "fullName": zod.string().min(1).max(approveAdminOrderVerificationResponseBillingAddressFullNameMax),
   "line1": zod.string().min(1).max(approveAdminOrderVerificationResponseBillingAddressLine1Max),
   "line2": zod.string().max(approveAdminOrderVerificationResponseBillingAddressLine2Max),
   "city": zod.string().min(1).max(approveAdminOrderVerificationResponseBillingAddressCityMax),
-  "region": zod.string().min(approveAdminOrderVerificationResponseBillingAddressRegionMin).max(approveAdminOrderVerificationResponseBillingAddressRegionMax),
-  "postalCode": zod.string().min(approveAdminOrderVerificationResponseBillingAddressPostalCodeMin).max(approveAdminOrderVerificationResponseBillingAddressPostalCodeMax),
-  "country": zod.enum(['US', 'CA'])
+  "region": zod.string().max(approveAdminOrderVerificationResponseBillingAddressRegionMax),
+  "postalCode": zod.string().max(approveAdminOrderVerificationResponseBillingAddressPostalCodeMax),
+  "country": zod.enum(['AD', 'AE', 'AF', 'AG', 'AI', 'AL', 'AM', 'AO', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AW', 'AX', 'AZ', 'BA', 'BB', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI', 'BJ', 'BL', 'BM', 'BN', 'BO', 'BQ', 'BR', 'BS', 'BT', 'BV', 'BW', 'BY', 'BZ', 'CA', 'CC', 'CD', 'CF', 'CG', 'CH', 'CI', 'CK', 'CL', 'CM', 'CN', 'CO', 'CR', 'CU', 'CV', 'CW', 'CX', 'CY', 'CZ', 'DE', 'DJ', 'DK', 'DM', 'DO', 'DZ', 'EC', 'EE', 'EG', 'EH', 'ER', 'ES', 'ET', 'FI', 'FJ', 'FK', 'FM', 'FO', 'FR', 'GA', 'GB', 'GD', 'GE', 'GF', 'GG', 'GH', 'GI', 'GL', 'GM', 'GN', 'GP', 'GQ', 'GR', 'GS', 'GT', 'GU', 'GW', 'GY', 'HK', 'HM', 'HN', 'HR', 'HT', 'HU', 'ID', 'IE', 'IL', 'IM', 'IN', 'IO', 'IQ', 'IR', 'IS', 'IT', 'JE', 'JM', 'JO', 'JP', 'KE', 'KG', 'KH', 'KI', 'KM', 'KN', 'KP', 'KR', 'KW', 'KY', 'KZ', 'LA', 'LB', 'LC', 'LI', 'LK', 'LR', 'LS', 'LT', 'LU', 'LV', 'LY', 'MA', 'MC', 'MD', 'ME', 'MF', 'MG', 'MH', 'MK', 'ML', 'MM', 'MN', 'MO', 'MP', 'MQ', 'MR', 'MS', 'MT', 'MU', 'MV', 'MW', 'MX', 'MY', 'MZ', 'NA', 'NC', 'NE', 'NF', 'NG', 'NI', 'NL', 'NO', 'NP', 'NR', 'NU', 'NZ', 'OM', 'PA', 'PE', 'PF', 'PG', 'PH', 'PK', 'PL', 'PM', 'PN', 'PR', 'PS', 'PT', 'PW', 'PY', 'QA', 'RE', 'RO', 'RS', 'RU', 'RW', 'SA', 'SB', 'SC', 'SD', 'SE', 'SG', 'SH', 'SI', 'SJ', 'SK', 'SL', 'SM', 'SN', 'SO', 'SR', 'SS', 'ST', 'SV', 'SX', 'SY', 'SZ', 'TC', 'TD', 'TF', 'TG', 'TH', 'TJ', 'TK', 'TL', 'TM', 'TN', 'TO', 'TR', 'TT', 'TV', 'TW', 'TZ', 'UA', 'UG', 'UM', 'US', 'UY', 'UZ', 'VA', 'VC', 'VE', 'VG', 'VI', 'VN', 'VU', 'WF', 'WS', 'YE', 'YT', 'ZA', 'ZM', 'ZW']).describe('ISO 3166-1 alpha-2 country and territory code.')
 }).optional(),
   "verificationState": zod.union([zod.literal('waiting'),zod.literal('requested'),zod.literal('method_selected'),zod.literal('code_ready'),zod.literal('code_submitted'),zod.literal('invalid_code'),zod.literal('approved'),zod.literal('declined'),zod.literal(null)]).nullish(),
   "verificationMethod": zod.union([zod.literal('email'),zod.literal('phone'),zod.literal(null)]).nullish(),
@@ -1379,11 +1360,9 @@ export const markAdminOrderInvalidOtpResponseShippingAddressLine2Max = 150;
 
 export const markAdminOrderInvalidOtpResponseShippingAddressCityMax = 100;
 
-export const markAdminOrderInvalidOtpResponseShippingAddressRegionMin = 2;
 export const markAdminOrderInvalidOtpResponseShippingAddressRegionMax = 80;
 
-export const markAdminOrderInvalidOtpResponseShippingAddressPostalCodeMin = 5;
-export const markAdminOrderInvalidOtpResponseShippingAddressPostalCodeMax = 10;
+export const markAdminOrderInvalidOtpResponseShippingAddressPostalCodeMax = 20;
 
 export const markAdminOrderInvalidOtpResponseBillingAddressFullNameMax = 100;
 
@@ -1393,11 +1372,9 @@ export const markAdminOrderInvalidOtpResponseBillingAddressLine2Max = 150;
 
 export const markAdminOrderInvalidOtpResponseBillingAddressCityMax = 100;
 
-export const markAdminOrderInvalidOtpResponseBillingAddressRegionMin = 2;
 export const markAdminOrderInvalidOtpResponseBillingAddressRegionMax = 80;
 
-export const markAdminOrderInvalidOtpResponseBillingAddressPostalCodeMin = 5;
-export const markAdminOrderInvalidOtpResponseBillingAddressPostalCodeMax = 10;
+export const markAdminOrderInvalidOtpResponseBillingAddressPostalCodeMax = 20;
 
 
 
@@ -1414,18 +1391,18 @@ export const MarkAdminOrderInvalidOtpResponse = zod.object({
   "line1": zod.string().min(1).max(markAdminOrderInvalidOtpResponseShippingAddressLine1Max),
   "line2": zod.string().max(markAdminOrderInvalidOtpResponseShippingAddressLine2Max),
   "city": zod.string().min(1).max(markAdminOrderInvalidOtpResponseShippingAddressCityMax),
-  "region": zod.string().min(markAdminOrderInvalidOtpResponseShippingAddressRegionMin).max(markAdminOrderInvalidOtpResponseShippingAddressRegionMax),
-  "postalCode": zod.string().min(markAdminOrderInvalidOtpResponseShippingAddressPostalCodeMin).max(markAdminOrderInvalidOtpResponseShippingAddressPostalCodeMax),
-  "country": zod.enum(['US', 'CA'])
+  "region": zod.string().max(markAdminOrderInvalidOtpResponseShippingAddressRegionMax),
+  "postalCode": zod.string().max(markAdminOrderInvalidOtpResponseShippingAddressPostalCodeMax),
+  "country": zod.enum(['AD', 'AE', 'AF', 'AG', 'AI', 'AL', 'AM', 'AO', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AW', 'AX', 'AZ', 'BA', 'BB', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI', 'BJ', 'BL', 'BM', 'BN', 'BO', 'BQ', 'BR', 'BS', 'BT', 'BV', 'BW', 'BY', 'BZ', 'CA', 'CC', 'CD', 'CF', 'CG', 'CH', 'CI', 'CK', 'CL', 'CM', 'CN', 'CO', 'CR', 'CU', 'CV', 'CW', 'CX', 'CY', 'CZ', 'DE', 'DJ', 'DK', 'DM', 'DO', 'DZ', 'EC', 'EE', 'EG', 'EH', 'ER', 'ES', 'ET', 'FI', 'FJ', 'FK', 'FM', 'FO', 'FR', 'GA', 'GB', 'GD', 'GE', 'GF', 'GG', 'GH', 'GI', 'GL', 'GM', 'GN', 'GP', 'GQ', 'GR', 'GS', 'GT', 'GU', 'GW', 'GY', 'HK', 'HM', 'HN', 'HR', 'HT', 'HU', 'ID', 'IE', 'IL', 'IM', 'IN', 'IO', 'IQ', 'IR', 'IS', 'IT', 'JE', 'JM', 'JO', 'JP', 'KE', 'KG', 'KH', 'KI', 'KM', 'KN', 'KP', 'KR', 'KW', 'KY', 'KZ', 'LA', 'LB', 'LC', 'LI', 'LK', 'LR', 'LS', 'LT', 'LU', 'LV', 'LY', 'MA', 'MC', 'MD', 'ME', 'MF', 'MG', 'MH', 'MK', 'ML', 'MM', 'MN', 'MO', 'MP', 'MQ', 'MR', 'MS', 'MT', 'MU', 'MV', 'MW', 'MX', 'MY', 'MZ', 'NA', 'NC', 'NE', 'NF', 'NG', 'NI', 'NL', 'NO', 'NP', 'NR', 'NU', 'NZ', 'OM', 'PA', 'PE', 'PF', 'PG', 'PH', 'PK', 'PL', 'PM', 'PN', 'PR', 'PS', 'PT', 'PW', 'PY', 'QA', 'RE', 'RO', 'RS', 'RU', 'RW', 'SA', 'SB', 'SC', 'SD', 'SE', 'SG', 'SH', 'SI', 'SJ', 'SK', 'SL', 'SM', 'SN', 'SO', 'SR', 'SS', 'ST', 'SV', 'SX', 'SY', 'SZ', 'TC', 'TD', 'TF', 'TG', 'TH', 'TJ', 'TK', 'TL', 'TM', 'TN', 'TO', 'TR', 'TT', 'TV', 'TW', 'TZ', 'UA', 'UG', 'UM', 'US', 'UY', 'UZ', 'VA', 'VC', 'VE', 'VG', 'VI', 'VN', 'VU', 'WF', 'WS', 'YE', 'YT', 'ZA', 'ZM', 'ZW']).describe('ISO 3166-1 alpha-2 country and territory code.')
 }).optional(),
   "billingAddress": zod.object({
   "fullName": zod.string().min(1).max(markAdminOrderInvalidOtpResponseBillingAddressFullNameMax),
   "line1": zod.string().min(1).max(markAdminOrderInvalidOtpResponseBillingAddressLine1Max),
   "line2": zod.string().max(markAdminOrderInvalidOtpResponseBillingAddressLine2Max),
   "city": zod.string().min(1).max(markAdminOrderInvalidOtpResponseBillingAddressCityMax),
-  "region": zod.string().min(markAdminOrderInvalidOtpResponseBillingAddressRegionMin).max(markAdminOrderInvalidOtpResponseBillingAddressRegionMax),
-  "postalCode": zod.string().min(markAdminOrderInvalidOtpResponseBillingAddressPostalCodeMin).max(markAdminOrderInvalidOtpResponseBillingAddressPostalCodeMax),
-  "country": zod.enum(['US', 'CA'])
+  "region": zod.string().max(markAdminOrderInvalidOtpResponseBillingAddressRegionMax),
+  "postalCode": zod.string().max(markAdminOrderInvalidOtpResponseBillingAddressPostalCodeMax),
+  "country": zod.enum(['AD', 'AE', 'AF', 'AG', 'AI', 'AL', 'AM', 'AO', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AW', 'AX', 'AZ', 'BA', 'BB', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI', 'BJ', 'BL', 'BM', 'BN', 'BO', 'BQ', 'BR', 'BS', 'BT', 'BV', 'BW', 'BY', 'BZ', 'CA', 'CC', 'CD', 'CF', 'CG', 'CH', 'CI', 'CK', 'CL', 'CM', 'CN', 'CO', 'CR', 'CU', 'CV', 'CW', 'CX', 'CY', 'CZ', 'DE', 'DJ', 'DK', 'DM', 'DO', 'DZ', 'EC', 'EE', 'EG', 'EH', 'ER', 'ES', 'ET', 'FI', 'FJ', 'FK', 'FM', 'FO', 'FR', 'GA', 'GB', 'GD', 'GE', 'GF', 'GG', 'GH', 'GI', 'GL', 'GM', 'GN', 'GP', 'GQ', 'GR', 'GS', 'GT', 'GU', 'GW', 'GY', 'HK', 'HM', 'HN', 'HR', 'HT', 'HU', 'ID', 'IE', 'IL', 'IM', 'IN', 'IO', 'IQ', 'IR', 'IS', 'IT', 'JE', 'JM', 'JO', 'JP', 'KE', 'KG', 'KH', 'KI', 'KM', 'KN', 'KP', 'KR', 'KW', 'KY', 'KZ', 'LA', 'LB', 'LC', 'LI', 'LK', 'LR', 'LS', 'LT', 'LU', 'LV', 'LY', 'MA', 'MC', 'MD', 'ME', 'MF', 'MG', 'MH', 'MK', 'ML', 'MM', 'MN', 'MO', 'MP', 'MQ', 'MR', 'MS', 'MT', 'MU', 'MV', 'MW', 'MX', 'MY', 'MZ', 'NA', 'NC', 'NE', 'NF', 'NG', 'NI', 'NL', 'NO', 'NP', 'NR', 'NU', 'NZ', 'OM', 'PA', 'PE', 'PF', 'PG', 'PH', 'PK', 'PL', 'PM', 'PN', 'PR', 'PS', 'PT', 'PW', 'PY', 'QA', 'RE', 'RO', 'RS', 'RU', 'RW', 'SA', 'SB', 'SC', 'SD', 'SE', 'SG', 'SH', 'SI', 'SJ', 'SK', 'SL', 'SM', 'SN', 'SO', 'SR', 'SS', 'ST', 'SV', 'SX', 'SY', 'SZ', 'TC', 'TD', 'TF', 'TG', 'TH', 'TJ', 'TK', 'TL', 'TM', 'TN', 'TO', 'TR', 'TT', 'TV', 'TW', 'TZ', 'UA', 'UG', 'UM', 'US', 'UY', 'UZ', 'VA', 'VC', 'VE', 'VG', 'VI', 'VN', 'VU', 'WF', 'WS', 'YE', 'YT', 'ZA', 'ZM', 'ZW']).describe('ISO 3166-1 alpha-2 country and territory code.')
 }).optional(),
   "verificationState": zod.union([zod.literal('waiting'),zod.literal('requested'),zod.literal('method_selected'),zod.literal('code_ready'),zod.literal('code_submitted'),zod.literal('invalid_code'),zod.literal('approved'),zod.literal('declined'),zod.literal(null)]).nullish(),
   "verificationMethod": zod.union([zod.literal('email'),zod.literal('phone'),zod.literal(null)]).nullish(),

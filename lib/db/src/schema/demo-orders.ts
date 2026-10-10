@@ -5,7 +5,7 @@ import { z } from "zod/v4";
 export type DemoOrderItem = { productId: number; name: string; unitPriceCents: number; quantity: number };
 export type OrderAddress = {
   fullName: string; line1: string; line2: string; city: string;
-  region: string; postalCode: string; country: "US" | "CA";
+  region: string; postalCode: string; country: string;
 };
 
 export const demoOrdersTable = pgTable("demo_orders", {

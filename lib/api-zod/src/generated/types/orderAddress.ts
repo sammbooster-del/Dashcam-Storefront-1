@@ -5,7 +5,7 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-import type { OrderAddressCountry } from './orderAddressCountry';
+import type { CountryCode } from './countryCode';
 
 export interface OrderAddress {
   /**
@@ -25,15 +25,9 @@ export interface OrderAddress {
      * @maxLength 100
      */
   city: string;
-  /**
-     * @minLength 2
-     * @maxLength 80
-     */
+  /** @maxLength 80 */
   region: string;
-  /**
-     * @minLength 5
-     * @maxLength 10
-     */
+  /** @maxLength 20 */
   postalCode: string;
-  country: OrderAddressCountry;
+  country: CountryCode;
 }

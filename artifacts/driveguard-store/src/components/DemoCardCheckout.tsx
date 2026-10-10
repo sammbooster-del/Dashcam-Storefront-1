@@ -7,6 +7,7 @@ import { CheckoutBillingFields } from './CheckoutBillingFields';
 import { AcceptedCards, CardBrandLogo, detectCardBrand } from './AcceptedCards';
 import { CheckoutPaymentMethod } from './CheckoutPaymentMethod';
 import { CheckoutProgress, type CheckoutStep } from './CheckoutProgress';
+import { countryName, northAmerican, useCheckoutCountry } from '@/lib-countries';
 
 type DemoBrand = 'visa' | 'mastercard';
 type CardType = 'credit' | 'debit';
@@ -41,10 +42,11 @@ const completedRefFields = (name: string, number: string, expiry: string, cvc: s
   ...(validExpiry(expiry) ? ['expiry' as const] : []),
   ...(validCvc(cvc) ? ['cvc' as const] : []),
 ];
-const validPhone = (phone: string) => {
+const validPhone = (phone: string, country: string) => {
   const digits = phone.replace(/\D/g, '');
   return /^[+()\d.\s-]+$/.test(phone) &&
-    (digits.length === 10 || (digits.length === 11 && digits.startsWith('1')));
+    (phone.startsWith('+') ? /^[1-9]\d{6,14}$/.test(digits)
+      : northAmerican(country) && (digits.length === 10 || (digits.length === 11 && digits.startsWith('1'))));
 };
 
 function CheckoutTransition({ title, description, testId }: { title: string; description: string; testId: string }) {
@@ -86,8 +88,11 @@ export function DemoCardCheckout({
   const [demoNumber, setDemoNumber] = useState('');
   const [demoExpiry, setDemoExpiry] = useState('');
   const [demoCvc, setDemoCvc] = useState('');
-  const [shippingAddress, setShippingAddress] = useState<OrderAddress>(emptyAddress);
-  const [billingAddress, setBillingAddress] = useState<OrderAddress>(emptyAddress);
+  const countries = settings.shippingCountries ?? ['US', 'CA'];
+  const defaultCountry = useCheckoutCountry(countries);
+  const shippingEdited = useRef(false);
+  const [shippingAddress, setShippingAddress] = useState<OrderAddress>(() => emptyAddress(defaultCountry));
+  const [billingAddress, setBillingAddress] = useState<OrderAddress>(() => emptyAddress(defaultCountry));
   const [billingStarted, setBillingStarted] = useState(false);
   const [step, setStep] = useState<CheckoutStep>('delivery');
   const [cardSelected, setCardSelected] = useState(false);
@@ -98,6 +103,11 @@ export function DemoCardCheckout({
   const [draftError, setDraftError] = useState('');
   const [formError, setFormError] = useState('');
   const [pending, setPending] = useState<PendingVerification | null>(restorePending);
+  useEffect(() => {
+    if (pending) return;
+    if (!shippingEdited.current) setShippingAddress(previous => previous.country === defaultCountry ? previous : { ...previous, country: defaultCountry, region: '', postalCode: '' });
+    if (!billingStarted) setBillingAddress(previous => previous.country === defaultCountry ? previous : { ...previous, country: defaultCountry, region: '', postalCode: '' });
+  }, [defaultCountry, billingStarted, pending]);
   const [verificationState, setVerificationState] = useState<'waiting' | 'requested' | 'method_selected' | 'code_ready' | 'code_submitted' | 'invalid_code' | 'approved'>('waiting');
   const [verificationMethod, setVerificationMethod] = useState<'email' | 'phone' | null>(null);
   const [verificationCode, setVerificationCode] = useState('');
@@ -151,8 +161,9 @@ export function DemoCardCheckout({
     setDemoNumber('');
     setDemoExpiry('');
     setDemoCvc('');
-    setShippingAddress(emptyAddress());
-    setBillingAddress(emptyAddress());
+    shippingEdited.current = false;
+    setShippingAddress(emptyAddress(defaultCountry));
+    setBillingAddress(emptyAddress(defaultCountry));
     setBillingStarted(false);
     setContactEmail('');
     setContactPhone('');
@@ -324,6 +335,7 @@ export function DemoCardCheckout({
     void sendDeliveryAlert({ draftId }).catch(() => {});
   };
   const updateShippingAddress = (value: OrderAddress) => {
+    shippingEdited.current = true;
     setShippingAddress(value);
     alertDeliveryStarted(Boolean(
       value.fullName.trim() || value.line1.trim() || value.line2.trim() ||
@@ -343,8 +355,12 @@ export function DemoCardCheckout({
   const continueToPayment = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (stepTransitionTimer.current !== null || !cart.length || cart.some(line => line.quantity > line.product.stock)) return;
-    if (!validPhone(contactPhone.trim())) {
-      setFormError('Enter a valid US or Canadian 10-digit phone number.');
+    if (!countries.includes(shippingAddress.country)) {
+      setFormError('Choose an available delivery country.');
+      return;
+    }
+    if (!validPhone(contactPhone.trim(), shippingAddress.country)) {
+      setFormError('Enter a valid phone number with country code, such as +44 20 7946 0958. US and Canadian 10-digit numbers are also accepted.');
       return;
     }
     beginStepTransition('method');
@@ -404,7 +420,7 @@ export function DemoCardCheckout({
   };
   const stockError = cart.some(line => line.quantity > line.product.stock);
   const displayedBrand = detectCardBrand(demoNumber);
-  const deliverySummary = `${shippingAddress.line1}${shippingAddress.line2 ? `, ${shippingAddress.line2}` : ''}, ${shippingAddress.city}, ${shippingAddress.region} ${shippingAddress.postalCode}, ${shippingAddress.country === 'CA' ? 'Canada' : 'United States'}`;
+  const deliverySummary = `${shippingAddress.line1}${shippingAddress.line2 ? `, ${shippingAddress.line2}` : ''}, ${shippingAddress.city}, ${shippingAddress.region} ${shippingAddress.postalCode}, ${countryName(shippingAddress.country)}`;
 
   if (declineVisible) return <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#17212f]/75 px-5 py-8" data-testid="screen-order-declined">
     <div ref={declineRef} tabIndex={-1} role="alertdialog" aria-modal="true" aria-labelledby="decline-title" aria-describedby="decline-description" onKeyDown={event => { if (event.key === 'Tab') event.preventDefault(); }} className="w-full max-w-md rounded-xl bg-white px-7 py-10 text-center shadow-2xl outline-none sm:px-10">
@@ -464,7 +480,7 @@ export function DemoCardCheckout({
       </div>
       <div className="border-t border-[#e9edf0] pt-6">
         <h3 className="mb-4 text-[18px] font-extrabold tracking-[-.03em] text-[#1c2734]">Shipping address</h3>
-        <CheckoutAddressFields kind="shipping" value={shippingAddress} onChange={updateShippingAddress} />
+        <CheckoutAddressFields kind="shipping" value={shippingAddress} onChange={updateShippingAddress} countries={countries} />
       </div>
       {stockError && <p role="alert" className="text-[12px] text-[#a61c1c]">One or more items exceed current availability. Update your cart before checkout.</p>}
       <button type="submit" disabled={!cart.length || stockError} className="red-button red-button--wide" data-testid="button-continue-payment"><span>Continue to payment</span><ArrowRight size={18} aria-hidden="true" /></button>
@@ -493,7 +509,7 @@ export function DemoCardCheckout({
           <label className="block min-w-0"><span className="sr-only">Security code</span><input required maxLength={4} pattern="[0-9]{3,4}" type="password" inputMode="numeric" autoComplete="new-password" name="demo-card-security-code" placeholder="Security code" value={demoCvc} onChange={event => setDemoCvc(event.target.value.replace(/\D/g, '').slice(0, 4))} onBlur={() => completeField('cvc', validCvc(demoCvc))} className="h-[52px] w-full min-w-0 rounded-xl border border-[#cdd4dc] bg-white px-3.5 text-[15px] text-[#17212f] outline-none placeholder:text-[#788493] focus:border-[#c92525] focus:ring-1 focus:ring-[#c92525]" data-testid="input-card-cvc" /></label>
         </div>
         <label className="block"><span className="sr-only">Cardholder name</span><input required maxLength={80} autoComplete="off" value={demoName} onChange={event => setDemoName(event.target.value)} onBlur={() => completeField('name', validName(demoName))} className="h-[52px] w-full rounded-xl border border-[#cdd4dc] bg-white px-3.5 text-[15px] text-[#17212f] outline-none placeholder:text-[#788493] focus:border-[#c92525] focus:ring-1 focus:ring-[#c92525]" data-testid="input-card-name" placeholder="Cardholder name" /></label>
-        <CheckoutBillingFields value={billingAddress} onChange={value => { setBillingAddress(value); setBillingStarted(true); }} />
+        <CheckoutBillingFields value={billingAddress} countries={countries} onChange={value => { setBillingAddress(value); setBillingStarted(true); }} />
         <div className="flex items-center justify-between gap-3 pt-2">
           <span className="text-[12px] font-semibold text-[#344255]">Card type</span>
           <div className="flex rounded-lg border border-[#d9dee5] bg-[#f7f8fa] p-0.5" role="group" aria-label="Card type">
