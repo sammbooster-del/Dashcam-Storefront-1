@@ -10,7 +10,7 @@
 - [Imported preview setup](imported-preview-setup.md) — Starting imported source does not restore the original database records or sign-in accounts.
 - [Imported Git history](imported-git-history.md) — A valid shallow import can fail its first GitHub push; backups may lack the same ancestors.
 - [Order confirmation emails](order-confirmation-emails.md) — Send separate customer and team confirmations; the website domain and verified sending domain are independent.
-- [Unconfirmed iPhone inventory](unconfirmed-iphone-inventory.md) — iPhone listings use estimated prices; zero stock is intentional until the owner supplies availability.
+- [iPhone listing assumptions](unconfirmed-iphone-inventory.md) — Prices remain estimates; positive stock is owner-authorized. Preserve merchant-entered quantities.
 - [Tool sandbox globals](tool-sandbox-globals.md) — Impure fetch is available, but browser/Node globals such as AbortSignal are not guaranteed there.
 - [Skincare variant accuracy](skincare-variant-accuracy.md) — Verify exact patch variants against manufacturer details; roundup ingredient lists can mix different formulas.
 - [Checkout country policy](checkout-country-policy.md) — Worldwide country options are merchant opt-in; country detection is approximate and must not override shopper edits.
