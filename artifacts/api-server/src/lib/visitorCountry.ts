@@ -24,6 +24,29 @@ export function clientIp(forwarded: string | undefined, remote: string | undefin
   return publicIp(remote);
 }
 
+export function clientIps(forwarded: string | undefined, remote: string | undefined): string[] {
+  // Hosting proxies can append public proxy addresses after the real visitor.
+  // Never let an allowed proxy country override a blocked visitor country.
+  const candidates = (forwarded ?? "").split(",").map(value => publicIp(value));
+  const ips = [...new Set(candidates.filter((ip): ip is string => ip !== null))];
+  if (!ips.length) {
+    const ip = publicIp(remote);
+    if (ip) ips.push(ip);
+  }
+  return ips;
+}
+
+export async function countryForRequest(
+  ips: string[], lookup: (ip: string) => Promise<string | null>,
+): Promise<string | null> {
+  // An oversized or unverifiable chain must not open access.
+  if (!ips.length || ips.length > 8) return null;
+  const countries = await Promise.all(ips.map(lookup));
+  if (countries.includes("IN")) return "IN";
+  if (countries.includes(null)) return null;
+  return countries[0];
+}
+
 export function createCountryLookup(fetcher: typeof fetch = fetch) {
   const cache = new Map<string, { country: string | null; expires: number }>();
   const pending = new Map<string, Promise<string | null>>();

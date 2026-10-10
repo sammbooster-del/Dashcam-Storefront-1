@@ -19,7 +19,13 @@ The development preview proxy can hide the visitor's public IP even for external
 
 **Why:** The preview returned a local-only access result through its public proxy; server-side IP simulation alone did not exercise the browser's real location.
 
-**How to apply:** Retain a browser location check for the local development preview, and verify actual forwarded-IP handling after publishing. Do not mistake an allowed local request for proof of the visitor's country.
+**How to apply:** Retain an independent browser location check in both preview and production, and verify actual forwarded-IP handling after publishing. Do not mistake an allowed local request for proof of the visitor's country.
+
+The rightmost public forwarded IP can belong to a hosting proxy, not the visitor.
+
+**Why:** A live request originating in India was reported as Singapore when the server selected only the rightmost public address.
+
+**How to apply:** Do not let a proxy's allowed country override a blocked visitor in the forwarded chain. Keep browser verification independent of the server's reported country; unknown locations still fail closed. IP geolocation cannot identify physical location behind a foreign VPN.
 
 Use a backup geolocation provider when the primary lookup fails, rather than removing the regional access gate.
 

@@ -1,6 +1,19 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { clientIp, createCountryLookup, publicIp } from "./visitorCountry";
+import { clientIp, clientIps, countryForRequest, createCountryLookup, publicIp } from "./visitorCountry";
+
+test("a public hosting proxy never overrides an Indian visitor", async () => {
+  const ips = clientIps("8.8.8.8, 49.36.0.1, 1.1.1.1, 10.0.0.1", "127.0.0.1");
+  assert.deepEqual(ips, ["8.8.8.8", "49.36.0.1", "1.1.1.1"]);
+  assert.equal(await countryForRequest(ips, async ip => ip === "49.36.0.1" ? "IN" : "SG"), "IN");
+});
+
+test("unknown and oversized proxy chains fail closed", async () => {
+  assert.equal(await countryForRequest(["8.8.8.8", "1.1.1.1"], async ip => ip === "8.8.8.8" ? "US" : null), null);
+  assert.equal(await countryForRequest(Array(9).fill("8.8.8.8"), async () => "US"), null);
+  assert.equal(await countryForRequest([], async () => "US"), null);
+  assert.equal(await countryForRequest(["8.8.8.8"], async () => "US"), "US");
+});
 
 test("ignores private addresses and spoofed first forwarded entries", () => {
   assert.equal(publicIp("::ffff:127.0.0.1"), null);

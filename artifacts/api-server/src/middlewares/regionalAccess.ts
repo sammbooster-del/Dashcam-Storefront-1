@@ -1,6 +1,6 @@
 import type { RequestHandler } from "express";
 import { GetAccessStatusResponse } from "@workspace/api-zod";
-import { clientIp, createCountryLookup } from "../lib/visitorCountry";
+import { clientIps, countryForRequest, createCountryLookup } from "../lib/visitorCountry";
 
 const lookupCountry = createCountryLookup();
 
@@ -8,10 +8,10 @@ export const regionalAccess: RequestHandler = async (req, res, next) => {
   // Health checks must remain available to the publishing infrastructure.
   if (req.path === "/healthz") { next(); return; }
   res.setHeader("Cache-Control", "private, no-store");
-  const ip = clientIp(req.get("x-forwarded-for"), req.socket.remoteAddress);
+  const ips = clientIps(req.get("x-forwarded-for"), req.socket.remoteAddress);
   // Local development and screenshots have no public IP. Never bypass in production.
-  const localDevelopment = !ip && process.env.NODE_ENV !== "production";
-  const country = ip ? await lookupCountry(ip) : null;
+  const localDevelopment = !ips.length && process.env.NODE_ENV !== "production";
+  const country = await countryForRequest(ips, lookupCountry);
   if (country === "IN") {
     res.status(403).json({
       allowed: false, country, code: "REGION_BLOCKED",

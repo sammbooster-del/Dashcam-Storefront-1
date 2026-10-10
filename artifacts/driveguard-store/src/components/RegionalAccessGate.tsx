@@ -1,25 +1,27 @@
 import type { ReactNode } from 'react';
 import { getGetAccessStatusQueryKey, useGetAccessStatus } from '@workspace/api-client-react';
 import { useQuery } from '@tanstack/react-query';
-import { visitorCountry } from '@/lib-countries';
+import { lookupVisitorCountry } from '@/lib/visitorCountryLookup';
 
 export function RegionalAccessGate({ children }: { children: ReactNode }) {
   const access = useGetAccessStatus({
-    query: { queryKey: getGetAccessStatusQueryKey(), retry: false, staleTime: 60_000, refetchOnWindowFocus: true },
+    query: { queryKey: getGetAccessStatusQueryKey(), retry: false, staleTime: 60_000, refetchOnWindowFocus: true, refetchInterval: 60_000 },
   });
-  // The development preview's local proxy may hide the visitor IP.
-  // Production always enforces the location check server-side.
-  const needsBrowserLookup = access.isSuccess && access.data.country === null;
+  // Independently verify the browser's network, even when a hosting proxy
+  // reports an allowed country. Neither check can override an India block.
+  const needsBrowserLookup = access.isSuccess && access.data.allowed;
   const browserCountry = useQuery({
     queryKey: ['regional-preview-country'],
     queryFn: async () => {
-      const country = await visitorCountry();
+      const country = await lookupVisitorCountry();
       if (!country) throw new Error('Location unavailable');
       return country;
     },
     enabled: needsBrowserLookup,
     retry: false,
     staleTime: 60_000,
+    refetchOnWindowFocus: true,
+    refetchInterval: 60_000,
   });
   if (access.isPending || (needsBrowserLookup && browserCountry.isPending)) {
     return <main className="grid min-h-[100dvh] place-items-center bg-background px-6" aria-busy="true">
