@@ -10,3 +10,4 @@
 - [Imported preview setup](imported-preview-setup.md) — Starting imported source does not restore the original database records or sign-in accounts.
 - [Imported Git history](imported-git-history.md) — A valid shallow import can fail its first GitHub push; backups may lack the same ancestors.
 - [Order confirmation emails](order-confirmation-emails.md) — Send separate customer and team confirmations; the website domain and verified sending domain are independent.
+- [Unconfirmed iPhone inventory](unconfirmed-iphone-inventory.md) — iPhone listings use estimated prices; zero stock is intentional until the owner supplies availability.
