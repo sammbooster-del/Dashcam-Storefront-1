@@ -44,3 +44,9 @@ The owner requested “Confirmed & paid” wording for internal testing; keep si
 **Why:** The checkout does not process real payments, and the request was explicitly framed as testing.
 
 **How to apply:** Preview labels must not change payment, inventory, or shipping state. Live confirmations must not claim payment based only on simulated approval.
+
+Do not mention in the email that no actual payment has been made.
+
+**Why:** The user asked.
+
+**How to apply:** Keep that statement out of the email's subject and message.
