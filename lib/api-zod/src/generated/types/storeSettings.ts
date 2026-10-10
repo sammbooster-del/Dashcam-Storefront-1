@@ -20,6 +20,11 @@ export interface StoreSettings {
   supportEmail: string;
   /** @minItems 1 */
   shippingCountries: CountryCode[];
+  /**
+     * @items.minLength 1
+     * @items.maxLength 80
+     */
+  disabledCategories?: string[];
   fictionalDemoMode: boolean;
   verificationTitle: string;
   verificationMerchantName: string;

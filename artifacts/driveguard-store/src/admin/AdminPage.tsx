@@ -31,7 +31,7 @@ import {
   ImagePlus, Package, Pencil, Plus, RefreshCw, Search, Settings2, ShieldCheck,
   ShoppingBag, Trash2, X,
 } from 'lucide-react';
-import { KNOWN_CATEGORY_EXAMPLES, buildCategories, categoryLabel } from '@/lib-categories';
+import { KNOWN_CATEGORY_EXAMPLES, buildCategories, categoryLabel, normalizeCategory, productVisible } from '@/lib-categories';
 import './AdminPage.css';
 import { CheckoutCountriesEditor } from './CheckoutCountriesEditor';
 import { countryName } from '@/lib-countries';
@@ -60,6 +60,7 @@ const settingsDraft = (settings: StoreSettingsInput): SettingsDraft => ({
   shippingThreshold: dollars(settings.shippingThresholdCents), shipping: dollars(settings.shippingCents),
   supportEmail: settings.supportEmail,
   shippingCountries: settings.shippingCountries ?? ['US', 'CA'],
+  disabledCategories: settings.disabledCategories ?? [],
   orderEmailsEnabled: settings.orderEmailsEnabled ?? false,
   orderEmailFrom: settings.orderEmailFrom ?? '',
   orderEmailTeam: settings.orderEmailTeam ?? '',
@@ -306,10 +307,13 @@ function ProductEditor({ product, onClose, onSave, pending, existingCategories =
   </div>;
 }
 
-function SettingsEditor({ initial, onSave, pending }: { initial: StoreSettingsInput; onSave: (data: StoreSettingsInput) => Promise<void>; pending: boolean }) {
+function SettingsEditor({ initial, onSave, pending, products }: { initial: StoreSettingsInput; onSave: (data: StoreSettingsInput) => Promise<void>; pending: boolean; products: Product[] }) {
   const [draft, setDraft] = useState<SettingsDraft>(() => settingsDraft(initial));
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState('');
+  const disabledCategories = draft.disabledCategories ?? [];
+  const categories = [...new Set([...products.map(product => normalizeCategory(product.category)), ...disabledCategories])]
+    .filter(Boolean).sort((a, b) => categoryLabel(a).localeCompare(categoryLabel(b)));
   const set = <K extends keyof SettingsDraft>(key: K, value: SettingsDraft[K]) => { setDraft(previous => ({ ...previous, [key]: value })); setSaved(false); };
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault(); setError('');
@@ -321,6 +325,7 @@ function SettingsEditor({ initial, onSave, pending }: { initial: StoreSettingsIn
         trustDescription: draft.trustDescription.trim(), shippingThresholdCents: toCents(draft.shippingThreshold),
         shippingCents: toCents(draft.shipping), supportEmail: draft.supportEmail.trim(),
         shippingCountries: draft.shippingCountries ?? ['US', 'CA'],
+        disabledCategories,
         orderEmailsEnabled: draft.orderEmailsEnabled,
         orderEmailFrom: (draft.orderEmailFrom ?? '').trim(),
         orderEmailTeam: (draft.orderEmailTeam ?? '').trim(),
@@ -354,6 +359,16 @@ function SettingsEditor({ initial, onSave, pending }: { initial: StoreSettingsIn
           <Field label="Trust section title" name="trust-title" value={draft.trustTitle} onChange={value => set('trustTitle', value)} maxLength={130} />
           <label className="dg-field">Trust section description<textarea name="trust-description" data-testid="input-admin-trust-description" maxLength={500} value={draft.trustDescription} onChange={event => set('trustDescription', event.target.value)} /></label>
         </div>
+      </section>
+      <section className="dg-panel dg-form-section" data-testid="admin-category-visibility">
+        <h2>Product categories</h2>
+        <p>Switch a category off to hide it and all its products from the shop, search and checkout. Products stay in your admin catalog. Save settings to apply changes.</p>
+        {categories.length ? categories.map((category, index) => <Switch key={category}
+          id={`category-${index}`} label={categoryLabel(category)} checked={!disabledCategories.includes(category)}
+          detail={`${products.filter(product => normalizeCategory(product.category) === category).length} products · ${disabledCategories.includes(category) ? 'Hidden from shop' : 'Category enabled; individually hidden products stay hidden'}`}
+          onChange={() => set('disabledCategories', disabledCategories.includes(category)
+            ? disabledCategories.filter(item => item !== category) : [...disabledCategories, category])} />)
+          : <p>Categories will appear here when you add products to your catalog.</p>}
       </section>
       <section className="dg-panel dg-form-section"><h2>Shipping & support</h2><p>Amounts are in US dollars. Free shipping starts at the threshold.</p>
         <div className="dg-fields two">
@@ -526,7 +541,7 @@ export default function AdminPage() {
   const toggleProduct = async (product: Product, field: 'active' | 'featured') => {
     try {
       await updateProduct.mutateAsync({ id: product.id, data: { [field]: !product[field] } });
-      setNotice({ type: 'success', text: `${product.name} ${field === 'active' ? (product.active ? 'hidden from the store' : 'made visible') : (product.featured ? 'removed from featured' : 'marked as featured')}.` });
+      setNotice({ type: 'success', text: `${product.name} ${field === 'active' ? (product.active ? 'hidden from the store' : productVisible({ ...product, active: true }, settings.data?.disabledCategories) ? 'made visible' : 'enabled individually (its category remains switched off)') : (product.featured ? 'removed from featured' : 'marked as featured')}.` });
       await invalidate('products');
     } catch (error) { setNotice({ type: 'error', text: errorMessage(error) }); }
   };
@@ -582,12 +597,12 @@ export default function AdminPage() {
     } catch (error) { setNotice({ type: 'error', text: errorMessage(error) }); setDeletion(null); }
   };
   const visibleProducts = useMemo(() => (products.data ?? []).filter(product =>
-    (productFilter === 'all' || (productFilter === 'live' ? product.active : !product.active)) &&
+    (productFilter === 'all' || (productFilter === 'live' ? productVisible(product, settings.data?.disabledCategories) : !productVisible(product, settings.data?.disabledCategories))) &&
     `${product.name} ${product.slug} ${product.category}`.toLowerCase().includes(search.toLowerCase().trim())
-  ), [products.data, productFilter, search]);
+  ), [products.data, productFilter, search, settings.data?.disabledCategories]);
   const visibleOrders = useMemo(() => (orders.data ?? []).filter(order => orderFilter === 'all' || order.status === orderFilter), [orders.data, orderFilter]);
   const newOrders = (orders.data ?? []).filter(order => order.status === 'new').length;
-  const lowStock = (products.data ?? []).filter(product => product.active && product.stock < 5).length;
+  const lowStock = (products.data ?? []).filter(product => productVisible(product, settings.data?.disabledCategories) && product.stock < 5).length;
   const pageTitle = { overview: 'Overview', products: 'Products', orders: 'Orders', settings: 'Store settings' }[section];
   const pageSub = {
     overview: 'A clear view of what is happening in your store.',
@@ -647,7 +662,7 @@ export default function AdminPage() {
               <div className="dg-panel dg-watch"><h2>Needs your attention</h2>
                 <div className="dg-watch-row"><span>New orders</span><strong>{newOrders}</strong></div>
                 <div className="dg-watch-row"><span>Visible products low on stock</span><strong>{lowStock}</strong></div>
-                <div className="dg-watch-row"><span>Hidden products</span><strong>{(products.data ?? []).filter(product => !product.active).length}</strong></div>
+                <div className="dg-watch-row"><span>Hidden products</span><strong>{(products.data ?? []).filter(product => !productVisible(product, settings.data?.disabledCategories)).length}</strong></div>
                 <div className="dg-watch-note">Stock warning applies to visible listings with fewer than five units remaining.</div>
                 <button type="button" className="dg-secondary" style={{ marginTop: 17, width: '100%' }} onClick={() => setSection('products')} data-testid="button-admin-manage-catalog">Manage catalog <ArrowRight size={14} /></button>
               </div>
@@ -662,7 +677,7 @@ export default function AdminPage() {
                   <td data-label="Product"><div className="dg-product-cell"><ProductImage url={product.imageUrl} name={product.name} /><div><strong>{product.name}</strong><small>/{product.slug}</small></div></div></td>
                   <td data-label="Category">{categoryLabel(product.category)}</td><td data-label="Price" className="dg-mono">{money(product.priceCents)}</td>
                   <td data-label="Stock" className={product.stock < 5 ? 'dg-stock-low' : ''}>{product.stock} {product.stock < 5 ? '· Low' : ''}</td>
-                  <td data-label="Visibility"><span className={`dg-badge ${product.active ? 'live' : 'hidden'}`}>{product.active ? 'Visible' : 'Hidden'}</span></td>
+                  <td data-label="Visibility"><span className={`dg-badge ${productVisible(product, settings.data?.disabledCategories) ? 'live' : 'hidden'}`}>{!product.active ? 'Hidden' : productVisible(product, settings.data?.disabledCategories) ? 'Visible' : 'Category hidden'}</span></td>
                   <td data-label="Featured"><button type="button" className="dg-quiet" aria-label={`${product.featured ? 'Remove featured from' : 'Feature'} ${product.name}`} disabled={updateProduct.isPending} onClick={() => void toggleProduct(product, 'featured')} data-testid={`button-admin-feature-${product.id}`}>{product.featured ? 'Featured' : '—'}</button></td>
                   <td data-label="Actions"><div className="dg-row-actions"><button type="button" className="dg-icon-button" title={product.active ? 'Hide product' : 'Show product'} aria-label={`${product.active ? 'Hide' : 'Show'} ${product.name}`} disabled={updateProduct.isPending} onClick={() => void toggleProduct(product, 'active')} data-testid={`button-admin-visibility-${product.id}`}>{product.active ? <EyeOff size={16} /> : <Eye size={16} />}</button>
                     <button type="button" className="dg-icon-button" title="Edit product" aria-label={`Edit ${product.name}`} onClick={() => setEditor(product)} data-testid={`button-admin-edit-product-${product.id}`}><Pencil size={16} /></button>
@@ -729,7 +744,7 @@ export default function AdminPage() {
               </div> : <div className="dg-empty"><ClipboardList size={29} /><strong>{(orders.data ?? []).length ? 'No orders in this status' : 'No orders yet'}</strong><p>{(orders.data ?? []).length ? 'Choose another status filter to see more orders.' : 'Orders will appear here after checkout.'}</p></div>}
               <div className="dg-count">Showing {visibleOrders.length} of {(orders.data ?? []).length} orders</div>
             </section>
-          </> : settings.data ? <SettingsEditor initial={settings.data} pending={updateSettings.isPending} onSave={async data => { await updateSettings.mutateAsync({ data }); await invalidate('settings'); }} /> : null}
+          </> : settings.data ? <SettingsEditor initial={settings.data} products={products.data ?? []} pending={updateSettings.isPending} onSave={async data => { await updateSettings.mutateAsync({ data }); await invalidate('settings'); }} /> : null}
       </div>
     </main>
     {editor !== undefined && <ProductEditor existingCategories={buildCategories(products.data ?? []).map(entry => entry.key)} product={editor} onClose={() => setEditor(undefined)} onSave={saveProduct} pending={createProduct.isPending || updateProduct.isPending} />}

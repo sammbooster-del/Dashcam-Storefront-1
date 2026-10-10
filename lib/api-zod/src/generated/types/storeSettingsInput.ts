@@ -45,6 +45,12 @@ export interface StoreSettingsInput {
      * @maxItems 249
      */
   shippingCountries?: CountryCode[];
+  /**
+     * @maxItems 1000
+     * @items.minLength 1
+     * @items.maxLength 80
+     */
+  disabledCategories?: string[];
   orderEmailsEnabled?: boolean;
   /** @maxLength 254 */
   orderEmailFrom?: string;

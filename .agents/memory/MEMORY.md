@@ -14,3 +14,4 @@
 - [Tool sandbox globals](tool-sandbox-globals.md) — Impure fetch is available, but browser/Node globals such as AbortSignal are not guaranteed there.
 - [Skincare variant accuracy](skincare-variant-accuracy.md) — Verify exact patch variants against manufacturer details; roundup ingredient lists can mix different formulas.
 - [Checkout country policy](checkout-country-policy.md) — Worldwide country options are merchant opt-in; country detection is approximate and must not override shopper edits.
+- [Category visibility policy](category-visibility-policy.md) — Category switches override shop visibility without rewriting individual product visibility or stock.

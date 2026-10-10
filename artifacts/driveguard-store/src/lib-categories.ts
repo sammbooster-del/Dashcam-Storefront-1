@@ -3,6 +3,8 @@ import type { Product } from '@workspace/api-client-react';
 const FRIENDLY: Record<string, string> = { front: 'Front cameras', dual: 'Dual-channel cameras', everyday: 'Everyday essentials' };
 export const KNOWN_CATEGORY_EXAMPLES = ['skincare', 'bags', 'stationery', 'drinkware', 'front', 'dual', 'everyday', 'general'];
 export const normalizeCategory = (value: string) => value.trim().toLocaleLowerCase();
+export const productVisible = (product: Product, disabledCategories: readonly string[] = []) =>
+  product.active && !disabledCategories.includes(normalizeCategory(product.category));
 export const categoryLabel = (value: string) => {
   const key = normalizeCategory(value);
   if (Object.hasOwn(FRIENDLY, key)) return FRIENDLY[key];

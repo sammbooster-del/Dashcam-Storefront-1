@@ -86,6 +86,7 @@ const defaultSettings = {
   shippingCents: 1200,
   supportEmail: "",
   shippingCountries: ["US", "CA"],
+  disabledCategories: [],
   orderEmailsEnabled: false,
   orderEmailFrom: "",
   orderEmailTeam: "",
@@ -318,7 +319,8 @@ router.get("/storefront", async (_req, res): Promise<void> => {
   const products = await db.select().from(storeProductsTable)
     .where(eq(storeProductsTable.active, true))
     .orderBy(desc(storeProductsTable.featured), desc(storeProductsTable.id));
-  res.json(GetStorefrontResponse.parse({ settings, products: products.map(productResponse) }));
+  const disabled = new Set(settings.disabledCategories);
+  res.json(GetStorefrontResponse.parse({ settings, products: products.filter(product => !disabled.has(product.category.trim().toLocaleLowerCase())).map(productResponse) }));
 });
 
 router.put("/demo-drafts/:id", async (req, res): Promise<void> => {
@@ -500,7 +502,8 @@ router.post("/demo-orders", async (req, res): Promise<void> => {
   }
   const products = await db.select().from(storeProductsTable)
     .where(and(inArray(storeProductsTable.id, [...quantities.keys()]), eq(storeProductsTable.active, true)));
-  if (products.length !== quantities.size || products.some(product => product.stock < quantities.get(product.id)!)) {
+  const disabledCategories = new Set(settings.disabledCategories);
+  if (products.length !== quantities.size || products.some(product => disabledCategories.has(product.category.trim().toLocaleLowerCase()) || product.stock < quantities.get(product.id)!)) {
     res.status(409).json({ error: "One or more items are unavailable. Please update your cart." });
     return;
   }
@@ -687,14 +690,14 @@ router.get("/admin/demo-drafts", async (_req, res): Promise<void> => {
 });
 
 router.get("/admin/overview", async (_req, res): Promise<void> => {
-  await ensureStore();
+  const settings = await ensureStore();
   const [products, orders] = await Promise.all([
     db.select().from(storeProductsTable),
     db.select().from(demoOrdersTable),
   ]);
   res.json(GetAdminOverviewResponse.parse({
     productCount: products.length,
-    activeProductCount: products.filter(product => product.active).length,
+    activeProductCount: products.filter(product => product.active && !settings.disabledCategories.includes(product.category.trim().toLocaleLowerCase())).length,
     totalOrders: orders.length,
     simulatedRevenueCents: orders.filter(order => order.status !== "cancelled" && order.verificationState !== "declined").reduce((sum, order) => sum + order.totalCents, 0),
   }));
@@ -821,7 +824,13 @@ router.put("/admin/settings", async (req, res): Promise<void> => {
       return;
     }
   }
-  const [settings] = await db.update(storeSettingsTable).set({ ...parsed.data, orderEmailFrom: emailFrom, orderEmailTeam: emailTeam })
+  const disabledCategories = parsed.data.disabledCategories === undefined ? current.disabledCategories
+    : [...new Set(parsed.data.disabledCategories.map(category => category.trim().toLocaleLowerCase()))];
+  if (disabledCategories.some(category => !category)) {
+    res.status(400).json({ error: "Category names cannot be blank." });
+    return;
+  }
+  const [settings] = await db.update(storeSettingsTable).set({ ...parsed.data, disabledCategories, orderEmailFrom: emailFrom, orderEmailTeam: emailTeam })
     .where(eq(storeSettingsTable.id, 1)).returning();
   res.json(UpdateAdminSettingsResponse.parse(settings));
 });

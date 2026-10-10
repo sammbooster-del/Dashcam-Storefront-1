@@ -585,6 +585,9 @@ components:
           minItems: 1
           uniqueItems: true
           items: { $ref: "#/components/schemas/CountryCode" }
+        disabledCategories:
+          type: array
+          items: { type: string, minLength: 1, maxLength: 80 }
         fictionalDemoMode: { type: boolean }
         verificationTitle: { type: string }
         verificationMerchantName: { type: string }
@@ -625,6 +628,10 @@ components:
           maxItems: 249
           uniqueItems: true
           items: { $ref: "#/components/schemas/CountryCode" }
+        disabledCategories:
+          type: array
+          maxItems: 1000
+          items: { type: string, minLength: 1, maxLength: 80 }
         orderEmailsEnabled: { type: boolean }
         orderEmailFrom: { type: string, maxLength: 254 }
         orderEmailTeam: { type: string, maxLength: 254 }

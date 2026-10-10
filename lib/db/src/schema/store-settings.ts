@@ -16,6 +16,7 @@ export const storeSettingsTable = pgTable("store_settings", {
   shippingCents: integer("shipping_cents").notNull(),
   supportEmail: text("support_email").notNull(),
   shippingCountries: text("shipping_countries").array().notNull().default(sql`ARRAY['US', 'CA']::text[]`),
+  disabledCategories: text("disabled_categories").array().notNull().default(sql`ARRAY[]::text[]`),
   orderEmailsEnabled: boolean("order_emails_enabled").notNull().default(false),
   orderEmailFrom: text("order_email_from").notNull().default(""),
   orderEmailTeam: text("order_email_team").notNull().default(""),
