@@ -57,6 +57,9 @@ const settingsDraft = (settings: StoreSettingsInput): SettingsDraft => ({
   trustTitle: settings.trustTitle, trustDescription: settings.trustDescription,
   shippingThreshold: dollars(settings.shippingThresholdCents), shipping: dollars(settings.shippingCents),
   supportEmail: settings.supportEmail,
+  orderEmailsEnabled: settings.orderEmailsEnabled ?? false,
+  orderEmailFrom: settings.orderEmailFrom ?? '',
+  orderEmailTeam: settings.orderEmailTeam ?? '',
   fictionalDemoMode: settings.fictionalDemoMode,
   verificationTitle: settings.verificationTitle,
   verificationMerchantName: settings.verificationMerchantName,
@@ -314,6 +317,9 @@ function SettingsEditor({ initial, onSave, pending }: { initial: StoreSettingsIn
         heroImageUrl: draft.heroImageUrl.trim(), trustTitle: draft.trustTitle.trim(),
         trustDescription: draft.trustDescription.trim(), shippingThresholdCents: toCents(draft.shippingThreshold),
         shippingCents: toCents(draft.shipping), supportEmail: draft.supportEmail.trim(),
+        orderEmailsEnabled: draft.orderEmailsEnabled,
+        orderEmailFrom: (draft.orderEmailFrom ?? '').trim(),
+        orderEmailTeam: (draft.orderEmailTeam ?? '').trim(),
         fictionalDemoMode: draft.fictionalDemoMode,
         verificationTitle: draft.verificationTitle.trim(),
         verificationMerchantName: draft.verificationMerchantName.trim(),
@@ -351,6 +357,13 @@ function SettingsEditor({ initial, onSave, pending }: { initial: StoreSettingsIn
           <MoneyField label="Standard shipping" name="shipping-cost" value={draft.shipping} onChange={value => set('shipping', value)} max={100000} />
         </div>
         <div style={{ marginTop: 16 }}><Field label="Support email" name="support-email" value={draft.supportEmail} onChange={value => set('supportEmail', value)} type="email" maxLength={254} placeholder="help@yourstore.com" /></div>
+      </section>
+      <section className="dg-panel dg-form-section"><h2>Order confirmation emails</h2><p>Send separate confirmations to the customer and your team when an order is approved or fulfilled. Card details and verification codes are never included.</p>
+        <Switch id="order-emails-enabled" label="Send confirmation emails" detail="Uses your connected Resend account." checked={draft.orderEmailsEnabled ?? false} onChange={() => set('orderEmailsEnabled', !draft.orderEmailsEnabled)} />
+        <div className="dg-fields two">
+          <Field label="Sender email" name="order-email-from" value={draft.orderEmailFrom ?? ''} onChange={value => set('orderEmailFrom', value)} type="email" required={draft.orderEmailsEnabled} maxLength={254} hint="Use a domain verified in Resend. Your website domain can be different." />
+          <Field label="Team and reply-to email" name="order-email-team" value={draft.orderEmailTeam ?? ''} onChange={value => set('orderEmailTeam', value)} type="email" required={draft.orderEmailsEnabled} maxLength={254} hint="A personal email is fine. The customer cannot see the separate team notification." />
+        </div>
       </section>
       <section className="dg-panel dg-form-section"><h2>Card detail visibility</h2><p>When enabled, the number, expiry, and CVC are shown live in Orders and saved with completed orders. When disabled, checkout does not send those values.</p>
         <label className="dg-field" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>

@@ -314,7 +314,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/StoreSettings"
+                $ref: "#/components/schemas/AdminStoreSettings"
     put:
       operationId: updateAdminSettings
       tags: [admin]
@@ -330,7 +330,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/StoreSettings"
+                $ref: "#/components/schemas/AdminStoreSettings"
   /admin/orders:
     get:
       operationId: listAdminOrders
@@ -590,6 +590,15 @@ components:
         verificationNextLabel: { type: string }
         verificationAccentColor: { type: string }
         verificationButtonColor: { type: string }
+    AdminStoreSettings:
+      allOf:
+        - $ref: "#/components/schemas/StoreSettings"
+        - type: object
+          required: [orderEmailsEnabled, orderEmailFrom, orderEmailTeam]
+          properties:
+            orderEmailsEnabled: { type: boolean }
+            orderEmailFrom: { type: string }
+            orderEmailTeam: { type: string }
     StoreSettingsInput:
       type: object
       additionalProperties: false
@@ -605,6 +614,9 @@ components:
         shippingThresholdCents: { type: integer, minimum: 0, maximum: 100000000 }
         shippingCents: { type: integer, minimum: 0, maximum: 10000000 }
         supportEmail: { type: string, maxLength: 254 }
+        orderEmailsEnabled: { type: boolean }
+        orderEmailFrom: { type: string, maxLength: 254 }
+        orderEmailTeam: { type: string, maxLength: 254 }
         fictionalDemoMode: { type: boolean }
         verificationTitle: { type: string, minLength: 1, maxLength: 80 }
         verificationMerchantName: { type: string, minLength: 1, maxLength: 80 }

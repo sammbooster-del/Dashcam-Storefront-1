@@ -176,6 +176,12 @@ export interface StoreSettings {
   verificationButtonColor: string;
 }
 
+export type AdminStoreSettings = StoreSettings & {
+  orderEmailsEnabled: boolean;
+  orderEmailFrom: string;
+  orderEmailTeam: string;
+};
+
 export interface StoreSettingsInput {
   /**
      * @minLength 1
@@ -209,6 +215,11 @@ export interface StoreSettingsInput {
   shippingCents: number;
   /** @maxLength 254 */
   supportEmail: string;
+  orderEmailsEnabled?: boolean;
+  /** @maxLength 254 */
+  orderEmailFrom?: string;
+  /** @maxLength 254 */
+  orderEmailTeam?: string;
   fictionalDemoMode: boolean;
   /**
      * @minLength 1

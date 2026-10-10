@@ -22,6 +22,7 @@ import type {
 import type {
   AdminIdentity,
   AdminOverview,
+  AdminStoreSettings,
   DeliveryAlertInput,
   DeliveryAlertResult,
   DemoCheckoutDraft,
@@ -39,7 +40,6 @@ import type {
   ProductImageUploadInput,
   ProductInput,
   ProductUpdate,
-  StoreSettings,
   StoreSettingsInput,
   Storefront
 } from './api.schemas';
@@ -1424,9 +1424,9 @@ export const getGetAdminSettingsUrl = () => {
   return `/api/admin/settings`
 }
 
-export const getAdminSettings = async ( options?: Parameters<typeof customFetch>[1]): Promise<StoreSettings> => {
+export const getAdminSettings = async ( options?: Parameters<typeof customFetch>[1]): Promise<AdminStoreSettings> => {
 
-  return customFetch<StoreSettings>(getGetAdminSettingsUrl(),
+  return customFetch<AdminStoreSettings>(getGetAdminSettingsUrl(),
   {
     ...options,
     method: 'GET'
@@ -1495,7 +1495,7 @@ export const getUpdateAdminSettingsUrl = () => {
   return `/api/admin/settings`
 }
 
-export const updateAdminSettings = async (storeSettingsInput: StoreSettingsInput, options?: Parameters<typeof customFetch>[1]): Promise<StoreSettings> => {
+export const updateAdminSettings = async (storeSettingsInput: StoreSettingsInput, options?: Parameters<typeof customFetch>[1]): Promise<AdminStoreSettings> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
@@ -1511,7 +1511,7 @@ export const updateAdminSettings = async (storeSettingsInput: StoreSettingsInput
     }
     return headers;
   };
-return customFetch<StoreSettings>(getUpdateAdminSettingsUrl(),
+return customFetch<AdminStoreSettings>(getUpdateAdminSettingsUrl(),
   {
     ...options,
     method: 'PUT',

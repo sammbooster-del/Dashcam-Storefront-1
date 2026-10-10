@@ -8,6 +8,7 @@
 
 export * from './adminIdentity';
 export * from './adminOverview';
+export * from './adminStoreSettings';
 export * from './deliveryAlertInput';
 export * from './deliveryAlertResult';
 export * from './demoBillingAddress';

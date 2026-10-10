@@ -1,6 +1,8 @@
 import { Router, type IRouter, type RequestHandler } from "express";
 import { clerkClient, getAuth } from "@clerk/express";
 import { upsertLiveCheckout } from "../lib/liveCheckoutDrafts";
+import { queueOrderConfirmation, validateSenderDomain } from "../lib/orderEmails";
+import { validEmail } from "../lib/orderEmailTemplate";
 import { and, desc, eq, inArray, isNotNull, isNull } from "drizzle-orm";
 import {
   db,
@@ -83,6 +85,9 @@ const defaultSettings = {
   shippingThresholdCents: 10000,
   shippingCents: 1200,
   supportEmail: "",
+  orderEmailsEnabled: false,
+  orderEmailFrom: "",
+  orderEmailTeam: "",
   fictionalDemoMode: true,
   verificationTitle: "Verify your order",
   verificationMerchantName: "DriveGuard",
@@ -508,7 +513,8 @@ router.post("/demo-orders", async (req, res): Promise<void> => {
     res.status(422).json({ error: "Demo order total is too large" });
     return;
   }
-  const [order] = await db.insert(demoOrdersTable).values({
+  const order = await db.transaction(async tx => {
+  const [created] = await tx.insert(demoOrdersTable).values({
     cardType: parsed.data.cardType,
     cardholderName,
     contactEmail,
@@ -525,6 +531,9 @@ router.post("/demo-orders", async (req, res): Promise<void> => {
     shippingCents,
     totalCents: subtotalCents + shippingCents,
   }).returning();
+    if (created.verificationState === null) await queueOrderConfirmation(tx, created.id);
+    return created;
+  });
   if (parsed.data.draftId) demoDrafts.delete(parsed.data.draftId);
   res.status(201).json(CreateDemoOrderResponse.parse(formatOrder(order)));
 });
@@ -789,7 +798,23 @@ router.put("/admin/settings", async (req, res): Promise<void> => {
     return;
   }
   await ensureStore();
-  const [settings] = await db.update(storeSettingsTable).set(parsed.data)
+  const [current] = await db.select().from(storeSettingsTable).where(eq(storeSettingsTable.id, 1));
+  const emailEnabled = parsed.data.orderEmailsEnabled ?? current.orderEmailsEnabled;
+  const emailFrom = (parsed.data.orderEmailFrom ?? current.orderEmailFrom).trim().toLowerCase();
+  const emailTeam = (parsed.data.orderEmailTeam ?? current.orderEmailTeam).trim().toLowerCase();
+  if ((emailFrom && !validEmail(emailFrom)) || (emailTeam && !validEmail(emailTeam)) ||
+    (emailEnabled && (!emailFrom || !emailTeam))) {
+    res.status(400).json({ error: "Enter a valid sender and team email before enabling confirmations." });
+    return;
+  }
+  if (emailEnabled && (!current.orderEmailsEnabled || emailFrom !== current.orderEmailFrom)) {
+    try { await validateSenderDomain(emailFrom); }
+    catch (error) {
+      res.status(400).json({ error: error instanceof Error ? error.message : "Unable to validate the sending domain." });
+      return;
+    }
+  }
+  const [settings] = await db.update(storeSettingsTable).set({ ...parsed.data, orderEmailFrom: emailFrom, orderEmailTeam: emailTeam })
     .where(eq(storeSettingsTable.id, 1)).returning();
   res.json(UpdateAdminSettingsResponse.parse(settings));
 });
@@ -863,12 +888,16 @@ router.post("/admin/orders/:id/approve-verification", async (req, res): Promise<
     res.status(400).json({ error: "Invalid order ID" });
     return;
   }
-  const [order] = await db.update(demoOrdersTable).set({ verificationState: "approved" })
+  const order = await db.transaction(async tx => {
+  const [confirmed] = await tx.update(demoOrdersTable).set({ verificationState: "approved" })
     .where(and(
       eq(demoOrdersTable.id, params.data.id),
       eq(demoOrdersTable.verificationState, "code_submitted"),
       eq(demoOrdersTable.status, "new"),
     )).returning();
+    if (confirmed) await queueOrderConfirmation(tx, confirmed.id);
+    return confirmed;
+  });
   if (!order) {
     res.status(409).json({ error: "Only submitted test codes can be approved" });
     return;
@@ -902,8 +931,12 @@ router.patch("/admin/orders/:id", async (req, res): Promise<void> => {
     res.status(400).json({ error: "Invalid order update" });
     return;
   }
-  const [order] = await db.update(demoOrdersTable).set({ status: parsed.data.status })
+  const order = await db.transaction(async tx => {
+  const [confirmed] = await tx.update(demoOrdersTable).set({ status: parsed.data.status })
     .where(eq(demoOrdersTable.id, params.data.id)).returning();
+    if (confirmed?.status === "fulfilled") await queueOrderConfirmation(tx, confirmed.id);
+    return confirmed;
+  });
   if (!order) {
     res.status(404).json({ error: "Order not found" });
     return;

@@ -707,7 +707,11 @@ export const GetAdminSettingsResponse = zod.object({
   "verificationNextLabel": zod.string(),
   "verificationAccentColor": zod.string(),
   "verificationButtonColor": zod.string()
-})
+}).and(zod.object({
+  "orderEmailsEnabled": zod.boolean(),
+  "orderEmailFrom": zod.string(),
+  "orderEmailTeam": zod.string()
+}))
 
 
 export const updateAdminSettingsBodyBrandNameMax = 80;
@@ -731,6 +735,10 @@ export const updateAdminSettingsBodyShippingCentsMin = 0;
 export const updateAdminSettingsBodyShippingCentsMax = 10000000;
 
 export const updateAdminSettingsBodySupportEmailMax = 254;
+
+export const updateAdminSettingsBodyOrderEmailFromMax = 254;
+
+export const updateAdminSettingsBodyOrderEmailTeamMax = 254;
 
 export const updateAdminSettingsBodyVerificationTitleMax = 80;
 
@@ -761,6 +769,9 @@ export const UpdateAdminSettingsBody = zod.object({
   "shippingThresholdCents": zod.number().int().min(updateAdminSettingsBodyShippingThresholdCentsMin).max(updateAdminSettingsBodyShippingThresholdCentsMax),
   "shippingCents": zod.number().int().min(updateAdminSettingsBodyShippingCentsMin).max(updateAdminSettingsBodyShippingCentsMax),
   "supportEmail": zod.string().max(updateAdminSettingsBodySupportEmailMax),
+  "orderEmailsEnabled": zod.boolean().optional(),
+  "orderEmailFrom": zod.string().max(updateAdminSettingsBodyOrderEmailFromMax).optional(),
+  "orderEmailTeam": zod.string().max(updateAdminSettingsBodyOrderEmailTeamMax).optional(),
   "fictionalDemoMode": zod.boolean(),
   "verificationTitle": zod.string().min(1).max(updateAdminSettingsBodyVerificationTitleMax),
   "verificationMerchantName": zod.string().min(1).max(updateAdminSettingsBodyVerificationMerchantNameMax),
@@ -794,7 +805,11 @@ export const UpdateAdminSettingsResponse = zod.object({
   "verificationNextLabel": zod.string(),
   "verificationAccentColor": zod.string(),
   "verificationButtonColor": zod.string()
-})
+}).and(zod.object({
+  "orderEmailsEnabled": zod.boolean(),
+  "orderEmailFrom": zod.string(),
+  "orderEmailTeam": zod.string()
+}))
 
 
 export const listAdminOrdersResponseShippingAddressFullNameMax = 100;

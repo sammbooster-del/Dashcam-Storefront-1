@@ -20,6 +20,7 @@
 export * from "./store-products";
 export * from "./store-settings";
 export * from "./demo-orders";
+export * from "./order-email-jobs";
 export * from "./shop-settings";
 export * from "./shop-categories";
 export * from "./shop-products";
