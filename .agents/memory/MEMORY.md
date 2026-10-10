@@ -12,3 +12,4 @@
 - [Order confirmation emails](order-confirmation-emails.md) — Send separate customer and team confirmations; the website domain and verified sending domain are independent.
 - [Unconfirmed iPhone inventory](unconfirmed-iphone-inventory.md) — iPhone listings use estimated prices; zero stock is intentional until the owner supplies availability.
 - [Tool sandbox globals](tool-sandbox-globals.md) — Impure fetch is available, but browser/Node globals such as AbortSignal are not guaranteed there.
+- [Skincare variant accuracy](skincare-variant-accuracy.md) — Verify exact patch variants against manufacturer details; roundup ingredient lists can mix different formulas.
