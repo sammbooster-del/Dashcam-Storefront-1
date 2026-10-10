@@ -3,7 +3,7 @@ name: Unconfirmed iPhone inventory
 description: Why the initial iPhone listings have estimated prices and no purchasable inventory.
 ---
 
-The owner asked to add iPhone 13 through 15 using general knowledge instead of supplying product details. The initial 128 GB listings use estimated prices; zero stock is intentional, not a missing inventory migration.
+The owner asked to use general knowledge for iPhone listings instead of supplying product details. This also applies to the subsequent Pro Max additions. Prices are estimates; zero stock is intentional, not a missing inventory migration.
 
 **Why:** General product knowledge cannot establish the owner's actual stock, condition or carrier compatibility. Inventing availability would present unverified inventory as available to purchase.
 

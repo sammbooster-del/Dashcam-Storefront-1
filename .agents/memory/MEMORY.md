@@ -11,3 +11,4 @@
 - [Imported Git history](imported-git-history.md) — A valid shallow import can fail its first GitHub push; backups may lack the same ancestors.
 - [Order confirmation emails](order-confirmation-emails.md) — Send separate customer and team confirmations; the website domain and verified sending domain are independent.
 - [Unconfirmed iPhone inventory](unconfirmed-iphone-inventory.md) — iPhone listings use estimated prices; zero stock is intentional until the owner supplies availability.
+- [Tool sandbox globals](tool-sandbox-globals.md) — Impure fetch is available, but browser/Node globals such as AbortSignal are not guaranteed there.
