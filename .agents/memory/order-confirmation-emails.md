@@ -21,6 +21,12 @@ The new store sending domain is linked to a different Resend account with a diff
 
 **How to apply:** Have the owner update the existing Resend connection securely, then verify domain access through that connection before changing the sender. Do not request credentials in chat.
 
+Ask the owner for the customer recipient before sending an order-confirmation demonstration when no customer email has been supplied. Do not assume the sender or team mailbox is the customer.
+
+**Why:** The owner corrected an order-email demonstration that used the sending address without asking for the customer email.
+
+**How to apply:** Collect the intended customer address first; keep the separate team notification unchanged.
+
 Order confirmations do not change the externally shared verification-code process.
 
 **Why:** The email request concerns confirmed orders, not generating or sending the team's existing verification codes.
