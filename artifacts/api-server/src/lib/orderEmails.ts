@@ -3,7 +3,7 @@ import { and, eq, inArray, lte, or, sql } from "drizzle-orm";
 import { db, demoOrdersTable, orderEmailJobsTable, storeProductsTable, storeSettingsTable } from "@workspace/db";
 import { logger } from "./logger";
 import { renderOrderConfirmation, validEmail } from "./orderEmailTemplate";
-import { prepareEmailImages, type InlineEmailImage } from "./orderEmailImages";
+import { prepareEmailImages, prepareVisaEmailLogo, type InlineEmailImage } from "./orderEmailImages";
 
 type Transaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
 const MAX_ATTEMPTS = 5;
@@ -87,10 +87,13 @@ export async function processOrderEmails(deliver: SendEmail = sendEmail, store: 
           id: storeProductsTable.id, imageUrl: storeProductsTable.imageUrl,
         }).from(storeProductsTable).where(inArray(storeProductsTable.id, productIds)) : [];
         const { images, attachments } = await prepareEmailImages(products);
+        const previewVisa = process.env.NODE_ENV === "development";
+        if (previewVisa) attachments.push(await prepareVisaEmailLogo());
         const content = renderOrderConfirmation(order, settings.brandName, job.audience, {
           storeUrl: process.env.ORDER_EMAIL_STORE_URL,
           productImages: images,
           previewPaid: process.env.NODE_ENV === "development",
+          previewVisa,
         });
         const providerId = await deliver({
             from: `${settings.brandName.replace(/[<>\r\n]/g, "")} <${settings.orderEmailFrom}>`,

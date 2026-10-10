@@ -14,3 +14,17 @@ mtime_ms = 1791663996783
 storage_uri = "gcs://replit-rams-assets-pike/rams/assets/repl:ca9c7873-0c41-4351-8df6-d833baaeab72/b510bacc-6769-49a6-a8e7-3d5bb915644e/df20858a-3812-4ce9-a44b-7bfa5908de7e"
 storage_version_token = "1791664057144406"
 content_type = "image/jpeg"
+
+[[outputs]]
+id = "_7Qex8lj83bZdG2ISZGYp"
+uri = "file://generated-artifacts/order-email-visa-mobile.jpg"
+type = "image"
+title = "Updated Everyday Finds email"
+description = "Order confirmed & paid, with an embedded Visa logo, a Paid badge, and compact product photos."
+logical_id = "bd036434-6ca4-41a0-9848-949a845f4a53"
+content_hash = "sha256:322e42d753cf17ab175d777901d75571025a1b2b1d3bc3dfd311517c155148b2"
+size = 67691
+mtime_ms = 1791664928839
+storage_uri = "gcs://replit-rams-assets-pike/rams/assets/repl:ca9c7873-0c41-4351-8df6-d833baaeab72/bd036434-6ca4-41a0-9848-949a845f4a53/054a16c0-9a01-4e44-86b4-18d4da752629"
+storage_version_token = "1791664943070808"
+content_type = "image/jpeg"

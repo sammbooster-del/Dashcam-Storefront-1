@@ -6,7 +6,7 @@ const money = (cents: number) => new Intl.NumberFormat("en-US", { style: "curren
 const escapeHtml = (value: string) => value.replace(/[&<>"']/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]!);
 export const validEmail = (value: string) => value.length <= 254 && /^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(value);
 
-export type EmailPresentation = { storeUrl?: string; productImages?: Record<number, string>; previewPaid?: boolean };
+export type EmailPresentation = { storeUrl?: string; productImages?: Record<number, string>; previewPaid?: boolean; previewVisa?: boolean };
 
 export function emailImageUrl(value: string | undefined, storeUrl?: string) {
   if (!value) return undefined;
@@ -20,6 +20,7 @@ export function renderOrderConfirmation(order: EmailOrder, brand: string, audien
   // A paid-looking status is only for explicitly requested internal previews.
   // Production must never infer payment from a simulated order approval.
   const previewPaid = presentation.previewPaid === true && process.env.NODE_ENV === "development";
+  const previewVisa = previewPaid && presentation.previewVisa === true;
   const status = previewPaid ? "confirmed & paid" : "confirmed";
   const subject = `${brand.replace(/[\r\n]/g, " ")} — ${audience === "team" ? `New ${status} order` : `Order ${status}`} #${order.id}`;
   const address = order.shippingAddress;
@@ -29,6 +30,7 @@ export function renderOrderConfirmation(order: EmailOrder, brand: string, audien
     ...order.items.map(item => `${item.name} × ${item.quantity} — ${money(item.unitPriceCents * item.quantity)}`),
     "", `Subtotal: ${money(order.subtotalCents)}`, `Shipping: ${money(order.shippingCents)}`,
     `Total: ${money(order.totalCents)}`, "",
+    ...(previewPaid ? [`Payment status: Paid`, ...(previewVisa ? ["Paid with: Visa"] : []), ""] : []),
     ...(address ? ["Delivery address", address.fullName, address.line1, address.line2,
       `${address.city}, ${address.region} ${address.postalCode}`, address.country, ""] : []),
     ...(audience === "team" && order.contactEmail ? [`Customer email: ${order.contactEmail}`, ""] : []),
@@ -60,6 +62,17 @@ export function renderOrderConfirmation(order: EmailOrder, brand: string, audien
     : "";
   const customerDetails = audience === "team" && order.contactEmail
     ? `<tr><td class="content-pad" style="padding:0 32px 24px;"><p style="margin:0 0 8px;font-size:11px;font-weight:700;letter-spacing:1.4px;color:#6a776e;text-transform:uppercase;">Customer contact</p><p style="margin:0;font-size:14px;color:#233c32;overflow-wrap:anywhere;">${escapeHtml(order.contactEmail)}</p></td></tr>` : "";
+  const paymentSummary = previewPaid ? `<tr><td class="content-pad" style="padding:0 32px 26px;">
+    <table role="presentation" cellspacing="0" cellpadding="0" width="100%" style="background:#f0f5ee;border:1px solid #dfe8da;border-radius:12px;"><tr>
+      <td valign="middle" style="padding:20px;">
+        <p style="margin:0 0 10px;font-size:10px;letter-spacing:1.5px;font-weight:700;color:#657c68;text-transform:uppercase;">Payment status</p>
+        <table role="presentation" cellspacing="0" cellpadding="0"><tr><td style="background:#2d5142;border-radius:20px;padding:6px 13px;color:#ffffff;font-size:12px;line-height:16px;font-weight:700;">&#10003;&nbsp; Paid</td></tr></table>
+      </td>
+      <td valign="middle" align="right" style="padding:20px;">
+        ${previewVisa ? `<p style="margin:0 0 9px;font-size:11px;color:#657c68;">Paid with</p><table role="presentation" cellspacing="0" cellpadding="0" align="right"><tr><td style="background:#ffffff;border:1px solid #e1e5dc;border-radius:6px;padding:8px 10px;"><img src="cid:payment-visa" alt="Visa" width="52" height="18" style="display:block;border:0;width:52px;height:18px;" /></td></tr></table>` : `<p style="margin:0;font-size:18px;font-weight:700;color:#233c32;">${money(order.totalCents)}</p>`}
+      </td>
+    </tr></table>
+  </td></tr>` : "";
   const html = `<!DOCTYPE html>
 <html lang="en">
 <head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><meta name="color-scheme" content="light" />
@@ -91,6 +104,7 @@ export function renderOrderConfirmation(order: EmailOrder, brand: string, audien
             <tr><td style="padding:14px 0 0;border-top:1px solid #eceee9;font-size:18px;font-weight:700;">Order total</td><td align="right" style="padding:14px 0 0;border-top:1px solid #eceee9;font-size:20px;font-weight:700;">${money(order.totalCents)}</td></tr>
           </table>
         </td></tr>
+        ${paymentSummary}
         ${address ? `<tr><td class="content-pad" style="padding:0 32px 24px;"><table role="presentation" cellspacing="0" cellpadding="0" width="100%" style="background:#f7f8f4;border-radius:10px;"><tr><td style="padding:20px;"><p style="margin:0 0 10px;font-size:11px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:#6a776e;">Delivery address</p><p style="margin:0;font-size:14px;line-height:22px;color:#233c32;">${deliveryLines}</p></td></tr></table></td></tr>` : ""}
         ${customerDetails}
         ${storeUrl ? `<tr><td class="content-pad" align="center" style="padding:0 32px 28px;"><table role="presentation" cellspacing="0" cellpadding="0"><tr><td align="center" bgcolor="#2d5142" style="background:#2d5142;border-radius:8px;"><a href="${escapeHtml(storeUrl)}" style="display:inline-block;padding:14px 28px;border:1px solid #2d5142;border-radius:8px;font-size:14px;font-weight:600;color:#ffffff;text-decoration:none;">Continue shopping</a></td></tr></table></td></tr>` : ""}

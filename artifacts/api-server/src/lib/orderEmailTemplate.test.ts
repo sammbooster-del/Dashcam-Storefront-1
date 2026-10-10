@@ -61,14 +61,18 @@ test("confirmed and paid is limited to explicitly requested development previews
   const original = process.env.NODE_ENV;
   try {
     process.env.NODE_ENV = "development";
-    const preview = renderOrderConfirmation(order, "Everyday Finds", "customer", { previewPaid: true });
+    const preview = renderOrderConfirmation(order, "Everyday Finds", "customer", { previewPaid: true, previewVisa: true });
     assert.equal(preview.subject, "Everyday Finds — Order confirmed & paid #321");
     assert.match(preview.html, /Order confirmed &amp; paid/);
     assert.match(preview.text, /Your order is confirmed & paid/);
+    assert.match(preview.text, /Paid with: Visa/);
+    assert.match(preview.html, /src="cid:payment-visa" alt="Visa"/);
+    assert.match(preview.html, /Payment status/);
     process.env.NODE_ENV = "production";
-    const live = renderOrderConfirmation(order, "Everyday Finds", "customer", { previewPaid: true });
+    const live = renderOrderConfirmation(order, "Everyday Finds", "customer", { previewPaid: true, previewVisa: true });
     assert.equal(live.subject, "Everyday Finds — Order confirmed #321");
     assert.doesNotMatch(live.html, /paid/i);
+    assert.doesNotMatch(live.html, /payment-visa/);
   } finally {
     if (original === undefined) delete process.env.NODE_ENV;
     else process.env.NODE_ENV = original;
