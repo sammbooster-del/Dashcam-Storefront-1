@@ -1,0 +1,20 @@
+/* Dialogs render outside .dg-admin, so they need their own theme scope. */
+.dg-email-dialog {
+  --dg-ink: #252927;
+  --dg-muted: #727875;
+  --dg-line: #dfe2dc;
+  --dg-paper: #f5f6f2;
+  --dg-red: #c92525;
+}
+
+.dg-email-dialog button:disabled {
+  cursor: not-allowed;
+  opacity: .6;
+}
+
+.dg-email-dialog .dg-primary:disabled {
+  background: #e2e7e2;
+  border-color: #cbd0c8;
+  color: #435447;
+  opacity: 1;
+}

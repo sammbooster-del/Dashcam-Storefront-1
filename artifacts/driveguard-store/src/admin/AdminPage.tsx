@@ -29,12 +29,13 @@ import {
   ArrowDownRight, ArrowRight, ArrowUp, ArrowDown, Boxes, ChevronDown, ChevronRight,
   CircleAlert, ClipboardList, Eye, EyeOff, ImageOff, LayoutDashboard,
   ImagePlus, Package, Pencil, Plus, RefreshCw, Search, Settings2, ShieldCheck,
-  ShoppingBag, Trash2, X,
+   ShoppingBag, Trash2, X, Mail,
 } from 'lucide-react';
 import { KNOWN_CATEGORY_EXAMPLES, buildCategories, categoryLabel, normalizeCategory, productVisible } from '@/lib-categories';
 import './AdminPage.css';
 import { CheckoutCountriesEditor } from './CheckoutCountriesEditor';
 import { countryName } from '@/lib-countries';
+import CustomerEmailDialog from './CustomerEmailDialog';
 
 type Section = 'overview' | 'products' | 'orders' | 'settings';
 type ProductDraft = Omit<ProductInput, 'priceCents' | 'stock'> & { price: string; stock: string };
@@ -497,6 +498,7 @@ export default function AdminPage() {
   const [productFilter, setProductFilter] = useState<'all' | 'live' | 'hidden'>('all');
   const [orderFilter, setOrderFilter] = useState<'all' | 'new' | 'fulfilled' | 'cancelled'>('all');
   const [expandedOrder, setExpandedOrder] = useState<number | null>(null);
+  const [emailOrder, setEmailOrder] = useState<Pick<DemoOrder, 'id' | 'contactEmail'> | null>(null);
   useEffect(() => {
     if (expandedOrder === null || !window.matchMedia('(max-width: 767px)').matches) return;
     const frame = window.requestAnimationFrame(() => {
@@ -697,7 +699,7 @@ export default function AdminPage() {
                    <td data-label="Items"><span title={orderLabel(order)}>{order.items.reduce((sum,item) => sum + item.quantity,0)} item{order.items.reduce((sum,item) => sum + item.quantity,0) === 1 ? '' : 's'}</span></td>
                     <td data-label="Payment" style={{ textTransform:'capitalize' }}>{order.cardType} · demo{order.cardholderName ? <small style={{ display:'block', textTransform:'none', fontWeight:700 }}>{order.cardholderName}</small> : null}{order.demoCardNumber ? <small style={{ display:'block', textTransform:'none' }}>Open order for card details</small> : null}</td><td data-label="Total" className="dg-mono">{money(order.totalCents)}</td>
                    <td data-label="Status"><select className="dg-status-select" aria-label={`Status for order ${order.id}`} value={order.status} disabled={updateOrder.isPending} onChange={event => void changeOrderStatus(order.id, event.target.value as DemoOrder['status'])} data-testid={`select-admin-order-status-${order.id}`}><option value="new">New</option><option value="fulfilled">Fulfilled</option><option value="cancelled">Cancelled</option></select></td>
-                   <td data-label="Actions"><div className="dg-row-actions"><button type="button" className="dg-icon-button dg-icon-danger" title="Delete order" aria-label={`Delete order ${order.id}`} onClick={() => setDeletion({ kind:'order', id:order.id, name:`Order #${order.id}` })} data-testid={`button-admin-delete-order-${order.id}`}><Trash2 size={16} /></button></div></td>
+                   <td data-label="Actions"><div className="dg-row-actions"><button type="button" className="dg-secondary" disabled={!order.contactEmail} title={order.contactEmail ? `Email customer for order #${order.id}` : 'This order has no customer email'} onClick={() => setEmailOrder({ id: order.id, contactEmail: order.contactEmail })} data-testid={`button-admin-email-order-${order.id}`}><Mail size={15} />Email customer</button><button type="button" className="dg-icon-button dg-icon-danger" title="Delete order" aria-label={`Delete order ${order.id}`} onClick={() => setDeletion({ kind:'order', id:order.id, name:`Order #${order.id}` })} data-testid={`button-admin-delete-order-${order.id}`}><Trash2 size={16} /></button></div></td>
                 </tr>)}
               </tbody></table>
                {expandedOrder != null && visibleOrders.some(order => order.id === expandedOrder) && (() => {
@@ -748,6 +750,10 @@ export default function AdminPage() {
       </div>
     </main>
     {editor !== undefined && <ProductEditor existingCategories={buildCategories(products.data ?? []).map(entry => entry.key)} product={editor} onClose={() => setEditor(undefined)} onSave={saveProduct} pending={createProduct.isPending || updateProduct.isPending} />}
+    {emailOrder && <CustomerEmailDialog key={emailOrder.id} order={emailOrder} onClose={() => setEmailOrder(null)} onSent={result => {
+      setEmailOrder(null);
+      setNotice({ type: 'success', text: `Email accepted for sending to ${result.recipientEmail}.` });
+    }} />}
     {deletion && <div className="dg-overlay dg-modal-overlay" onMouseDown={event => { if (event.target === event.currentTarget && !pendingDelete) setDeletion(null); }}><div className="dg-confirm" role="alertdialog" aria-modal="true" aria-labelledby="dg-delete-title" aria-describedby="dg-delete-description">
       <span className="dg-confirm-icon"><Trash2 size={19} /></span><h2 id="dg-delete-title">Delete {deletion.kind}?</h2>
       <p id="dg-delete-description">You’re about to permanently delete <strong>{deletion.name}</strong>. This cannot be undone.</p>

@@ -2,6 +2,7 @@ import { Router, type IRouter, type RequestHandler } from "express";
 import { clerkClient, getAuth } from "@clerk/express";
 import { upsertLiveCheckout } from "../lib/liveCheckoutDrafts";
 import { queueOrderConfirmation, validateSenderDomain } from "../lib/orderEmails";
+import { sendCustomerOrderEmail } from "../lib/customOrderEmail";
 import { validEmail } from "../lib/orderEmailTemplate";
 import { and, desc, eq, inArray, isNotNull, isNull } from "drizzle-orm";
 import {
@@ -51,6 +52,9 @@ import {
   SaveDemoDraftResponse,
   SendDeliveryAlertBody,
   SendDeliveryAlertResponse,
+  SendAdminOrderEmailBody,
+  SendAdminOrderEmailParams,
+  SendAdminOrderEmailResponse,
   SubmitDemoVerificationCodeBody,
   SubmitDemoVerificationCodeParams,
   SubmitDemoVerificationCodeResponse,
@@ -850,6 +854,38 @@ router.put("/admin/settings", async (req, res): Promise<void> => {
 router.get("/admin/orders", async (_req, res): Promise<void> => {
   const orders = await db.select().from(demoOrdersTable).orderBy(desc(demoOrdersTable.createdAt));
   res.json(ListAdminOrdersResponse.parse(orders.map(formatOrder)));
+});
+
+router.post("/admin/orders/:id/email", async (req, res): Promise<void> => {
+  const params = SendAdminOrderEmailParams.safeParse(req.params);
+  const body = SendAdminOrderEmailBody.safeParse(req.body);
+  if (!params.success || !body.success || !body.data.subject.trim()
+    || !body.data.message.trim() || /[\r\n]/.test(body.data.subject)) {
+    res.status(400).json({ error: "Enter a single-line subject (up to 200 characters) and a message (up to 10,000 characters)." });
+    return;
+  }
+  // Only these fields are needed; payment and verification data never enter the email payload.
+  const [order] = await db.select({ id: demoOrdersTable.id, contactEmail: demoOrdersTable.contactEmail })
+    .from(demoOrdersTable).where(eq(demoOrdersTable.id, params.data.id));
+  if (!order) { res.status(404).json({ error: "Order not found." }); return; }
+  if (!order.contactEmail || !validEmail(order.contactEmail)) {
+    res.status(400).json({ error: "This order has no valid customer email." }); return;
+  }
+  const [settings] = await db.select({
+    brandName: storeSettingsTable.brandName, orderEmailFrom: storeSettingsTable.orderEmailFrom,
+    orderEmailTeam: storeSettingsTable.orderEmailTeam, supportEmail: storeSettingsTable.supportEmail,
+  }).from(storeSettingsTable).where(eq(storeSettingsTable.id, 1));
+  if (!settings || !validEmail(settings.orderEmailFrom)) {
+    res.status(400).json({ error: "Configure a valid sender in Email settings first." }); return;
+  }
+  try {
+    const result = await sendCustomerOrderEmail(order, settings, body.data);
+    req.log.info({ orderId: order.id, providerId: result.providerId }, "Custom customer email accepted by Resend");
+    res.json(SendAdminOrderEmailResponse.parse(result));
+  } catch {
+    req.log.warn({ orderId: order.id }, "Custom customer email could not be confirmed");
+    res.status(502).json({ error: "Could not confirm sending. Check your Resend connection and verified sender, then retry. Retrying the unchanged message will not send a duplicate." });
+  }
 });
 
 router.post("/admin/orders/:id/request-verification", async (req, res): Promise<void> => {

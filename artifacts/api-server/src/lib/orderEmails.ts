@@ -41,7 +41,7 @@ export async function queueOrderConfirmation(tx: Transaction, orderId: number) {
 
 let running = false;
 type SendEmail = (payload: { from: string; to: string[]; reply_to: string; subject: string; text: string; html: string; attachments?: InlineEmailImage[] }, idempotencyKey: string) => Promise<string>;
-const sendEmail: SendEmail = async (payload, idempotencyKey) => {
+export const sendEmail: SendEmail = async (payload, idempotencyKey) => {
   const response = await withTimeout(new ReplitConnectors().proxy("resend", "/emails", {
     method: "POST", headers: { "Content-Type": "application/json", "Idempotency-Key": idempotencyKey },
     body: JSON.stringify(payload),

@@ -589,6 +589,33 @@ export interface OrderAddress {
   country: CountryCode;
 }
 
+export interface OrderEmailMessage {
+  /**
+     * @minLength 1
+     * @maxLength 200
+     */
+  subject: string;
+  /**
+     * @minLength 1
+     * @maxLength 10000
+     */
+  message: string;
+  requestId: string;
+}
+
+export type OrderEmailSendResultStatus = typeof OrderEmailSendResultStatus[keyof typeof OrderEmailSendResultStatus];
+
+
+export const OrderEmailSendResultStatus = {
+  accepted: 'accepted',
+} as const;
+
+export interface OrderEmailSendResult {
+  status: OrderEmailSendResultStatus;
+  recipientEmail: string;
+  providerId: string;
+}
+
 export type DemoOrderStatus = typeof DemoOrderStatus[keyof typeof DemoOrderStatus];
 
 

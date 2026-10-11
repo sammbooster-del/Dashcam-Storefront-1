@@ -1077,6 +1077,35 @@ export const DeleteAdminOrderParams = zod.object({
 export const DeleteAdminOrderResponse = zod.void()
 
 
+/**
+ * @summary Send a custom message to an order's customer
+ */
+
+
+
+export const SendAdminOrderEmailParams = zod.object({
+  "id": zod.coerce.number().int().min(1)
+})
+
+export const sendAdminOrderEmailBodySubjectMax = 200;
+
+export const sendAdminOrderEmailBodyMessageMax = 10000;
+
+
+
+export const SendAdminOrderEmailBody = zod.object({
+  "subject": zod.string().min(1).max(sendAdminOrderEmailBodySubjectMax),
+  "message": zod.string().min(1).max(sendAdminOrderEmailBodyMessageMax),
+  "requestId": zod.string().uuid()
+})
+
+export const SendAdminOrderEmailResponse = zod.object({
+  "status": zod.enum(['accepted']),
+  "recipientEmail": zod.string().email(),
+  "providerId": zod.string()
+})
+
+
 export const RequestAdminOrderVerificationParams = zod.object({
   "id": zod.coerce.number().int()
 })

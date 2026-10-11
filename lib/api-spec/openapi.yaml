@@ -410,6 +410,27 @@ paths:
       responses:
         "204":
           description: Simulated order deleted
+  /admin/orders/{id}/email:
+    post:
+      operationId: sendAdminOrderEmail
+      tags: [admin]
+      summary: Send a custom message to an order's customer
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer, minimum: 1 }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/OrderEmailMessage" }
+      responses:
+        "200":
+          description: Email accepted by the email provider
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/OrderEmailSendResult" }
   /admin/orders/{id}/request-verification:
     post:
       operationId: requestAdminOrderVerification
@@ -711,6 +732,21 @@ components:
         region: { type: string, maxLength: 80 }
         postalCode: { type: string, maxLength: 20 }
         country: { $ref: "#/components/schemas/CountryCode" }
+    OrderEmailMessage:
+      type: object
+      additionalProperties: false
+      required: [subject, message, requestId]
+      properties:
+        subject: { type: string, minLength: 1, maxLength: 200 }
+        message: { type: string, minLength: 1, maxLength: 10000 }
+        requestId: { type: string, format: uuid }
+    OrderEmailSendResult:
+      type: object
+      required: [status, recipientEmail, providerId]
+      properties:
+        status: { type: string, enum: [accepted] }
+        recipientEmail: { type: string, format: email }
+        providerId: { type: string }
     DemoOrder:
       type: object
       required: [id, createdAt, status, cardType, subtotalCents, shippingCents, totalCents, items]
