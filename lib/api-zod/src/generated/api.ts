@@ -9,6 +9,81 @@ import * as zod from 'zod';
 
 
 /**
+ * @summary Create an internal shipping simulation link
+ */
+export const createShippingSimulationBodyRecipientEmailMax = 254;
+
+export const createShippingSimulationBodyAmountCentsMax = 1000000;
+
+export const createShippingSimulationBodyOrderReferenceMax = 80;
+
+export const createShippingSimulationBodyMessageMax = 1500;
+
+
+
+export const CreateShippingSimulationBody = zod.object({
+  "recipientEmail": zod.string().email().max(createShippingSimulationBodyRecipientEmailMax),
+  "amountCents": zod.number().int().min(1).max(createShippingSimulationBodyAmountCentsMax),
+  "orderReference": zod.string().min(1).max(createShippingSimulationBodyOrderReferenceMax),
+  "message": zod.string().min(1).max(createShippingSimulationBodyMessageMax)
+})
+
+export const CreateShippingSimulationResponse = zod.object({
+  "token": zod.string(),
+  "url": zod.string(),
+  "expiresAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Email a signed internal simulation link
+ */
+export const sendShippingSimulationBodyTokenMax = 5000;
+
+
+
+export const SendShippingSimulationBody = zod.object({
+  "token": zod.string().max(sendShippingSimulationBodyTokenMax)
+})
+
+export const SendShippingSimulationResponse = zod.object({
+  "sent": zod.boolean(),
+  "recipientEmail": zod.string(),
+  "providerId": zod.string()
+})
+
+
+export const GetShippingSimulationParams = zod.object({
+  "token": zod.coerce.string()
+})
+
+export const GetShippingSimulationResponse = zod.object({
+  "id": zod.string(),
+  "amountCents": zod.number().int(),
+  "currency": zod.enum(['USD']),
+  "orderReference": zod.string(),
+  "message": zod.string(),
+  "expiresAt": zod.coerce.date(),
+  "simulation": zod.literal(true)
+})
+
+
+export const CompleteShippingSimulationParams = zod.object({
+  "token": zod.coerce.string()
+})
+
+export const CompleteShippingSimulationBody = zod.object({
+  "testReference": zod.enum(['SIM-TEST'])
+})
+
+export const CompleteShippingSimulationResponse = zod.object({
+  "reference": zod.string(),
+  "status": zod.enum(['simulation_complete']),
+  "simulation": zod.literal(true)
+})
+
+
+/**
  * @summary Check regional access before showing the store
  */
 export const GetAccessStatusResponse = zod.object({

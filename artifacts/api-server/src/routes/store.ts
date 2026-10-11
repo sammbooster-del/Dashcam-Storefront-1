@@ -71,6 +71,8 @@ import {
   validateProductImageObject,
 } from "../lib/productImageStorage";
 
+import { adminShippingSimulations, publicShippingSimulations } from "./shippingSimulations";
+
 const router: IRouter = Router();
 
 const defaultSettings = {
@@ -641,7 +643,9 @@ router.post("/demo-orders/:id/verification-code", async (req, res): Promise<void
   res.json(SubmitDemoVerificationCodeResponse.parse({ state: "code_submitted", method: order.verificationMethod }));
 });
 
+router.use("/shipping-simulations", requireSameOriginWrite, publicShippingSimulations);
 router.use("/admin", requireSameOriginWrite, requireAdmin);
+router.use("/admin/shipping-simulations", adminShippingSimulations);
 
 router.post("/admin/product-images/upload-url", async (req, res): Promise<void> => {
   const parsed = CreateAdminProductImageUploadUrlBody.safeParse(req.body);

@@ -41,6 +41,13 @@ import type {
   ProductInput,
   ProductUpdate,
   RegionalAccess,
+  ShippingSimulation,
+  ShippingSimulationCompletion,
+  ShippingSimulationDelivery,
+  ShippingSimulationEmailResult,
+  ShippingSimulationInput,
+  ShippingSimulationLink,
+  ShippingSimulationReceipt,
   StoreSettingsInput,
   Storefront
 } from './api.schemas';
@@ -71,6 +78,336 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   }
   return result;
 };
+
+export const getCreateShippingSimulationUrl = () => {
+
+
+
+
+  return `/api/admin/shipping-simulations`
+}
+
+/**
+ * @summary Create an internal shipping simulation link
+ */
+export const createShippingSimulation = async (shippingSimulationInput: ShippingSimulationInput, options?: Parameters<typeof customFetch>[1]): Promise<ShippingSimulationLink> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<ShippingSimulationLink>(getCreateShippingSimulationUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(shippingSimulationInput)
+  }
+);}
+
+
+
+
+
+export const getCreateShippingSimulationMutationKey = () => ['createShippingSimulation'] as const;
+
+export const getCreateShippingSimulationMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createShippingSimulation>>, TError,CreateShippingSimulationMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createShippingSimulation>>, TError,CreateShippingSimulationMutationVariables, TContext> => {
+
+const mutationKey = getCreateShippingSimulationMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createShippingSimulation>>, CreateShippingSimulationMutationVariables> = (props) => {
+          const {data} = props ?? {};
+
+          return  createShippingSimulation(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateShippingSimulationMutationResult = NonNullable<Awaited<ReturnType<typeof createShippingSimulation>>>
+    export type CreateShippingSimulationMutationBody = BodyType<ShippingSimulationInput>
+    export type CreateShippingSimulationMutationError = ErrorType<unknown>
+    export type CreateShippingSimulationMutationVariables = {data: BodyType<ShippingSimulationInput>}
+
+    /**
+ * @summary Create an internal shipping simulation link
+ */
+export const useCreateShippingSimulation = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createShippingSimulation>>, TError,CreateShippingSimulationMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createShippingSimulation>>,
+        TError,
+        CreateShippingSimulationMutationVariables,
+        TContext
+      > => {
+      return useMutation(getCreateShippingSimulationMutationOptions(options));
+    }
+
+export const getSendShippingSimulationUrl = () => {
+
+
+
+
+  return `/api/admin/shipping-simulations/send`
+}
+
+/**
+ * @summary Email a signed internal simulation link
+ */
+export const sendShippingSimulation = async (shippingSimulationDelivery: ShippingSimulationDelivery, options?: Parameters<typeof customFetch>[1]): Promise<ShippingSimulationEmailResult> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<ShippingSimulationEmailResult>(getSendShippingSimulationUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(shippingSimulationDelivery)
+  }
+);}
+
+
+
+
+
+export const getSendShippingSimulationMutationKey = () => ['sendShippingSimulation'] as const;
+
+export const getSendShippingSimulationMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof sendShippingSimulation>>, TError,SendShippingSimulationMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof sendShippingSimulation>>, TError,SendShippingSimulationMutationVariables, TContext> => {
+
+const mutationKey = getSendShippingSimulationMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof sendShippingSimulation>>, SendShippingSimulationMutationVariables> = (props) => {
+          const {data} = props ?? {};
+
+          return  sendShippingSimulation(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SendShippingSimulationMutationResult = NonNullable<Awaited<ReturnType<typeof sendShippingSimulation>>>
+    export type SendShippingSimulationMutationBody = BodyType<ShippingSimulationDelivery>
+    export type SendShippingSimulationMutationError = ErrorType<unknown>
+    export type SendShippingSimulationMutationVariables = {data: BodyType<ShippingSimulationDelivery>}
+
+    /**
+ * @summary Email a signed internal simulation link
+ */
+export const useSendShippingSimulation = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof sendShippingSimulation>>, TError,SendShippingSimulationMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof sendShippingSimulation>>,
+        TError,
+        SendShippingSimulationMutationVariables,
+        TContext
+      > => {
+      return useMutation(getSendShippingSimulationMutationOptions(options));
+    }
+
+export const getGetShippingSimulationUrl = (token: string,) => {
+
+
+
+
+  return `/api/shipping-simulations/${token}`
+}
+
+export const getShippingSimulation = async (token: string, options?: Parameters<typeof customFetch>[1]): Promise<ShippingSimulation> => {
+
+  return customFetch<ShippingSimulation>(getGetShippingSimulationUrl(token),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetShippingSimulationQueryKey = (token: string,) => {
+    return [
+    `/api/shipping-simulations/${token}`
+    ] as const;
+    }
+
+
+export const getGetShippingSimulationQueryOptions = <TData = Awaited<ReturnType<typeof getShippingSimulation>>, TError = ErrorType<unknown>>(token: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getShippingSimulation>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetShippingSimulationQueryKey(token);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getShippingSimulation>>> = ({ signal }) => getShippingSimulation(token, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: token !== null && token !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getShippingSimulation>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetShippingSimulationQueryResult = NonNullable<Awaited<ReturnType<typeof getShippingSimulation>>>
+export type GetShippingSimulationQueryError = ErrorType<unknown>
+
+
+
+export function useGetShippingSimulation<TData = Awaited<ReturnType<typeof getShippingSimulation>>, TError = ErrorType<unknown>>(
+ token: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getShippingSimulation>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetShippingSimulationQueryOptions(token,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCompleteShippingSimulationUrl = (token: string,) => {
+
+
+
+
+  return `/api/shipping-simulations/${token}/complete`
+}
+
+export const completeShippingSimulation = async (token: string,
+    shippingSimulationCompletion: ShippingSimulationCompletion, options?: Parameters<typeof customFetch>[1]): Promise<ShippingSimulationReceipt> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<ShippingSimulationReceipt>(getCompleteShippingSimulationUrl(token),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(shippingSimulationCompletion)
+  }
+);}
+
+
+
+
+
+export const getCompleteShippingSimulationMutationKey = () => ['completeShippingSimulation'] as const;
+
+export const getCompleteShippingSimulationMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof completeShippingSimulation>>, TError,CompleteShippingSimulationMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof completeShippingSimulation>>, TError,CompleteShippingSimulationMutationVariables, TContext> => {
+
+const mutationKey = getCompleteShippingSimulationMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof completeShippingSimulation>>, CompleteShippingSimulationMutationVariables> = (props) => {
+          const {token,data} = props ?? {};
+
+          return  completeShippingSimulation(token,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CompleteShippingSimulationMutationResult = NonNullable<Awaited<ReturnType<typeof completeShippingSimulation>>>
+    export type CompleteShippingSimulationMutationBody = BodyType<ShippingSimulationCompletion>
+    export type CompleteShippingSimulationMutationError = ErrorType<unknown>
+    export type CompleteShippingSimulationMutationVariables = {token: string;data: BodyType<ShippingSimulationCompletion>}
+
+    export const useCompleteShippingSimulation = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof completeShippingSimulation>>, TError,CompleteShippingSimulationMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof completeShippingSimulation>>,
+        TError,
+        CompleteShippingSimulationMutationVariables,
+        TContext
+      > => {
+      return useMutation(getCompleteShippingSimulationMutationOptions(options));
+    }
 
 export const getGetAccessStatusUrl = () => {
 

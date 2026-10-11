@@ -15,6 +15,67 @@ tags:
   - name: admin
     description: Protected store management
 paths:
+  /admin/shipping-simulations:
+    post:
+      operationId: createShippingSimulation
+      tags: [admin]
+      summary: Create an internal shipping simulation link
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ShippingSimulationInput" }
+      responses:
+        "201":
+          description: Simulation link created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ShippingSimulationLink" }
+  /admin/shipping-simulations/send:
+    post:
+      operationId: sendShippingSimulation
+      tags: [admin]
+      summary: Email a signed internal simulation link
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ShippingSimulationDelivery" }
+      responses:
+        "200":
+          description: Email accepted by provider
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ShippingSimulationEmailResult" }
+  /shipping-simulations/{token}:
+    get:
+      operationId: getShippingSimulation
+      tags: [store]
+      parameters:
+        - { name: token, in: path, required: true, schema: { type: string } }
+      responses:
+        "200":
+          description: Internal simulation without recipient details
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ShippingSimulation" }
+  /shipping-simulations/{token}/complete:
+    post:
+      operationId: completeShippingSimulation
+      tags: [store]
+      parameters:
+        - { name: token, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ShippingSimulationCompletion" }
+      responses:
+        "200":
+          description: Simulated completion, not an order or payment mutation
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ShippingSimulationReceipt" }
   /access-status:
     get:
       operationId: getAccessStatus
@@ -492,6 +553,59 @@ paths:
                 $ref: "#/components/schemas/DemoOrder"
 components:
   schemas:
+    ShippingSimulationInput:
+      type: object
+      additionalProperties: false
+      required: [recipientEmail, amountCents, orderReference, message]
+      properties:
+        recipientEmail: { type: string, format: email, maxLength: 254 }
+        amountCents: { type: integer, minimum: 1, maximum: 1000000 }
+        orderReference: { type: string, minLength: 1, maxLength: 80 }
+        message: { type: string, minLength: 1, maxLength: 1500 }
+    ShippingSimulation:
+      type: object
+      required: [id, amountCents, currency, orderReference, message, expiresAt, simulation]
+      properties:
+        id: { type: string }
+        amountCents: { type: integer }
+        currency: { type: string, enum: [USD] }
+        orderReference: { type: string }
+        message: { type: string }
+        expiresAt: { type: string, format: date-time }
+        simulation: { type: boolean, enum: [true] }
+    ShippingSimulationLink:
+      type: object
+      required: [token, url, expiresAt]
+      properties:
+        token: { type: string }
+        url: { type: string }
+        expiresAt: { type: string, format: date-time }
+    ShippingSimulationDelivery:
+      type: object
+      additionalProperties: false
+      required: [token]
+      properties:
+        token: { type: string, maxLength: 5000 }
+    ShippingSimulationEmailResult:
+      type: object
+      required: [sent, recipientEmail, providerId]
+      properties:
+        sent: { type: boolean }
+        recipientEmail: { type: string }
+        providerId: { type: string }
+    ShippingSimulationCompletion:
+      type: object
+      additionalProperties: false
+      required: [testReference]
+      properties:
+        testReference: { type: string, enum: [SIM-TEST] }
+    ShippingSimulationReceipt:
+      type: object
+      required: [reference, status, simulation]
+      properties:
+        reference: { type: string }
+        status: { type: string, enum: [simulation_complete] }
+        simulation: { type: boolean, enum: [true] }
     RegionalAccess:
       type: object
       required: [allowed, country, code, message]
