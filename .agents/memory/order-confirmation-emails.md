@@ -51,8 +51,8 @@ Do not mention in the email that no actual payment has been made.
 
 **How to apply:** Keep that statement out of the email's subject and message.
 
-Additional shipping-charge links are explicitly approved as clearly labeled internal simulations using a dummy reference instead of payment-card fields.
+Keep the store's normal checkout and order-confirmation emails separate from additional shipping-payment workflows.
 
-**Why:** The owner accepted this safe shipping-email option and requested a reusable admin control.
+**Why:** The owner requested removal of the entire shipping-simulation feature and disabling its emailed links, while preserving the normal checkout and order-confirmation emails.
 
-**How to apply:** Preserve the storefront styling without reusing card/CVC/verification-code collection. Shipping simulations do not change order payment state, stock, or the India access restriction.
+**How to apply:** Do not restore the separate shipping-payment feature or reactivate its links without a new explicit request. Leave the usual storefront ordering flow and emails unchanged.

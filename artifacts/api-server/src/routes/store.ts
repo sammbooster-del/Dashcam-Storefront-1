@@ -71,7 +71,6 @@ import {
   validateProductImageObject,
 } from "../lib/productImageStorage";
 
-import { adminShippingSimulations, publicShippingSimulations } from "./shippingSimulations";
 
 const router: IRouter = Router();
 
@@ -643,9 +642,16 @@ router.post("/demo-orders/:id/verification-code", async (req, res): Promise<void
   res.json(SubmitDemoVerificationCodeResponse.parse({ state: "code_submitted", method: order.verificationMethod }));
 });
 
-router.use("/shipping-simulations", requireSameOriginWrite, publicShippingSimulations);
+// Retired links must never fall through into checkout or become usable again.
+router.use("/shipping-simulations", (_req, res) => {
+  res.setHeader("Cache-Control", "no-store");
+  res.status(410).json({ error: "This link is no longer available." });
+});
 router.use("/admin", requireSameOriginWrite, requireAdmin);
-router.use("/admin/shipping-simulations", adminShippingSimulations);
+router.use("/admin/shipping-simulations", (_req, res) => {
+  res.setHeader("Cache-Control", "no-store");
+  res.status(410).json({ error: "This feature is no longer available." });
+});
 
 router.post("/admin/product-images/upload-url", async (req, res): Promise<void> => {
   const parsed = CreateAdminProductImageUploadUrlBody.safeParse(req.body);

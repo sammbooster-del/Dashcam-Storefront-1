@@ -1,6 +1,5 @@
 import { type ChangeEvent, type FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { ShippingSimulationPanel } from './ShippingSimulationPanel';
 import {
   getGetAdminOverviewQueryKey,
   getGetAdminSettingsQueryKey,
@@ -688,7 +687,6 @@ export default function AdminPage() {
               <div className="dg-count">Showing {visibleProducts.length} product{visibleProducts.length === 1 ? '' : 's'}</div>
             </section>
           </> : section === 'orders' ? <>
-            <ShippingSimulationPanel />
             <LiveDrafts drafts={drafts.data ?? []} loading={drafts.isPending} error={drafts.isError} fictionalDemoMode={settings.data?.fictionalDemoMode ?? false} />
             <div className="dg-toolbar"><div className="dg-filter" aria-label="Filter orders">{(['all', 'new', 'fulfilled', 'cancelled'] as const).map(value => <button type="button" key={value} aria-pressed={orderFilter === value} onClick={() => setOrderFilter(value)} data-testid={`button-admin-order-filter-${value}`}>{value === 'all' ? 'All orders' : value.charAt(0).toUpperCase() + value.slice(1)}</button>)}</div></div>
             <section className="dg-panel"><div className="dg-panel-head"><div><h2>Orders</h2><p>Selected methods and submitted codes appear in order details.</p></div><span className="dg-subtle">{(orders.data ?? []).filter(order => order.verificationState === 'method_selected' || (order.verificationState === 'requested' && order.verificationMethod)).length} waiting for code · {(orders.data ?? []).filter(order => order.verificationState === 'code_submitted').length} to review</span></div>
