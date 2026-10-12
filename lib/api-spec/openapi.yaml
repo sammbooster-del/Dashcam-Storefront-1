@@ -15,6 +15,26 @@ tags:
   - name: admin
     description: Protected store management
 paths:
+  /admin/email:
+    post:
+      operationId: sendAdminEmail
+      tags: [Admin]
+      summary: Send a standalone custom email without attaching it to an order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/StandaloneEmailMessage" }
+      responses:
+        "200":
+          description: Email accepted by the sending provider
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/OrderEmailSendResult" }
+        "400": { description: "Invalid recipient, message, button or sender settings" }
+        "401": { description: Sign-in required }
+        "403": { description: Administrator access required }
+        "502": { description: Email delivery could not be confirmed }
   /admin/private-products:
     get:
       operationId: listAdminPrivateProducts
@@ -992,6 +1012,12 @@ components:
         subject: { type: string, minLength: 1, maxLength: 200 }
         message: { type: string, minLength: 1, maxLength: 10000 }
         requestId: { type: string, format: uuid }
+        buttonText: { type: string, minLength: 1, maxLength: 80 }
+        buttonUrl:
+          type: string
+          format: uri
+          maxLength: 2048
+          description: Optional HTTPS Stripe-hosted payment link or active private Stripe product link on this store. Provide together with buttonText.
     OrderEmailSendResult:
       type: object
       required: [status, recipientEmail, providerId]
@@ -999,6 +1025,13 @@ components:
         status: { type: string, enum: [accepted] }
         recipientEmail: { type: string, format: email }
         providerId: { type: string }
+    StandaloneEmailMessage:
+      allOf:
+        - $ref: "#/components/schemas/OrderEmailMessage"
+        - type: object
+          required: [recipientEmail]
+          properties:
+            recipientEmail: { type: string, format: email, maxLength: 254 }
     DemoOrder:
       type: object
       required: [id, createdAt, status, cardType, subtotalCents, shippingCents, totalCents, items]

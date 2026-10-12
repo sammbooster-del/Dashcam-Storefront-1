@@ -696,6 +696,16 @@ export interface OrderEmailMessage {
      */
   message: string;
   requestId: string;
+  /**
+     * @minLength 1
+     * @maxLength 80
+     */
+  buttonText?: string;
+  /**
+     * Optional HTTPS Stripe-hosted payment link or active private Stripe product link on this store. Provide together with buttonText.
+     * @maxLength 2048
+     */
+  buttonUrl?: string;
 }
 
 export type OrderEmailSendResultStatus = typeof OrderEmailSendResultStatus[keyof typeof OrderEmailSendResultStatus];
@@ -710,6 +720,11 @@ export interface OrderEmailSendResult {
   recipientEmail: string;
   providerId: string;
 }
+
+export type StandaloneEmailMessage = OrderEmailMessage & {
+  /** @maxLength 254 */
+  recipientEmail: string;
+};
 
 export type DemoOrderStatus = typeof DemoOrderStatus[keyof typeof DemoOrderStatus];
 

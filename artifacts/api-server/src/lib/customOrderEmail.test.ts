@@ -1,7 +1,8 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { customerEmailPayload, sendCustomerOrderEmail } from "./customOrderEmail";
-import { SendAdminOrderEmailBody } from "@workspace/api-zod";
+import { customerEmailPayload, sendCustomerOrderEmail, sendStandaloneCustomerEmail } from "./customOrderEmail";
+import { SendAdminOrderEmailBody, SendAdminEmailBody } from "@workspace/api-zod";
+import { customerEmailButton } from "./customerEmailButton";
 
 const order = { id: 42, contactEmail: "customer@example.com" };
 const settings = {
@@ -81,4 +82,61 @@ test("API schema validates length and retry identity", () => {
   assert.equal(SendAdminOrderEmailBody.safeParse({ ...input, subject: "x".repeat(201) }).success, false);
   assert.equal(SendAdminOrderEmailBody.safeParse({ ...input, message: "x".repeat(10001) }).success, false);
   assert.equal(SendAdminOrderEmailBody.safeParse({ ...input, requestId: "not-a-uuid" }).success, false);
+});
+
+test("optional button renders an escaped CTA and a plain-text fallback", () => {
+  const button = {
+    ...input, buttonText: 'View <offer> & pay',
+    buttonUrl: 'https://buy.stripe.com/example?client_reference_id=hello&locale=en',
+  };
+  const payload = customerEmailPayload(order, settings, button);
+  assert.match(payload.html, /View &lt;offer&gt; &amp; pay/);
+  assert.match(payload.html, /href="https:\/\/buy.stripe.com\/example\?client_reference_id=hello&amp;locale=en"/);
+  assert.match(payload.text, /View <offer> & pay: https:\/\/buy\.stripe\.com/);
+  assert.match(payload.html, /Button not opening/);
+});
+
+test("button is optional and requires both fields with a safe destination", () => {
+  assert.equal(customerEmailButton(input), null);
+  const button = { ...input, buttonText: 'View offer', buttonUrl: 'https://buy.stripe.com/example' };
+  for (const url of [
+    'javascript:alert(1)', 'http://buy.stripe.com/example', 'https://buy.stripe.com.evil.example/x',
+    'https://user:password@buy.stripe.com/x', 'https://buy.stripe.com:8443/x',
+    'https://shop.example/checkout', 'https://evil.example/private-product/' + 'a'.repeat(64),
+  ]) assert.throws(() => customerEmailButton({ ...button, buttonUrl: url }, 'https://shop.example'));
+  assert.throws(() => customerEmailButton({ ...input, buttonText: 'View offer' }));
+  assert.throws(() => customerEmailButton({ ...input, buttonUrl: button.buttonUrl }));
+  assert.throws(() => customerEmailButton({ ...button, buttonText: 'x'.repeat(81) }));
+  assert.equal(customerEmailButton({
+    ...button, buttonUrl: 'https://shop.example/private-product/' + 'a'.repeat(64),
+  }, 'https://shop.example')?.privateToken, 'a'.repeat(64));
+});
+
+test("standalone emails have no order number and use the manually entered recipient", async () => {
+  const calls: { key: string; payload: ReturnType<typeof customerEmailPayload> }[] = [];
+  const deps = {
+    verifySender: async () => {},
+    deliver: async (payload: ReturnType<typeof customerEmailPayload>, key: string) => {
+      calls.push({ payload, key }); return 'standalone-provider-id';
+    },
+  };
+  const message = { ...input, buttonText: 'View offer', buttonUrl: 'https://buy.stripe.com/example' };
+  const first = await sendStandaloneCustomerEmail('chosen@example.com', settings, message, deps);
+  await sendStandaloneCustomerEmail('chosen@example.com', settings, message, deps);
+  assert.deepEqual(calls[0].payload.to, ['chosen@example.com']);
+  assert.doesNotMatch(calls[0].payload.html + calls[0].payload.text, /order #|undefined/);
+  assert.match(calls[0].payload.html, /View offer/);
+  assert.equal(calls[0].key, calls[1].key);
+  assert.equal(first.recipientEmail, 'chosen@example.com');
+  assert.equal(first.status, 'accepted');
+  assert.equal(SendAdminEmailBody.safeParse({ ...message, recipientEmail: 'chosen@example.com' }).success, true);
+  assert.equal(SendAdminEmailBody.safeParse({ ...message, recipientEmail: 'not-an-email' }).success, false);
+  assert.equal(SendAdminEmailBody.safeParse(message).success, false);
+});
+
+test("standalone provider failure never claims success", async () => {
+  await assert.rejects(sendStandaloneCustomerEmail('chosen@example.com', settings, input, {
+    verifySender: async () => {},
+    deliver: async () => { throw new Error('Provider unavailable'); },
+  }), /Provider unavailable/);
 });

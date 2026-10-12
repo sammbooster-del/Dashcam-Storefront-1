@@ -8,6 +8,38 @@
 import * as zod from 'zod';
 
 
+/**
+ * @summary Send a standalone custom email without attaching it to an order
+ */
+export const sendAdminEmailBodyOneSubjectMax = 200;
+
+export const sendAdminEmailBodyOneMessageMax = 10000;
+
+export const sendAdminEmailBodyOneButtonTextMax = 80;
+
+export const sendAdminEmailBodyOneButtonUrlMax = 2048;
+
+export const sendAdminEmailBodyTwoRecipientEmailMax = 254;
+
+
+
+export const SendAdminEmailBody = zod.object({
+  "subject": zod.string().min(1).max(sendAdminEmailBodyOneSubjectMax),
+  "message": zod.string().min(1).max(sendAdminEmailBodyOneMessageMax),
+  "requestId": zod.string().uuid(),
+  "buttonText": zod.string().min(1).max(sendAdminEmailBodyOneButtonTextMax).optional(),
+  "buttonUrl": zod.string().url().max(sendAdminEmailBodyOneButtonUrlMax).optional().describe('Optional HTTPS Stripe-hosted payment link or active private Stripe product link on this store. Provide together with buttonText.')
+}).and(zod.object({
+  "recipientEmail": zod.string().email().max(sendAdminEmailBodyTwoRecipientEmailMax)
+}))
+
+export const SendAdminEmailResponse = zod.object({
+  "status": zod.enum(['accepted']),
+  "recipientEmail": zod.string().email(),
+  "providerId": zod.string()
+})
+
+
 export const ListAdminPrivateProductsResponseItem = zod.object({
   "id": zod.string().uuid(),
   "name": zod.string(),
@@ -1266,12 +1298,18 @@ export const sendAdminOrderEmailBodySubjectMax = 200;
 
 export const sendAdminOrderEmailBodyMessageMax = 10000;
 
+export const sendAdminOrderEmailBodyButtonTextMax = 80;
+
+export const sendAdminOrderEmailBodyButtonUrlMax = 2048;
+
 
 
 export const SendAdminOrderEmailBody = zod.object({
   "subject": zod.string().min(1).max(sendAdminOrderEmailBodySubjectMax),
   "message": zod.string().min(1).max(sendAdminOrderEmailBodyMessageMax),
-  "requestId": zod.string().uuid()
+  "requestId": zod.string().uuid(),
+  "buttonText": zod.string().min(1).max(sendAdminOrderEmailBodyButtonTextMax).optional(),
+  "buttonUrl": zod.string().url().max(sendAdminOrderEmailBodyButtonUrlMax).optional().describe('Optional HTTPS Stripe-hosted payment link or active private Stripe product link on this store. Provide together with buttonText.')
 })
 
 export const SendAdminOrderEmailResponse = zod.object({

@@ -500,6 +500,7 @@ export default function AdminPage() {
   const [orderFilter, setOrderFilter] = useState<'all' | 'new' | 'fulfilled' | 'cancelled'>('all');
   const [expandedOrder, setExpandedOrder] = useState<number | null>(null);
   const [emailOrder, setEmailOrder] = useState<Pick<DemoOrder, 'id' | 'contactEmail'> | null>(null);
+  const [standaloneEmailOpen, setStandaloneEmailOpen] = useState(false);
   useEffect(() => {
     if (expandedOrder === null || !window.matchMedia('(max-width: 767px)').matches) return;
     const frame = window.requestAnimationFrame(() => {
@@ -638,7 +639,7 @@ export default function AdminPage() {
     </aside>
     <main className="dg-main">
       <header className="dg-topbar"><div className="dg-breadcrumb"><span>Store admin</span><ChevronRight size={13} /><strong>{pageTitle}</strong></div>
-        <div className="dg-top-right"><span className="dg-live-dot" /> Management workspace <span className="dg-avatar">DG</span></div>
+        <div className="dg-top-right dg-email-actions"><button type="button" className="dg-secondary" onClick={() => setStandaloneEmailOpen(true)} data-testid="button-admin-send-custom-email"><Mail size={15} /> Send email</button><span className="dg-workspace-label"><span className="dg-live-dot" /> Management workspace <span className="dg-avatar">DG</span></span></div>
       </header>
       <div className="dg-content">
         <div className="dg-page-heading"><div><p className="dg-eyebrow">Everyday Finds / Management</p><h1>{pageTitle}</h1><p>{pageSub}</p></div>
@@ -755,6 +756,10 @@ export default function AdminPage() {
     {editor !== undefined && <ProductEditor existingCategories={buildCategories(products.data ?? []).map(entry => entry.key)} product={editor} onClose={() => setEditor(undefined)} onSave={saveProduct} pending={createProduct.isPending || updateProduct.isPending} />}
     {emailOrder && <CustomerEmailDialog key={emailOrder.id} order={emailOrder} onClose={() => setEmailOrder(null)} onSent={result => {
       setEmailOrder(null);
+      setNotice({ type: 'success', text: `Email accepted for sending to ${result.recipientEmail}.` });
+    }} />}
+    {standaloneEmailOpen && <CustomerEmailDialog key="standalone-email" onClose={() => setStandaloneEmailOpen(false)} onSent={result => {
+      setStandaloneEmailOpen(false);
       setNotice({ type: 'success', text: `Email accepted for sending to ${result.recipientEmail}.` });
     }} />}
     {deletion && <div className="dg-overlay dg-modal-overlay" onMouseDown={event => { if (event.target === event.currentTarget && !pendingDelete) setDeletion(null); }}><div className="dg-confirm" role="alertdialog" aria-modal="true" aria-labelledby="dg-delete-title" aria-describedby="dg-delete-description">

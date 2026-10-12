@@ -3,6 +3,8 @@ import { clerkClient, getAuth } from "@clerk/express";
 import { upsertLiveCheckout } from "../lib/liveCheckoutDrafts";
 import { queueOrderConfirmation, validateSenderDomain } from "../lib/orderEmails";
 import { sendCustomerOrderEmail } from "../lib/customOrderEmail";
+import { customerEmailButton, EmailButtonError } from "../lib/customerEmailButton";
+import { PrivateProductError } from "../lib/privateProducts";
 import { validEmail } from "../lib/orderEmailTemplate";
 import { and, desc, eq, inArray, isNotNull, isNull } from "drizzle-orm";
 import {
@@ -864,6 +866,12 @@ router.post("/admin/orders/:id/email", async (req, res): Promise<void> => {
     res.status(400).json({ error: "Enter a single-line subject (up to 200 characters) and a message (up to 10,000 characters)." });
     return;
   }
+  const storeOrigin = req.get("origin");
+  try { customerEmailButton(body.data, storeOrigin); }
+  catch (error) {
+    res.status(400).json({ error: error instanceof EmailButtonError ? error.message : "Check the email button fields." });
+    return;
+  }
   // Only these fields are needed; payment and verification data never enter the email payload.
   const [order] = await db.select({ id: demoOrdersTable.id, contactEmail: demoOrdersTable.contactEmail })
     .from(demoOrdersTable).where(eq(demoOrdersTable.id, params.data.id));
@@ -879,10 +887,14 @@ router.post("/admin/orders/:id/email", async (req, res): Promise<void> => {
     res.status(400).json({ error: "Configure a valid sender in Email settings first." }); return;
   }
   try {
-    const result = await sendCustomerOrderEmail(order, settings, body.data);
+    const result = await sendCustomerOrderEmail(order, settings, body.data, undefined, storeOrigin);
     req.log.info({ orderId: order.id, providerId: result.providerId }, "Custom customer email accepted by Resend");
     res.json(SendAdminOrderEmailResponse.parse(result));
-  } catch {
+  } catch (error) {
+    if (error instanceof EmailButtonError || error instanceof PrivateProductError) {
+      res.status(400).json({ error: "The private offer is unavailable. Use an active private Stripe product link or a Stripe-hosted payment link." });
+      return;
+    }
     req.log.warn({ orderId: order.id }, "Custom customer email could not be confirmed");
     res.status(502).json({ error: "Could not confirm sending. Check your Resend connection and verified sender, then retry. Retrying the unchanged message will not send a duplicate." });
   }

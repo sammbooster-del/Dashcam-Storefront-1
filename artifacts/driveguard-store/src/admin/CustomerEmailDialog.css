@@ -18,3 +18,28 @@
   color: #435447;
   opacity: 1;
 }
+
+.dg-email-button-fields {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--dg-line);
+  border-radius: 8px;
+  min-width: 0;
+}
+.dg-email-button-fields legend { padding: 0 6px; font-weight: 600; font-size: 14px; }
+.dg-email-button-fields small { color: var(--dg-muted); line-height: 1.5; }
+.dg-email-button-error { color: #a02626; font-size: 13px; line-height: 1.5; }
+.dg-email-preview { border: 1px solid var(--dg-line); border-radius: 8px; overflow: hidden; background: #fff; }
+.dg-email-preview header { padding: 18px; background: #203c30; color: white; font-size: 12px; }
+.dg-email-preview header strong { display: block; margin-top: 8px; font-size: 18px; }
+.dg-email-preview > p { margin: 0; padding: 20px; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.65; }
+.dg-email-preview-action { padding: 0 20px 20px; }
+.dg-email-preview-button { display: inline-block; padding: 14px 22px; border-radius: 8px; background: #203c30; color: #fff; font-weight: 700; overflow-wrap: anywhere; }
+.dg-email-preview-action small { display: block; margin-top: 12px; color: var(--dg-muted); overflow-wrap: anywhere; }
+.dg-email-preview footer { border-top: 1px solid var(--dg-line); padding: 16px 20px; color: var(--dg-muted); font-size: 12px; }
+.dg-admin .dg-workspace-label { display: inline-flex; align-items: center; gap: 12px; }
+@media (max-width: 767px) {
+  .dg-admin .dg-top-right.dg-email-actions { display: flex; }
+  .dg-admin .dg-email-actions .dg-workspace-label { display: none; }
+}
