@@ -6,7 +6,6 @@ import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { StoreLayout } from '@/components/store/StoreLayout';
-import { RegionalAccessGate } from '@/components/RegionalAccessGate';
 import { siblingsOf } from '@/lib-groups';
 import { errorMessage, type CartLine } from '@/lib-store';
 import NotFound from '@/pages/not-found';
@@ -103,14 +102,14 @@ function App() {
   const updateQuantity = (id: number, amount: number) => setCart(items => items.flatMap(item => item.productId === id ? (item.quantity + amount > 0 ? [{ ...item, quantity: item.quantity + amount }] : []) : [item]));
   const removeItem = (id: number) => setCart(items => items.filter(item => item.productId !== id));
   const clearCart = () => setCart([]);
-  return <QueryClientProvider client={queryClient}><RegionalAccessGate><TooltipProvider><WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}><StoreClerkProvider><Switch>
+  return <QueryClientProvider client={queryClient}><TooltipProvider><WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}><StoreClerkProvider><Switch>
     <Route path="/admin" component={AdminAccess} />
     <Route path="/sign-in/*?" component={SignInPage} />
     <Route path="/sign-up/*?" component={SignUpPage} />
     <Route path="/shipping-simulation/:token" component={UnavailableLink} />
     <Route path="/private-product/:token" component={PrivateProduct} />
     <Route><Store cart={cart} add={add} updateQuantity={updateQuantity} removeItem={removeItem} clearCart={clearCart} /></Route>
-  </Switch></StoreClerkProvider></WouterRouter><Toaster /></TooltipProvider></RegionalAccessGate></QueryClientProvider>;
+  </Switch></StoreClerkProvider></WouterRouter><Toaster /></TooltipProvider></QueryClientProvider>;
 }
 
 export default App;

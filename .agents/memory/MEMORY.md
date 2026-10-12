@@ -16,7 +16,7 @@
 - [Checkout country policy](checkout-country-policy.md) — Worldwide country options are merchant opt-in; country detection is approximate and must not override shopper edits.
 - [Category visibility policy](category-visibility-policy.md) — Category switches override shop visibility without rewriting individual product visibility or stock.
 - [Shared React Query context](shared-query-context.md) — pnpm peer variants can split app and generated-hook contexts in production; dedupe the context library in Vite.
-- [Regional access policy](regional-access-policy.md) — Block access from India independently of delivery-country choices; the preview may hide public IPs.
+- [Regional access policy](regional-access-policy.md) — Worldwide access; no India block or required location check. Keep admin authentication unchanged.
 - [Admin portal styling](admin-portal-styling.md) — Portal-rendered admin dialogs need their own theme scope so controls remain readable.
 - [Live catalog updates](live-catalog-updates.md) — Preview product edits do not reach the separate live database; republishing alone does not copy new catalog records.
 - [Private product checkout scope](private-product-checkout-scope.md) — Stripe applies only to new link-only products; leave existing catalog and checkout unchanged.
