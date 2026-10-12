@@ -39,6 +39,7 @@ import type {
   OrderStatusInput,
   PrivateCheckoutInput,
   PrivateCheckoutRedirect,
+  PrivateInvoicePaymentInput,
   PrivatePayment,
   PrivatePaymentStatus,
   PrivateProduct,
@@ -81,6 +82,95 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   }
   return result;
 };
+
+export const getRecordAdminPrivatePaymentUrl = (id: string,) => {
+
+
+
+
+  return `/api/admin/private-products/${id}/record-payment`
+}
+
+/**
+ * @summary Record full payment actually received outside Stripe for a private invoice
+ */
+export const recordAdminPrivatePayment = async (id: string,
+    privateInvoicePaymentInput: PrivateInvoicePaymentInput, options?: Parameters<typeof customFetch>[1]): Promise<PrivateProduct> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<PrivateProduct>(getRecordAdminPrivatePaymentUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(privateInvoicePaymentInput)
+  }
+);}
+
+
+
+
+
+export const getRecordAdminPrivatePaymentMutationKey = () => ['recordAdminPrivatePayment'] as const;
+
+export const getRecordAdminPrivatePaymentMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof recordAdminPrivatePayment>>, TError,RecordAdminPrivatePaymentMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof recordAdminPrivatePayment>>, TError,RecordAdminPrivatePaymentMutationVariables, TContext> => {
+
+const mutationKey = getRecordAdminPrivatePaymentMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof recordAdminPrivatePayment>>, RecordAdminPrivatePaymentMutationVariables> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  recordAdminPrivatePayment(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RecordAdminPrivatePaymentMutationResult = NonNullable<Awaited<ReturnType<typeof recordAdminPrivatePayment>>>
+    export type RecordAdminPrivatePaymentMutationBody = BodyType<PrivateInvoicePaymentInput>
+    export type RecordAdminPrivatePaymentMutationError = ErrorType<void>
+    export type RecordAdminPrivatePaymentMutationVariables = {id: string;data: BodyType<PrivateInvoicePaymentInput>}
+
+    /**
+ * @summary Record full payment actually received outside Stripe for a private invoice
+ */
+export const useRecordAdminPrivatePayment = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof recordAdminPrivatePayment>>, TError,RecordAdminPrivatePaymentMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof recordAdminPrivatePayment>>,
+        TError,
+        RecordAdminPrivatePaymentMutationVariables,
+        TContext
+      > => {
+      return useMutation(getRecordAdminPrivatePaymentMutationOptions(options));
+    }
 
 export const getSendAdminEmailUrl = () => {
 

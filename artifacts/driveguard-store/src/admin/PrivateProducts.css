@@ -25,3 +25,12 @@
 @media (max-width: 760px) {
   .pl-item { grid-template-columns:1fr; gap:10px; }
 }
+
+.pl-ref { font:700 11px ui-monospace, monospace; color:var(--dg-muted); margin-right:8px; letter-spacing:.02em; }
+.pl-markpaid { max-width:480px; text-align:left; }
+.pl-paid-fields { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:14px 0; }
+.pl-paid-wide { grid-column:1 / -1; }
+.pl-paid-fields small { color:var(--dg-muted); font-weight:400; }
+.pl-confirm-check { display:flex; gap:10px; align-items:flex-start; padding:12px; border:1px solid var(--dg-line); border-radius:4px; background:#f9faf7; font-size:13px; line-height:1.45; cursor:pointer; }
+.pl-confirm-check input { margin-top:2px; }
+@media (max-width:560px) { .pl-paid-fields { grid-template-columns:1fr; } }

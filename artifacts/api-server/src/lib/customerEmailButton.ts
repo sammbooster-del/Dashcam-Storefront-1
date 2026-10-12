@@ -1,6 +1,7 @@
 import type { OrderEmailMessage } from "@workspace/api-zod";
 import { privateLinkByToken, readPrivateStripeProduct } from "./privateProducts";
 import { getUncachableStripeClient } from "./stripeClient";
+import { resolvePrivateInvoice } from "./privateInvoiceState";
 
 const stripeHosts = new Set(["checkout.stripe.com", "buy.stripe.com"]);
 
@@ -33,5 +34,9 @@ export async function verifyCustomerEmailButton(input: OrderEmailMessage, storeO
   if (!button?.privateToken) return;
   // Do not email disabled, archived, invented or another environment's offers.
   const link = await privateLinkByToken(button.privateToken);
-  await readPrivateStripeProduct(await getUncachableStripeClient(), link, true);
+  const stripe = await getUncachableStripeClient();
+  const { product, price } = await readPrivateStripeProduct(stripe, link);
+  if ((!product.active || !price.active) && !await resolvePrivateInvoice(link, stripe)) {
+    throw new EmailButtonError("This private invoice is unavailable.");
+  }
 }

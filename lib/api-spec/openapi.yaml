@@ -15,6 +15,29 @@ tags:
   - name: admin
     description: Protected store management
 paths:
+  /admin/private-products/{id}/record-payment:
+    post:
+      operationId: recordAdminPrivatePayment
+      tags: [Admin]
+      summary: Record full payment actually received outside Stripe for a private invoice
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/PrivateInvoicePaymentInput" }
+      responses:
+        "200":
+          description: Paid invoice with explicit payment provenance
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/PrivateProduct" }
+        "400": { description: Invalid payment record }
+        "401": { description: Sign-in required }
+        "403": { description: Administrator access required }
+        "404": { description: Private invoice unavailable }
+        "409": { description: A Stripe payment is in progress or the record conflicts with an existing settlement }
   /admin/email:
     post:
       operationId: sendAdminEmail
@@ -672,7 +695,7 @@ components:
   schemas:
     PrivateProduct:
       type: object
-      required: [id, name, priceCents, currency, collectDelivery, active, sharePath, livemode, brandName, createdAt]
+      required: [id, name, priceCents, currency, collectDelivery, active, sharePath, livemode, brandName, createdAt, invoiceReference, invoiceStatus, paymentSource, paidAt, paymentMethod]
       properties:
         id:
           type: string
@@ -697,6 +720,29 @@ components:
         createdAt:
           type: string
           format: date-time
+        invoiceReference: { type: string }
+        invoiceStatus: { type: string, enum: [unpaid, paid] }
+        paymentSource:
+          anyOf:
+            - { type: string, enum: [seller, stripe] }
+            - { type: "null" }
+        paidAt: { type: [string, "null"], format: date-time }
+        paymentMethod:
+          anyOf:
+            - { type: string, enum: [cash, bank_transfer, other] }
+            - { type: "null" }
+    PrivateInvoicePaymentInput:
+      type: object
+      additionalProperties: false
+      required: [requestId, method, paymentDate, receivedFullPayment, expectedName, expectedPriceCents]
+      properties:
+        requestId: { type: string, format: uuid }
+        method: { type: string, enum: [cash, bank_transfer, other] }
+        paymentDate: { type: string, format: date }
+        reference: { type: string, maxLength: 160 }
+        receivedFullPayment: { type: boolean }
+        expectedName: { type: string, minLength: 1, maxLength: 160 }
+        expectedPriceCents: { type: integer, minimum: 50, maximum: 99999999 }
     PrivateProductInput:
       type: object
       additionalProperties: false

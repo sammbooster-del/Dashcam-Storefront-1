@@ -1,6 +1,10 @@
 import { Router, type Request, type Response } from "express";
 import Stripe from "stripe";
 import { eq } from "drizzle-orm";
+import { getAuth } from "@clerk/express";
+import { RecordAdminPrivatePaymentParams, RecordAdminPrivatePaymentBody, RecordAdminPrivatePaymentResponse } from "@workspace/api-zod";
+import { recordPrivateInvoicePayment } from "../lib/privateInvoicePayments";
+import { withPrivateInvoiceLock } from "../lib/privateInvoiceState";
 import { db, privateProductLinksTable } from "@workspace/db";
 import {
   CreateAdminPrivateProductBody, CreateAdminPrivateProductResponse,
@@ -76,19 +80,21 @@ router.delete("/admin/private-products/:id", async (req, res) => {
   const params = DeleteAdminPrivateProductParams.safeParse(req.params);
   if (!params.success) { res.status(400).json({ error: "Invalid private product." }); return; }
   try {
-    const link = await privateLinkById(params.data.id, true);
+    await withPrivateInvoiceLock(params.data.id, async tx => {
+    const link = await privateLinkById(params.data.id, true, tx);
     if (!link.revokedAt) {
       const stripe = await getUncachableStripeClient();
       await readPrivateStripeProduct(stripe, link);
       await stripe.products.update(link.stripeProductId!, { active: false });
     }
-    await expirePrivateCheckouts(link.id);
+    await expirePrivateCheckouts(link.id, tx);
     // Keep a partially archived item visible (paused) so the owner can retry
     // if Stripe is unavailable while expiring outstanding checkout sessions.
     if (!link.revokedAt) {
-      await db.update(privateProductLinksTable).set({ revokedAt: new Date() })
+      await tx.update(privateProductLinksTable).set({ revokedAt: new Date() })
         .where(eq(privateProductLinksTable.id, link.id));
     }
+    });
     res.sendStatus(204);
   } catch (error) { failure(req, res, error); }
 });
@@ -105,8 +111,26 @@ router.get("/private-products/:token", async (req, res) => {
   try {
     const link = await privateLinkByToken(params.data.token);
     const stripe = await getUncachableStripeClient();
-    const { product, price } = await readPrivateStripeProduct(stripe, link, true);
-    res.json(GetPrivateProductResponse.parse(privateProductView(link, product, price, (await privateStoreSettings()).brandName)));
+    const { product, price } = await readPrivateStripeProduct(stripe, link);
+    const view = await privateProductView(link, product, price, (await privateStoreSettings()).brandName, stripe);
+    if (!view.active && view.invoiceStatus !== "paid") throw new PrivateProductError(404, "This private invoice is unavailable.");
+    res.set("Cache-Control", "no-store");
+    res.json(GetPrivateProductResponse.parse(view));
+  } catch (error) { failure(req, res, error); }
+});
+
+router.post("/admin/private-products/:id/record-payment", async (req, res) => {
+  const params = RecordAdminPrivatePaymentParams.safeParse(req.params);
+  const body = RecordAdminPrivatePaymentBody.safeParse(req.body);
+  if (!params.success || !body.success || body.data.receivedFullPayment !== true ||
+    typeof req.body.paymentDate !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(req.body.paymentDate) ||
+    !Object.keys(req.body).every(key => ["requestId", "method", "paymentDate", "reference", "receivedFullPayment", "expectedName", "expectedPriceCents"].includes(key))) {
+    res.status(400).json({ error: "Confirm full payment was received and complete the payment record." });
+    return;
+  }
+  try {
+    const view = await recordPrivateInvoicePayment(params.data.id, { ...body.data, paymentDate: req.body.paymentDate }, getAuth(req).userId ?? "");
+    res.json(RecordAdminPrivatePaymentResponse.parse(view));
   } catch (error) { failure(req, res, error); }
 });
 

@@ -3,15 +3,12 @@ import { and, desc, eq, isNotNull, isNull } from "drizzle-orm";
 import { db, privateProductLinksTable, storeSettingsTable, type PrivateProductLink } from "@workspace/db";
 import type { PrivateProductInput, PrivateProductUpdate } from "@workspace/api-zod";
 import { getUncachableStripeClient } from "./stripeClient";
+import { PRIVATE_PRODUCT_SCOPE, PrivateProductError } from "./privateStripeIdentity";
+import { resolvePrivateInvoice, withPrivateInvoiceLock, type PrivateInvoiceDb } from "./privateInvoiceState";
+export { PRIVATE_PRODUCT_SCOPE, PrivateProductError } from "./privateStripeIdentity";
 
-export class PrivateProductError extends Error {
-  constructor(public status: number, message: string) { super(message); }
-}
-
-export const PRIVATE_PRODUCT_SCOPE = "everyday-finds-private-links";
-
-export async function privateStoreSettings() {
-  const [settings] = await db.select({
+export async function privateStoreSettings(executor: PrivateInvoiceDb = db) {
+  const [settings] = await executor.select({
     brandName: storeSettingsTable.brandName,
     shippingCountries: storeSettingsTable.shippingCountries,
   }).from(storeSettingsTable).where(eq(storeSettingsTable.id, 1));
@@ -19,8 +16,8 @@ export async function privateStoreSettings() {
   return settings;
 }
 
-export async function privateLinkById(id: string, allowRevoked = false) {
-  const [link] = await db.select().from(privateProductLinksTable).where(and(
+export async function privateLinkById(id: string, allowRevoked = false, executor: PrivateInvoiceDb = db) {
+  const [link] = await executor.select().from(privateProductLinksTable).where(and(
     eq(privateProductLinksTable.id, id),
     ...(allowRevoked ? [] : [isNull(privateProductLinksTable.revokedAt)]),
   ));
@@ -52,15 +49,21 @@ export async function readPrivateStripeProduct(stripe: Stripe, link: PrivateProd
   return { product, price };
 }
 
-export function privateProductView(
+export async function privateProductView(
   link: PrivateProductLink, product: Stripe.Product, price: Stripe.Price, brandName: string,
+  stripe: Stripe, executor?: PrivateInvoiceDb,
 ) {
+  const invoice = await resolvePrivateInvoice(link, stripe, executor);
   return {
-    id: link.id, name: product.name, priceCents: price.unit_amount!,
+    id: link.id, name: invoice?.productName ?? product.name, priceCents: invoice?.amountCents ?? price.unit_amount!,
     currency: "usd" as const, collectDelivery: product.metadata.collect_delivery === "true",
     active: product.active && price.active && !link.revokedAt,
     sharePath: `/private-product/${link.token}`, livemode: product.livemode,
     brandName, createdAt: link.createdAt.toISOString(),
+    invoiceReference: `INV-${link.id.replace(/-/g, "").toUpperCase()}`,
+    invoiceStatus: invoice ? "paid" as const : "unpaid" as const,
+    paymentSource: invoice?.source ?? null, paidAt: invoice?.paidAt.toISOString() ?? null,
+    paymentMethod: invoice?.method ?? null,
   };
 }
 
@@ -76,7 +79,7 @@ export async function listPrivateProducts() {
   for (let offset = 0; offset < links.length; offset += 4) {
     products.push(...await Promise.all(links.slice(offset, offset + 4).map(async link => {
       const { product, price } = await readPrivateStripeProduct(stripe, link);
-      return privateProductView(link, product, price, settings.brandName);
+      return privateProductView(link, product, price, settings.brandName, stripe);
     })));
   }
   return products;
@@ -107,12 +110,17 @@ export async function createPrivateProduct(input: PrivateProductInput) {
     link.stripeProductId = product.id;
   }
   const { product, price } = await readPrivateStripeProduct(stripe, link);
-  return privateProductView(link, product, price, (await privateStoreSettings()).brandName);
+  return privateProductView(link, product, price, (await privateStoreSettings()).brandName, stripe);
 }
 
 export async function updatePrivateProduct(id: string, input: PrivateProductUpdate) {
-  const link = await privateLinkById(id);
+  return withPrivateInvoiceLock(id, async tx => {
+  const link = await privateLinkById(id, false, tx);
   const stripe = await getUncachableStripeClient();
+  const invoice = await resolvePrivateInvoice(link, stripe, tx);
+  if (invoice && (input.name !== undefined || input.priceCents !== undefined)) {
+    throw new PrivateProductError(409, "Paid invoice names and amounts cannot be edited. Create a new invoice instead.");
+  }
   const updates: Stripe.ProductUpdateParams = {};
   if (input.name !== undefined) updates.name = input.name.trim();
   if (input.active !== undefined) updates.active = input.active;
@@ -128,5 +136,6 @@ export async function updatePrivateProduct(id: string, input: PrivateProductUpda
   await stripe.products.update(link.stripeProductId!, updates,
     { idempotencyKey: `private-product-update:${id}:${input.requestId}` });
   const { product, price } = await readPrivateStripeProduct(stripe, link);
-  return privateProductView(link, product, price, (await privateStoreSettings()).brandName);
+  return privateProductView(link, product, price, (await privateStoreSettings(tx)).brandName, stripe, tx);
+  });
 }

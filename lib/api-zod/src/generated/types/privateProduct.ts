@@ -6,6 +6,9 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { PrivateProductCurrency } from './privateProductCurrency';
+import type { PrivateProductInvoiceStatus } from './privateProductInvoiceStatus';
+import type { PrivateProductPaymentMethod } from './privateProductPaymentMethod';
+import type { PrivateProductPaymentSource } from './privateProductPaymentSource';
 
 export interface PrivateProduct {
   id: string;
@@ -18,4 +21,10 @@ export interface PrivateProduct {
   livemode: boolean;
   brandName: string;
   createdAt: Date;
+  invoiceReference: string;
+  invoiceStatus: PrivateProductInvoiceStatus;
+  paymentSource: PrivateProductPaymentSource;
+  /** @nullable */
+  paidAt: Date | null;
+  paymentMethod: PrivateProductPaymentMethod;
 }

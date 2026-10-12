@@ -22,3 +22,24 @@
 @keyframes pp-sh { to { background-position:-200% 0; } }
 .pp-spin { animation:pp-rot 1s linear infinite; }
 @keyframes pp-rot { to { transform:rotate(360deg); } }
+
+.pp-sr { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); }
+.pp-invoice { display:grid; gap:18px; }
+.pp-inv-head { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; padding-bottom:16px; border-bottom:1px dashed #cfcabb; }
+.pp-ref { margin:0; font:800 20px ui-monospace, monospace; letter-spacing:-.03em; }
+.pp-stamp { font:800 12px ui-monospace, monospace; letter-spacing:.2em; text-transform:uppercase; padding:6px 10px; border:2px solid #8a3b2a; color:#8a3b2a; border-radius:3px; transform:rotate(-4deg); }
+.pp-stamp.is-paid { border-color:#2a6a37; color:#2a6a37; }
+.pp-meta { margin:0; display:flex; gap:28px; flex-wrap:wrap; }
+.pp-meta dt { font-size:11px; color:#757a72; text-transform:uppercase; letter-spacing:.1em; }
+.pp-meta dd { margin:3px 0 0; font-size:14px; font-weight:600; }
+.pp-line { display:flex; justify-content:space-between; gap:14px; padding:14px 0; border-top:1px solid #e4e0d3; border-bottom:1px solid #e4e0d3; font-size:15px; }
+.pp-line-name { font-weight:700; letter-spacing:-.01em; overflow-wrap:anywhere; }
+.pp-mono { font-family:ui-monospace, monospace; white-space:nowrap; }
+.pp-totals { display:grid; gap:8px; font-size:14px; color:#4a4f49; }
+.pp-totals > div { display:flex; justify-content:space-between; gap:12px; }
+.pp-totals small { font-size:11px; color:#757a72; }
+.pp-due { margin-top:6px; padding-top:12px; border-top:2px solid #23282a; color:#23282a; font-size:16px; }
+.pp-due strong { font-size:22px; }
+.pp-paid-band { display:flex; gap:14px; align-items:flex-start; padding:16px; background:#eef4ec; border-radius:4px; }
+.pp-paid-band .pp-state-icon { margin:0; flex:none; }
+.pp-paid-band .pp-text { margin-top:4px; }

@@ -3,8 +3,9 @@ import { and, desc, eq } from "drizzle-orm";
 import { db, privateCheckoutSessionsTable, type PrivateProductLink } from "@workspace/db";
 import { getUncachableStripeClient } from "./stripeClient";
 import {
-  PRIVATE_PRODUCT_SCOPE, PrivateProductError, privateStoreSettings, readPrivateStripeProduct,
+  PRIVATE_PRODUCT_SCOPE, PrivateProductError, privateLinkById, privateStoreSettings, readPrivateStripeProduct,
 } from "./privateProducts";
+import { resolvePrivateInvoice, withPrivateInvoiceLock, type PrivateInvoiceDb } from "./privateInvoiceState";
 
 export function verifiedPrivatePaymentStatus(session: Stripe.Checkout.Session) {
   if (session.metadata?.private_scope !== PRIVATE_PRODUCT_SCOPE || session.currency !== "usd") {
@@ -58,18 +59,25 @@ export function trustedStripeCheckoutUrl(url: string | null): string {
   return url;
 }
 
-export async function createPrivateStripeCheckout(link: PrivateProductLink, requestId: string, origin: string) {
-  const stripe = await getUncachableStripeClient();
+export async function createPrivateStripeCheckout(link: PrivateProductLink, requestId: string, origin: string, suppliedStripe?: Stripe, executor?: PrivateInvoiceDb) {
+  const checkout = async (tx: PrivateInvoiceDb) => {
+  link = await privateLinkById(link.id, false, tx);
+  const stripe = suppliedStripe ?? await getUncachableStripeClient();
+  if (await resolvePrivateInvoice(link, stripe, tx)) {
+    throw new PrivateProductError(409, "This invoice is already paid. Refresh the invoice to see its receipt.");
+  }
   const { product, price } = await readPrivateStripeProduct(stripe, link, true);
-  const settings = await privateStoreSettings();
+  const settings = await privateStoreSettings(tx);
   const session = await stripe.checkout.sessions.create(
     privateCheckoutParameters(link, product, price, origin, settings.shippingCountries),
     { idempotencyKey: `private-checkout:${link.id}:${requestId}:${price.id}:${product.metadata.collect_delivery}` },
   );
   const url = trustedStripeCheckoutUrl(session.url);
-  await db.insert(privateCheckoutSessionsTable).values({ stripeSessionId: session.id, linkId: link.id })
+  await tx.insert(privateCheckoutSessionsTable).values({ stripeSessionId: session.id, linkId: link.id })
     .onConflictDoNothing();
   return { url, sessionId: session.id };
+  };
+  return executor ? checkout(executor) : withPrivateInvoiceLock(link.id, checkout);
 }
 
 export async function readPrivatePayment(link: PrivateProductLink, sessionId: string) {
@@ -114,8 +122,8 @@ export async function listPrivatePayments() {
   return payments;
 }
 
-export async function expirePrivateCheckouts(linkId: string) {
-  const records = await db.select().from(privateCheckoutSessionsTable)
+export async function expirePrivateCheckouts(linkId: string, executor: PrivateInvoiceDb = db) {
+  const records = await executor.select().from(privateCheckoutSessionsTable)
     .where(eq(privateCheckoutSessionsTable.linkId, linkId));
   if (!records.length) return;
   const stripe = await getUncachableStripeClient();

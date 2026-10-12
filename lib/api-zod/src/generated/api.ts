@@ -9,6 +9,51 @@ import * as zod from 'zod';
 
 
 /**
+ * @summary Record full payment actually received outside Stripe for a private invoice
+ */
+export const RecordAdminPrivatePaymentParams = zod.object({
+  "id": zod.coerce.string().uuid()
+})
+
+export const recordAdminPrivatePaymentBodyReferenceMax = 160;
+
+export const recordAdminPrivatePaymentBodyExpectedNameMax = 160;
+
+export const recordAdminPrivatePaymentBodyExpectedPriceCentsMin = 50;
+export const recordAdminPrivatePaymentBodyExpectedPriceCentsMax = 99999999;
+
+
+
+export const RecordAdminPrivatePaymentBody = zod.object({
+  "requestId": zod.string().uuid(),
+  "method": zod.enum(['cash', 'bank_transfer', 'other']),
+  "paymentDate": zod.coerce.date(),
+  "reference": zod.string().max(recordAdminPrivatePaymentBodyReferenceMax).optional(),
+  "receivedFullPayment": zod.boolean(),
+  "expectedName": zod.string().min(1).max(recordAdminPrivatePaymentBodyExpectedNameMax),
+  "expectedPriceCents": zod.number().int().min(recordAdminPrivatePaymentBodyExpectedPriceCentsMin).max(recordAdminPrivatePaymentBodyExpectedPriceCentsMax)
+})
+
+export const RecordAdminPrivatePaymentResponse = zod.object({
+  "id": zod.string().uuid(),
+  "name": zod.string(),
+  "priceCents": zod.number().int(),
+  "currency": zod.enum(['usd']),
+  "collectDelivery": zod.boolean(),
+  "active": zod.boolean(),
+  "sharePath": zod.string(),
+  "livemode": zod.boolean(),
+  "brandName": zod.string(),
+  "createdAt": zod.coerce.date(),
+  "invoiceReference": zod.string(),
+  "invoiceStatus": zod.enum(['unpaid', 'paid']),
+  "paymentSource": zod.union([zod.enum(['seller', 'stripe']),zod.null()]),
+  "paidAt": zod.coerce.date().nullable(),
+  "paymentMethod": zod.union([zod.enum(['cash', 'bank_transfer', 'other']),zod.null()])
+})
+
+
+/**
  * @summary Send a standalone custom email without attaching it to an order
  */
 export const sendAdminEmailBodyOneSubjectMax = 200;
@@ -50,7 +95,12 @@ export const ListAdminPrivateProductsResponseItem = zod.object({
   "sharePath": zod.string(),
   "livemode": zod.boolean(),
   "brandName": zod.string(),
-  "createdAt": zod.coerce.date()
+  "createdAt": zod.coerce.date(),
+  "invoiceReference": zod.string(),
+  "invoiceStatus": zod.enum(['unpaid', 'paid']),
+  "paymentSource": zod.union([zod.enum(['seller', 'stripe']),zod.null()]),
+  "paidAt": zod.coerce.date().nullable(),
+  "paymentMethod": zod.union([zod.enum(['cash', 'bank_transfer', 'other']),zod.null()])
 })
 export const ListAdminPrivateProductsResponse = zod.array(ListAdminPrivateProductsResponseItem)
 
@@ -79,7 +129,12 @@ export const CreateAdminPrivateProductResponse = zod.object({
   "sharePath": zod.string(),
   "livemode": zod.boolean(),
   "brandName": zod.string(),
-  "createdAt": zod.coerce.date()
+  "createdAt": zod.coerce.date(),
+  "invoiceReference": zod.string(),
+  "invoiceStatus": zod.enum(['unpaid', 'paid']),
+  "paymentSource": zod.union([zod.enum(['seller', 'stripe']),zod.null()]),
+  "paidAt": zod.coerce.date().nullable(),
+  "paymentMethod": zod.union([zod.enum(['cash', 'bank_transfer', 'other']),zod.null()])
 })
 
 
@@ -112,7 +167,12 @@ export const UpdateAdminPrivateProductResponse = zod.object({
   "sharePath": zod.string(),
   "livemode": zod.boolean(),
   "brandName": zod.string(),
-  "createdAt": zod.coerce.date()
+  "createdAt": zod.coerce.date(),
+  "invoiceReference": zod.string(),
+  "invoiceStatus": zod.enum(['unpaid', 'paid']),
+  "paymentSource": zod.union([zod.enum(['seller', 'stripe']),zod.null()]),
+  "paidAt": zod.coerce.date().nullable(),
+  "paymentMethod": zod.union([zod.enum(['cash', 'bank_transfer', 'other']),zod.null()])
 })
 
 
@@ -177,7 +237,12 @@ export const GetPrivateProductResponse = zod.object({
   "sharePath": zod.string(),
   "livemode": zod.boolean(),
   "brandName": zod.string(),
-  "createdAt": zod.coerce.date()
+  "createdAt": zod.coerce.date(),
+  "invoiceReference": zod.string(),
+  "invoiceStatus": zod.enum(['unpaid', 'paid']),
+  "paymentSource": zod.union([zod.enum(['seller', 'stripe']),zod.null()]),
+  "paidAt": zod.coerce.date().nullable(),
+  "paymentMethod": zod.union([zod.enum(['cash', 'bank_transfer', 'other']),zod.null()])
 })
 
 

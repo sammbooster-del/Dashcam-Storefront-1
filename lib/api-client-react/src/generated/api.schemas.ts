@@ -12,6 +12,31 @@ export const PrivateProductCurrency = {
   usd: 'usd',
 } as const;
 
+export type PrivateProductInvoiceStatus = typeof PrivateProductInvoiceStatus[keyof typeof PrivateProductInvoiceStatus];
+
+
+export const PrivateProductInvoiceStatus = {
+  unpaid: 'unpaid',
+  paid: 'paid',
+} as const;
+
+export type PrivateProductPaymentSource = typeof PrivateProductPaymentSource[keyof typeof PrivateProductPaymentSource] | null;
+
+
+export const PrivateProductPaymentSource = {
+  seller: 'seller',
+  stripe: 'stripe',
+} as const;
+
+export type PrivateProductPaymentMethod = typeof PrivateProductPaymentMethod[keyof typeof PrivateProductPaymentMethod] | null;
+
+
+export const PrivateProductPaymentMethod = {
+  cash: 'cash',
+  bank_transfer: 'bank_transfer',
+  other: 'other',
+} as const;
+
 export interface PrivateProduct {
   id: string;
   name: string;
@@ -23,6 +48,40 @@ export interface PrivateProduct {
   livemode: boolean;
   brandName: string;
   createdAt: string;
+  invoiceReference: string;
+  invoiceStatus: PrivateProductInvoiceStatus;
+  paymentSource: PrivateProductPaymentSource;
+  /** @nullable */
+  paidAt: string | null;
+  paymentMethod: PrivateProductPaymentMethod;
+}
+
+export type PrivateInvoicePaymentInputMethod = typeof PrivateInvoicePaymentInputMethod[keyof typeof PrivateInvoicePaymentInputMethod];
+
+
+export const PrivateInvoicePaymentInputMethod = {
+  cash: 'cash',
+  bank_transfer: 'bank_transfer',
+  other: 'other',
+} as const;
+
+export interface PrivateInvoicePaymentInput {
+  requestId: string;
+  method: PrivateInvoicePaymentInputMethod;
+  paymentDate: string;
+  /** @maxLength 160 */
+  reference?: string;
+  receivedFullPayment: boolean;
+  /**
+     * @minLength 1
+     * @maxLength 160
+     */
+  expectedName: string;
+  /**
+     * @minimum 50
+     * @maximum 99999999
+     */
+  expectedPriceCents: number;
 }
 
 export interface PrivateProductInput {
