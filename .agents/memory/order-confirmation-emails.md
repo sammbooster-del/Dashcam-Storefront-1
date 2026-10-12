@@ -13,6 +13,12 @@ Treat the website domain and email sending domain independently, and keep the se
 
 **Why:** The owner approved using an existing verified sending domain temporarily but said they will link a different domain to this project.
 
+When switching Resend accounts, check the live store's saved sender against the new account's verified domains, not just the integration's connection status.
+
+**Why:** A healthy replacement connection can still fail sending when production retains a sender from the previous account.
+
+**How to apply:** Diagnose both sides read-only and have the owner update the live admin's Sender email. Reconnecting alone does not update stored production settings.
+
 **How to apply:** A website domain change alone must not replace the sender. Verify the new sender domain in Resend before enabling it; no actual mailbox is needed for sending when replies go to the configured team address.
 
 The new store sending domain is linked to a different Resend account with a different API key. Replace the existing connection's credentials rather than adding the domain to the old account.
