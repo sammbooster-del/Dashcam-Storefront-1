@@ -15,6 +15,143 @@ tags:
   - name: admin
     description: Protected store management
 paths:
+  /admin/private-products:
+    get:
+      operationId: listAdminPrivateProducts
+      tags: [admin]
+      responses:
+        "200":
+          description: Link-only products, available only to the administrator
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PrivateProduct"
+    post:
+      operationId: createAdminPrivateProduct
+      tags: [admin]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PrivateProductInput"
+      responses:
+        "201":
+          description: Link-only Stripe product created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PrivateProduct"
+  /admin/private-products/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    patch:
+      operationId: updateAdminPrivateProduct
+      tags: [admin]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PrivateProductUpdate"
+      responses:
+        "200":
+          description: Private product updated without changing existing orders
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PrivateProduct"
+    delete:
+      operationId: deleteAdminPrivateProduct
+      tags: [admin]
+      responses:
+        "204":
+          description: Private product archived and its link revoked
+  /admin/private-payments:
+    get:
+      operationId: listAdminPrivatePayments
+      tags: [admin]
+      responses:
+        "200":
+          description: Latest fifty Stripe checkout attempts for private products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PrivatePayment"
+  /private-products/{token}:
+    parameters:
+      - name: token
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: "^[a-f0-9]{64}$"
+    get:
+      operationId: getPrivateProduct
+      tags: [store]
+      responses:
+        "200":
+          description: An active link-only product; never returned by the public catalog
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PrivateProduct"
+  /private-products/{token}/checkout:
+    parameters:
+      - name: token
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: "^[a-f0-9]{64}$"
+    post:
+      operationId: createPrivateCheckout
+      tags: [store]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PrivateCheckoutInput"
+      responses:
+        "201":
+          description: Redirect to Stripe-hosted checkout
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PrivateCheckoutRedirect"
+  /private-products/{token}/payments/{sessionId}:
+    get:
+      operationId: getPrivatePayment
+      tags: [store]
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: "^[a-f0-9]{64}$"
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Payment status verified directly with Stripe, without exposing customer data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PrivatePaymentStatus"
   /access-status:
     get:
       operationId: getAccessStatus
@@ -513,6 +650,121 @@ paths:
                 $ref: "#/components/schemas/DemoOrder"
 components:
   schemas:
+    PrivateProduct:
+      type: object
+      required: [id, name, priceCents, currency, collectDelivery, active, sharePath, livemode, brandName, createdAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        priceCents:
+          type: integer
+        currency:
+          type: string
+          enum: [usd]
+        collectDelivery:
+          type: boolean
+        active:
+          type: boolean
+        sharePath:
+          type: string
+        livemode:
+          type: boolean
+        brandName:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+    PrivateProductInput:
+      type: object
+      additionalProperties: false
+      required: [name, priceCents, collectDelivery, requestId]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 160
+        priceCents:
+          type: integer
+          minimum: 50
+          maximum: 99999999
+        collectDelivery:
+          type: boolean
+        requestId:
+          type: string
+          format: uuid
+    PrivateProductUpdate:
+      type: object
+      additionalProperties: false
+      required: [requestId]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 160
+        priceCents:
+          type: integer
+          minimum: 50
+          maximum: 99999999
+        collectDelivery:
+          type: boolean
+        active:
+          type: boolean
+        requestId:
+          type: string
+          format: uuid
+    PrivateCheckoutInput:
+      type: object
+      additionalProperties: false
+      required: [requestId]
+      properties:
+        requestId:
+          type: string
+          format: uuid
+    PrivateCheckoutRedirect:
+      type: object
+      required: [url, sessionId]
+      properties:
+        url:
+          type: string
+          format: uri
+        sessionId:
+          type: string
+    PrivatePaymentStatus:
+      type: object
+      required: [sessionId, status, productName, amountCents, currency]
+      properties:
+        sessionId:
+          type: string
+        status:
+          type: string
+          enum: [open, processing, paid, expired]
+        productName:
+          type: string
+        amountCents:
+          type: [integer, "null"]
+        currency:
+          type: string
+          enum: [usd]
+    PrivatePayment:
+      allOf:
+        - $ref: "#/components/schemas/PrivatePaymentStatus"
+        - type: object
+          required: [customerEmail, customerName, deliveryAddress, createdAt]
+          properties:
+            customerEmail:
+              type: [string, "null"]
+            customerName:
+              type: [string, "null"]
+            deliveryAddress:
+              anyOf:
+                - $ref: "#/components/schemas/OrderAddress"
+                - type: "null"
+            createdAt:
+              type: string
+              format: date-time
     RegionalAccess:
       type: object
       required: [allowed, country, code, message]

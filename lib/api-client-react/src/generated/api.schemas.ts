@@ -5,169 +5,90 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-export type RegionalAccessCode = typeof RegionalAccessCode[keyof typeof RegionalAccessCode];
+export type PrivateProductCurrency = typeof PrivateProductCurrency[keyof typeof PrivateProductCurrency];
 
 
-export const RegionalAccessCode = {
-  ALLOWED: 'ALLOWED',
-  REGION_BLOCKED: 'REGION_BLOCKED',
-  LOCATION_UNAVAILABLE: 'LOCATION_UNAVAILABLE',
+export const PrivateProductCurrency = {
+  usd: 'usd',
 } as const;
 
-export interface RegionalAccess {
-  allowed: boolean;
-  /** @nullable */
-  country: string | null;
-  code: RegionalAccessCode;
-  message: string;
-}
-
-export interface DeliveryAlertInput {
-  draftId: string;
-}
-
-export interface DeliveryAlertResult {
-  accepted: boolean;
-}
-
-export interface HealthStatus {
-  status: string;
-}
-
-export interface AdminIdentity {
-  isAdmin: boolean;
-}
-
-export interface AdminOverview {
-  productCount: number;
-  activeProductCount: number;
-  totalOrders: number;
-  simulatedRevenueCents: number;
-}
-
-export interface Product {
-  id: number;
-  slug: string;
+export interface PrivateProduct {
+  id: string;
   name: string;
-  description: string;
-  imageUrl: string;
-  /**
-     * @maxItems 15
-     * @items.maxLength 2048
-     */
-  imageUrls: string[];
   priceCents: number;
-  stock: number;
-  /**
-     * @minLength 1
-     * @maxLength 80
-     * @pattern \S
-     */
-  category: string;
-  featured: boolean;
+  currency: PrivateProductCurrency;
+  collectDelivery: boolean;
   active: boolean;
+  sharePath: string;
+  livemode: boolean;
+  brandName: string;
+  createdAt: string;
 }
 
-export interface ProductInput {
-  /**
-     * @maxLength 100
-     * @pattern ^[a-z0-9]+(?:-[a-z0-9]+)*$
-     */
-  slug: string;
+export interface PrivateProductInput {
   /**
      * @minLength 1
-     * @maxLength 150
+     * @maxLength 160
      */
   name: string;
-  /** @maxLength 3000 */
-  description: string;
-  /** @maxLength 2048 */
-  imageUrl: string;
   /**
-     * @maxItems 15
-     * @items.maxLength 2048
-     */
-  imageUrls?: string[];
-  /**
-     * @minimum 0
-     * @maximum 100000000
+     * @minimum 50
+     * @maximum 99999999
      */
   priceCents: number;
-  /** @minimum 0 */
-  stock: number;
-  /**
-     * @minLength 1
-     * @maxLength 80
-     * @pattern \S
-     */
-  category: string;
-  featured: boolean;
-  active: boolean;
+  collectDelivery: boolean;
+  requestId: string;
 }
 
-export interface ProductUpdate {
-  /**
-     * @maxLength 100
-     * @pattern ^[a-z0-9]+(?:-[a-z0-9]+)*$
-     */
-  slug?: string;
+export interface PrivateProductUpdate {
   /**
      * @minLength 1
-     * @maxLength 150
+     * @maxLength 160
      */
   name?: string;
-  /** @maxLength 3000 */
-  description?: string;
-  /** @maxLength 2048 */
-  imageUrl?: string;
   /**
-     * @maxItems 15
-     * @items.maxLength 2048
-     */
-  imageUrls?: string[];
-  /**
-     * @minimum 0
-     * @maximum 100000000
+     * @minimum 50
+     * @maximum 99999999
      */
   priceCents?: number;
-  /** @minimum 0 */
-  stock?: number;
-  /**
-     * @minLength 1
-     * @maxLength 80
-     * @pattern \S
-     */
-  category?: string;
-  featured?: boolean;
+  collectDelivery?: boolean;
   active?: boolean;
+  requestId: string;
 }
 
-export type ProductImageUploadInputContentType = typeof ProductImageUploadInputContentType[keyof typeof ProductImageUploadInputContentType];
+export interface PrivateCheckoutInput {
+  requestId: string;
+}
+
+export interface PrivateCheckoutRedirect {
+  url: string;
+  sessionId: string;
+}
+
+export type PrivatePaymentStatusStatus = typeof PrivatePaymentStatusStatus[keyof typeof PrivatePaymentStatusStatus];
 
 
-export const ProductImageUploadInputContentType = {
-  'image/jpeg': 'image/jpeg',
-  'image/png': 'image/png',
-  'image/webp': 'image/webp',
+export const PrivatePaymentStatusStatus = {
+  open: 'open',
+  processing: 'processing',
+  paid: 'paid',
+  expired: 'expired',
 } as const;
 
-export interface ProductImageUploadInput {
-  /**
-     * @minLength 1
-     * @maxLength 255
-     */
-  name: string;
-  /**
-     * @minimum 1
-     * @maximum 10485760
-     */
-  size: number;
-  contentType: ProductImageUploadInputContentType;
-}
+export type PrivatePaymentStatusCurrency = typeof PrivatePaymentStatusCurrency[keyof typeof PrivatePaymentStatusCurrency];
 
-export interface ProductImageUpload {
-  uploadURL: string;
-  objectPath: string;
+
+export const PrivatePaymentStatusCurrency = {
+  usd: 'usd',
+} as const;
+
+export interface PrivatePaymentStatus {
+  sessionId: string;
+  status: PrivatePaymentStatusStatus;
+  productName: string;
+  /** @nullable */
+  amountCents: number | null;
+  currency: PrivatePaymentStatusCurrency;
 }
 
 /**
@@ -428,6 +349,205 @@ export const CountryCode = {
   ZW: 'ZW',
 } as const;
 
+export interface OrderAddress {
+  /**
+     * @minLength 1
+     * @maxLength 100
+     */
+  fullName: string;
+  /**
+     * @minLength 1
+     * @maxLength 150
+     */
+  line1: string;
+  /** @maxLength 150 */
+  line2: string;
+  /**
+     * @minLength 1
+     * @maxLength 100
+     */
+  city: string;
+  /** @maxLength 80 */
+  region: string;
+  /** @maxLength 20 */
+  postalCode: string;
+  country: CountryCode;
+}
+
+export type PrivatePayment = PrivatePaymentStatus & ({
+  /** @nullable */
+  customerEmail: string | null;
+  /** @nullable */
+  customerName: string | null;
+  deliveryAddress: OrderAddress | null;
+  createdAt: string;
+});
+
+export type RegionalAccessCode = typeof RegionalAccessCode[keyof typeof RegionalAccessCode];
+
+
+export const RegionalAccessCode = {
+  ALLOWED: 'ALLOWED',
+  REGION_BLOCKED: 'REGION_BLOCKED',
+  LOCATION_UNAVAILABLE: 'LOCATION_UNAVAILABLE',
+} as const;
+
+export interface RegionalAccess {
+  allowed: boolean;
+  /** @nullable */
+  country: string | null;
+  code: RegionalAccessCode;
+  message: string;
+}
+
+export interface DeliveryAlertInput {
+  draftId: string;
+}
+
+export interface DeliveryAlertResult {
+  accepted: boolean;
+}
+
+export interface HealthStatus {
+  status: string;
+}
+
+export interface AdminIdentity {
+  isAdmin: boolean;
+}
+
+export interface AdminOverview {
+  productCount: number;
+  activeProductCount: number;
+  totalOrders: number;
+  simulatedRevenueCents: number;
+}
+
+export interface Product {
+  id: number;
+  slug: string;
+  name: string;
+  description: string;
+  imageUrl: string;
+  /**
+     * @maxItems 15
+     * @items.maxLength 2048
+     */
+  imageUrls: string[];
+  priceCents: number;
+  stock: number;
+  /**
+     * @minLength 1
+     * @maxLength 80
+     * @pattern \S
+     */
+  category: string;
+  featured: boolean;
+  active: boolean;
+}
+
+export interface ProductInput {
+  /**
+     * @maxLength 100
+     * @pattern ^[a-z0-9]+(?:-[a-z0-9]+)*$
+     */
+  slug: string;
+  /**
+     * @minLength 1
+     * @maxLength 150
+     */
+  name: string;
+  /** @maxLength 3000 */
+  description: string;
+  /** @maxLength 2048 */
+  imageUrl: string;
+  /**
+     * @maxItems 15
+     * @items.maxLength 2048
+     */
+  imageUrls?: string[];
+  /**
+     * @minimum 0
+     * @maximum 100000000
+     */
+  priceCents: number;
+  /** @minimum 0 */
+  stock: number;
+  /**
+     * @minLength 1
+     * @maxLength 80
+     * @pattern \S
+     */
+  category: string;
+  featured: boolean;
+  active: boolean;
+}
+
+export interface ProductUpdate {
+  /**
+     * @maxLength 100
+     * @pattern ^[a-z0-9]+(?:-[a-z0-9]+)*$
+     */
+  slug?: string;
+  /**
+     * @minLength 1
+     * @maxLength 150
+     */
+  name?: string;
+  /** @maxLength 3000 */
+  description?: string;
+  /** @maxLength 2048 */
+  imageUrl?: string;
+  /**
+     * @maxItems 15
+     * @items.maxLength 2048
+     */
+  imageUrls?: string[];
+  /**
+     * @minimum 0
+     * @maximum 100000000
+     */
+  priceCents?: number;
+  /** @minimum 0 */
+  stock?: number;
+  /**
+     * @minLength 1
+     * @maxLength 80
+     * @pattern \S
+     */
+  category?: string;
+  featured?: boolean;
+  active?: boolean;
+}
+
+export type ProductImageUploadInputContentType = typeof ProductImageUploadInputContentType[keyof typeof ProductImageUploadInputContentType];
+
+
+export const ProductImageUploadInputContentType = {
+  'image/jpeg': 'image/jpeg',
+  'image/png': 'image/png',
+  'image/webp': 'image/webp',
+} as const;
+
+export interface ProductImageUploadInput {
+  /**
+     * @minLength 1
+     * @maxLength 255
+     */
+  name: string;
+  /**
+     * @minimum 1
+     * @maximum 10485760
+     */
+  size: number;
+  contentType: ProductImageUploadInputContentType;
+}
+
+export interface ProductImageUpload {
+  uploadURL: string;
+  objectPath: string;
+}
+
 export interface StoreSettings {
   brandName: string;
   announcement: string;
@@ -562,31 +682,6 @@ export interface OrderItem {
   name: string;
   unitPriceCents: number;
   quantity: number;
-}
-
-export interface OrderAddress {
-  /**
-     * @minLength 1
-     * @maxLength 100
-     */
-  fullName: string;
-  /**
-     * @minLength 1
-     * @maxLength 150
-     */
-  line1: string;
-  /** @maxLength 150 */
-  line2: string;
-  /**
-     * @minLength 1
-     * @maxLength 100
-     */
-  city: string;
-  /** @maxLength 80 */
-  region: string;
-  /** @maxLength 20 */
-  postalCode: string;
-  country: CountryCode;
 }
 
 export interface OrderEmailMessage {

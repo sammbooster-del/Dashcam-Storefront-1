@@ -20,7 +20,7 @@ app.use(
           url: req.url?.split("?")[0]?.replace(
             /(\/shipping-simulations\/)[^/]+/,
             "$1[redacted]",
-          ),
+          ).replace(/(\/private-products\/)[^/]+(\/payments\/[^/]+)?/, "$1[redacted]"),
         };
       },
       res(res) {

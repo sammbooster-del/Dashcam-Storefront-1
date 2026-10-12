@@ -8,6 +8,181 @@
 import * as zod from 'zod';
 
 
+export const ListAdminPrivateProductsResponseItem = zod.object({
+  "id": zod.string().uuid(),
+  "name": zod.string(),
+  "priceCents": zod.number().int(),
+  "currency": zod.enum(['usd']),
+  "collectDelivery": zod.boolean(),
+  "active": zod.boolean(),
+  "sharePath": zod.string(),
+  "livemode": zod.boolean(),
+  "brandName": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+export const ListAdminPrivateProductsResponse = zod.array(ListAdminPrivateProductsResponseItem)
+
+
+export const createAdminPrivateProductBodyNameMax = 160;
+
+export const createAdminPrivateProductBodyPriceCentsMin = 50;
+export const createAdminPrivateProductBodyPriceCentsMax = 99999999;
+
+
+
+export const CreateAdminPrivateProductBody = zod.object({
+  "name": zod.string().min(1).max(createAdminPrivateProductBodyNameMax),
+  "priceCents": zod.number().int().min(createAdminPrivateProductBodyPriceCentsMin).max(createAdminPrivateProductBodyPriceCentsMax),
+  "collectDelivery": zod.boolean(),
+  "requestId": zod.string().uuid()
+})
+
+export const CreateAdminPrivateProductResponse = zod.object({
+  "id": zod.string().uuid(),
+  "name": zod.string(),
+  "priceCents": zod.number().int(),
+  "currency": zod.enum(['usd']),
+  "collectDelivery": zod.boolean(),
+  "active": zod.boolean(),
+  "sharePath": zod.string(),
+  "livemode": zod.boolean(),
+  "brandName": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+
+
+export const UpdateAdminPrivateProductParams = zod.object({
+  "id": zod.coerce.string().uuid()
+})
+
+export const updateAdminPrivateProductBodyNameMax = 160;
+
+export const updateAdminPrivateProductBodyPriceCentsMin = 50;
+export const updateAdminPrivateProductBodyPriceCentsMax = 99999999;
+
+
+
+export const UpdateAdminPrivateProductBody = zod.object({
+  "name": zod.string().min(1).max(updateAdminPrivateProductBodyNameMax).optional(),
+  "priceCents": zod.number().int().min(updateAdminPrivateProductBodyPriceCentsMin).max(updateAdminPrivateProductBodyPriceCentsMax).optional(),
+  "collectDelivery": zod.boolean().optional(),
+  "active": zod.boolean().optional(),
+  "requestId": zod.string().uuid()
+})
+
+export const UpdateAdminPrivateProductResponse = zod.object({
+  "id": zod.string().uuid(),
+  "name": zod.string(),
+  "priceCents": zod.number().int(),
+  "currency": zod.enum(['usd']),
+  "collectDelivery": zod.boolean(),
+  "active": zod.boolean(),
+  "sharePath": zod.string(),
+  "livemode": zod.boolean(),
+  "brandName": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+
+
+export const DeleteAdminPrivateProductParams = zod.object({
+  "id": zod.coerce.string().uuid()
+})
+
+export const DeleteAdminPrivateProductResponse = zod.void()
+
+
+export const listAdminPrivatePaymentsResponseTwoDeliveryAddressOneFullNameMax = 100;
+
+export const listAdminPrivatePaymentsResponseTwoDeliveryAddressOneLine1Max = 150;
+
+export const listAdminPrivatePaymentsResponseTwoDeliveryAddressOneLine2Max = 150;
+
+export const listAdminPrivatePaymentsResponseTwoDeliveryAddressOneCityMax = 100;
+
+export const listAdminPrivatePaymentsResponseTwoDeliveryAddressOneRegionMax = 80;
+
+export const listAdminPrivatePaymentsResponseTwoDeliveryAddressOnePostalCodeMax = 20;
+
+
+
+export const ListAdminPrivatePaymentsResponseItem = zod.object({
+  "sessionId": zod.string(),
+  "status": zod.enum(['open', 'processing', 'paid', 'expired']),
+  "productName": zod.string(),
+  "amountCents": zod.number().int().nullable(),
+  "currency": zod.enum(['usd'])
+}).and(zod.object({
+  "customerEmail": zod.string().nullable(),
+  "customerName": zod.string().nullable(),
+  "deliveryAddress": zod.union([zod.object({
+  "fullName": zod.string().min(1).max(listAdminPrivatePaymentsResponseTwoDeliveryAddressOneFullNameMax),
+  "line1": zod.string().min(1).max(listAdminPrivatePaymentsResponseTwoDeliveryAddressOneLine1Max),
+  "line2": zod.string().max(listAdminPrivatePaymentsResponseTwoDeliveryAddressOneLine2Max),
+  "city": zod.string().min(1).max(listAdminPrivatePaymentsResponseTwoDeliveryAddressOneCityMax),
+  "region": zod.string().max(listAdminPrivatePaymentsResponseTwoDeliveryAddressOneRegionMax),
+  "postalCode": zod.string().max(listAdminPrivatePaymentsResponseTwoDeliveryAddressOnePostalCodeMax),
+  "country": zod.enum(['AD', 'AE', 'AF', 'AG', 'AI', 'AL', 'AM', 'AO', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AW', 'AX', 'AZ', 'BA', 'BB', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI', 'BJ', 'BL', 'BM', 'BN', 'BO', 'BQ', 'BR', 'BS', 'BT', 'BV', 'BW', 'BY', 'BZ', 'CA', 'CC', 'CD', 'CF', 'CG', 'CH', 'CI', 'CK', 'CL', 'CM', 'CN', 'CO', 'CR', 'CU', 'CV', 'CW', 'CX', 'CY', 'CZ', 'DE', 'DJ', 'DK', 'DM', 'DO', 'DZ', 'EC', 'EE', 'EG', 'EH', 'ER', 'ES', 'ET', 'FI', 'FJ', 'FK', 'FM', 'FO', 'FR', 'GA', 'GB', 'GD', 'GE', 'GF', 'GG', 'GH', 'GI', 'GL', 'GM', 'GN', 'GP', 'GQ', 'GR', 'GS', 'GT', 'GU', 'GW', 'GY', 'HK', 'HM', 'HN', 'HR', 'HT', 'HU', 'ID', 'IE', 'IL', 'IM', 'IN', 'IO', 'IQ', 'IR', 'IS', 'IT', 'JE', 'JM', 'JO', 'JP', 'KE', 'KG', 'KH', 'KI', 'KM', 'KN', 'KP', 'KR', 'KW', 'KY', 'KZ', 'LA', 'LB', 'LC', 'LI', 'LK', 'LR', 'LS', 'LT', 'LU', 'LV', 'LY', 'MA', 'MC', 'MD', 'ME', 'MF', 'MG', 'MH', 'MK', 'ML', 'MM', 'MN', 'MO', 'MP', 'MQ', 'MR', 'MS', 'MT', 'MU', 'MV', 'MW', 'MX', 'MY', 'MZ', 'NA', 'NC', 'NE', 'NF', 'NG', 'NI', 'NL', 'NO', 'NP', 'NR', 'NU', 'NZ', 'OM', 'PA', 'PE', 'PF', 'PG', 'PH', 'PK', 'PL', 'PM', 'PN', 'PR', 'PS', 'PT', 'PW', 'PY', 'QA', 'RE', 'RO', 'RS', 'RU', 'RW', 'SA', 'SB', 'SC', 'SD', 'SE', 'SG', 'SH', 'SI', 'SJ', 'SK', 'SL', 'SM', 'SN', 'SO', 'SR', 'SS', 'ST', 'SV', 'SX', 'SY', 'SZ', 'TC', 'TD', 'TF', 'TG', 'TH', 'TJ', 'TK', 'TL', 'TM', 'TN', 'TO', 'TR', 'TT', 'TV', 'TW', 'TZ', 'UA', 'UG', 'UM', 'US', 'UY', 'UZ', 'VA', 'VC', 'VE', 'VG', 'VI', 'VN', 'VU', 'WF', 'WS', 'YE', 'YT', 'ZA', 'ZM', 'ZW']).describe('ISO 3166-1 alpha-2 country and territory code.')
+}),zod.null()]),
+  "createdAt": zod.coerce.date()
+}))
+export const ListAdminPrivatePaymentsResponse = zod.array(ListAdminPrivatePaymentsResponseItem)
+
+
+export const getPrivateProductPathTokenRegExp = new RegExp('^[a-f0-9]{64}$');
+
+
+export const GetPrivateProductParams = zod.object({
+  "token": zod.coerce.string().regex(getPrivateProductPathTokenRegExp)
+})
+
+export const GetPrivateProductResponse = zod.object({
+  "id": zod.string().uuid(),
+  "name": zod.string(),
+  "priceCents": zod.number().int(),
+  "currency": zod.enum(['usd']),
+  "collectDelivery": zod.boolean(),
+  "active": zod.boolean(),
+  "sharePath": zod.string(),
+  "livemode": zod.boolean(),
+  "brandName": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+
+
+export const createPrivateCheckoutPathTokenRegExp = new RegExp('^[a-f0-9]{64}$');
+
+
+export const CreatePrivateCheckoutParams = zod.object({
+  "token": zod.coerce.string().regex(createPrivateCheckoutPathTokenRegExp)
+})
+
+export const CreatePrivateCheckoutBody = zod.object({
+  "requestId": zod.string().uuid()
+})
+
+export const CreatePrivateCheckoutResponse = zod.object({
+  "url": zod.string().url(),
+  "sessionId": zod.string()
+})
+
+
+export const getPrivatePaymentPathTokenRegExp = new RegExp('^[a-f0-9]{64}$');
+
+
+export const GetPrivatePaymentParams = zod.object({
+  "token": zod.coerce.string().regex(getPrivatePaymentPathTokenRegExp),
+  "sessionId": zod.coerce.string()
+})
+
+export const GetPrivatePaymentResponse = zod.object({
+  "sessionId": zod.string(),
+  "status": zod.enum(['open', 'processing', 'paid', 'expired']),
+  "productName": zod.string(),
+  "amountCents": zod.number().int().nullable(),
+  "currency": zod.enum(['usd'])
+})
+
+
 /**
  * @summary Check regional access before showing the store
  */

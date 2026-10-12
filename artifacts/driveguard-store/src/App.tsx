@@ -16,6 +16,7 @@ import ProductDetail from '@/pages/ProductDetail';
 import Cart from '@/pages/Cart';
 import Checkout from '@/pages/Checkout';
 import UnavailableLink from '@/pages/UnavailableLink';
+import PrivateProduct from '@/pages/PrivateProduct';
 import { AboutPage, ContactPage, PrivacyPage, ShippingReturnsPage, TermsPage } from '@/pages/info/InfoPages';
 import { Route, Router as WouterRouter, Switch, useLocation } from 'wouter';
 import { useState } from 'react';
@@ -107,6 +108,7 @@ function App() {
     <Route path="/sign-in/*?" component={SignInPage} />
     <Route path="/sign-up/*?" component={SignUpPage} />
     <Route path="/shipping-simulation/:token" component={UnavailableLink} />
+    <Route path="/private-product/:token" component={PrivateProduct} />
     <Route><Store cart={cart} add={add} updateQuantity={updateQuantity} removeItem={removeItem} clearCart={clearCart} /></Route>
   </Switch></StoreClerkProvider></WouterRouter><Toaster /></TooltipProvider></RegionalAccessGate></QueryClientProvider>;
 }

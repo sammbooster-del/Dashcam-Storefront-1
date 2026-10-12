@@ -29,15 +29,16 @@ import {
   ArrowDownRight, ArrowRight, ArrowUp, ArrowDown, Boxes, ChevronDown, ChevronRight,
   CircleAlert, ClipboardList, Eye, EyeOff, ImageOff, LayoutDashboard,
   ImagePlus, Package, Pencil, Plus, RefreshCw, Search, Settings2, ShieldCheck,
-   ShoppingBag, Trash2, X, Mail,
+   ShoppingBag, Trash2, X, Mail, Link2,
 } from 'lucide-react';
 import { KNOWN_CATEGORY_EXAMPLES, buildCategories, categoryLabel, normalizeCategory, productVisible } from '@/lib-categories';
 import './AdminPage.css';
 import { CheckoutCountriesEditor } from './CheckoutCountriesEditor';
 import { countryName } from '@/lib-countries';
 import CustomerEmailDialog from './CustomerEmailDialog';
+import PrivateProducts from './PrivateProducts';
 
-type Section = 'overview' | 'products' | 'orders' | 'settings';
+type Section = 'overview' | 'products' | 'orders' | 'privateLinks' | 'settings';
 type ProductDraft = Omit<ProductInput, 'priceCents' | 'stock'> & { price: string; stock: string };
 type SettingsDraft = Omit<StoreSettingsInput, 'shippingThresholdCents' | 'shippingCents'> & { shippingThreshold: string; shipping: string };
 type Deletion = { kind: 'product' | 'order'; id: number; name: string };
@@ -605,16 +606,17 @@ export default function AdminPage() {
   const visibleOrders = useMemo(() => (orders.data ?? []).filter(order => orderFilter === 'all' || order.status === orderFilter), [orders.data, orderFilter]);
   const newOrders = (orders.data ?? []).filter(order => order.status === 'new').length;
   const lowStock = (products.data ?? []).filter(product => productVisible(product, settings.data?.disabledCategories) && product.stock < 5).length;
-  const pageTitle = { overview: 'Overview', products: 'Products', orders: 'Orders', settings: 'Store settings' }[section];
+  const pageTitle = { overview: 'Overview', products: 'Products', orders: 'Orders', privateLinks: 'Private links', settings: 'Store settings' }[section];
   const pageSub = {
     overview: 'A clear view of what is happening in your store.',
     products: 'Manage the products, prices, and availability shoppers see.',
     orders: 'Track and manage checkout activity.',
+    privateLinks: 'Link-only offers paid on Stripe, hidden from the public store.',
     settings: 'Shape the storefront experience and shipping details.',
   }[section];
   const pendingDelete = deleteProduct.isPending || deleteOrder.isPending;
-  const failure = section === 'overview' ? overview.isError : section === 'products' ? products.isError : section === 'orders' ? orders.isError : settings.isError;
-  const loading = section === 'overview' ? overview.isLoading : section === 'products' ? products.isLoading : section === 'orders' ? orders.isLoading : settings.isLoading;
+  const failure = section === 'privateLinks' ? false : section === 'overview' ? overview.isError : section === 'products' ? products.isError : section === 'orders' ? orders.isError : settings.isError;
+  const loading = section === 'privateLinks' ? false : section === 'overview' ? overview.isLoading : section === 'products' ? products.isLoading : section === 'orders' ? orders.isLoading : settings.isLoading;
 
   return <div className="dg-admin" data-testid="page-admin">
     <aside className="dg-sidebar">
@@ -625,6 +627,7 @@ export default function AdminPage() {
           ['overview', LayoutDashboard, 'Overview'],
           ['products', Boxes, 'Products'],
           ['orders', ShoppingBag, 'Orders'],
+          ['privateLinks', Link2, 'Private links'],
           ['settings', Settings2, 'Store settings'],
         ] as const).map(([key, Icon, label]) =>
           <button key={key} type="button" aria-current={section === key ? 'page' : undefined} onClick={() => { setSection(key); setNotice(null); }}
@@ -746,7 +749,7 @@ export default function AdminPage() {
               </div> : <div className="dg-empty"><ClipboardList size={29} /><strong>{(orders.data ?? []).length ? 'No orders in this status' : 'No orders yet'}</strong><p>{(orders.data ?? []).length ? 'Choose another status filter to see more orders.' : 'Orders will appear here after checkout.'}</p></div>}
               <div className="dg-count">Showing {visibleOrders.length} of {(orders.data ?? []).length} orders</div>
             </section>
-          </> : settings.data ? <SettingsEditor initial={settings.data} products={products.data ?? []} pending={updateSettings.isPending} onSave={async data => { await updateSettings.mutateAsync({ data }); await invalidate('settings'); }} /> : null}
+          </> : section === 'privateLinks' ? <PrivateProducts /> : settings.data ? <SettingsEditor initial={settings.data} products={products.data ?? []} pending={updateSettings.isPending} onSave={async data => { await updateSettings.mutateAsync({ data }); await invalidate('settings'); }} /> : null}
       </div>
     </main>
     {editor !== undefined && <ProductEditor existingCategories={buildCategories(products.data ?? []).map(entry => entry.key)} product={editor} onClose={() => setEditor(undefined)} onSave={saveProduct} pending={createProduct.isPending || updateProduct.isPending} />}

@@ -20,3 +20,4 @@
 - [Admin portal styling](admin-portal-styling.md) — Portal-rendered admin dialogs need their own theme scope so controls remain readable.
 - [Live catalog updates](live-catalog-updates.md) — Preview product edits do not reach the separate live database; republishing alone does not copy new catalog records.
 - [Private product checkout scope](private-product-checkout-scope.md) — Stripe applies only to new link-only products; leave existing catalog and checkout unchanged.
+- [Stripe connector setup](stripe-connector-transport.md) — Current connection uses an authenticated API proxy; older native-integration credential templates do not describe this setup.

@@ -37,6 +37,13 @@ import type {
   OrderEmailMessage,
   OrderEmailSendResult,
   OrderStatusInput,
+  PrivateCheckoutInput,
+  PrivateCheckoutRedirect,
+  PrivatePayment,
+  PrivatePaymentStatus,
+  PrivateProduct,
+  PrivateProductInput,
+  PrivateProductUpdate,
   Product,
   ProductImageUpload,
   ProductImageUploadInput,
@@ -73,6 +80,611 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   }
   return result;
 };
+
+export const getListAdminPrivateProductsUrl = () => {
+
+
+
+
+  return `/api/admin/private-products`
+}
+
+export const listAdminPrivateProducts = async ( options?: Parameters<typeof customFetch>[1]): Promise<PrivateProduct[]> => {
+
+  return customFetch<PrivateProduct[]>(getListAdminPrivateProductsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListAdminPrivateProductsQueryKey = () => {
+    return [
+    `/api/admin/private-products`
+    ] as const;
+    }
+
+
+export const getListAdminPrivateProductsQueryOptions = <TData = Awaited<ReturnType<typeof listAdminPrivateProducts>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listAdminPrivateProducts>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListAdminPrivateProductsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listAdminPrivateProducts>>> = ({ signal }) => listAdminPrivateProducts({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listAdminPrivateProducts>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListAdminPrivateProductsQueryResult = NonNullable<Awaited<ReturnType<typeof listAdminPrivateProducts>>>
+export type ListAdminPrivateProductsQueryError = ErrorType<unknown>
+
+
+
+export function useListAdminPrivateProducts<TData = Awaited<ReturnType<typeof listAdminPrivateProducts>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listAdminPrivateProducts>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListAdminPrivateProductsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreateAdminPrivateProductUrl = () => {
+
+
+
+
+  return `/api/admin/private-products`
+}
+
+export const createAdminPrivateProduct = async (privateProductInput: PrivateProductInput, options?: Parameters<typeof customFetch>[1]): Promise<PrivateProduct> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<PrivateProduct>(getCreateAdminPrivateProductUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(privateProductInput)
+  }
+);}
+
+
+
+
+
+export const getCreateAdminPrivateProductMutationKey = () => ['createAdminPrivateProduct'] as const;
+
+export const getCreateAdminPrivateProductMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createAdminPrivateProduct>>, TError,CreateAdminPrivateProductMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createAdminPrivateProduct>>, TError,CreateAdminPrivateProductMutationVariables, TContext> => {
+
+const mutationKey = getCreateAdminPrivateProductMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createAdminPrivateProduct>>, CreateAdminPrivateProductMutationVariables> = (props) => {
+          const {data} = props ?? {};
+
+          return  createAdminPrivateProduct(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateAdminPrivateProductMutationResult = NonNullable<Awaited<ReturnType<typeof createAdminPrivateProduct>>>
+    export type CreateAdminPrivateProductMutationBody = BodyType<PrivateProductInput>
+    export type CreateAdminPrivateProductMutationError = ErrorType<unknown>
+    export type CreateAdminPrivateProductMutationVariables = {data: BodyType<PrivateProductInput>}
+
+    export const useCreateAdminPrivateProduct = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createAdminPrivateProduct>>, TError,CreateAdminPrivateProductMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createAdminPrivateProduct>>,
+        TError,
+        CreateAdminPrivateProductMutationVariables,
+        TContext
+      > => {
+      return useMutation(getCreateAdminPrivateProductMutationOptions(options));
+    }
+
+export const getUpdateAdminPrivateProductUrl = (id: string,) => {
+
+
+
+
+  return `/api/admin/private-products/${id}`
+}
+
+export const updateAdminPrivateProduct = async (id: string,
+    privateProductUpdate: PrivateProductUpdate, options?: Parameters<typeof customFetch>[1]): Promise<PrivateProduct> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<PrivateProduct>(getUpdateAdminPrivateProductUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(privateProductUpdate)
+  }
+);}
+
+
+
+
+
+export const getUpdateAdminPrivateProductMutationKey = () => ['updateAdminPrivateProduct'] as const;
+
+export const getUpdateAdminPrivateProductMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateAdminPrivateProduct>>, TError,UpdateAdminPrivateProductMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateAdminPrivateProduct>>, TError,UpdateAdminPrivateProductMutationVariables, TContext> => {
+
+const mutationKey = getUpdateAdminPrivateProductMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateAdminPrivateProduct>>, UpdateAdminPrivateProductMutationVariables> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateAdminPrivateProduct(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateAdminPrivateProductMutationResult = NonNullable<Awaited<ReturnType<typeof updateAdminPrivateProduct>>>
+    export type UpdateAdminPrivateProductMutationBody = BodyType<PrivateProductUpdate>
+    export type UpdateAdminPrivateProductMutationError = ErrorType<unknown>
+    export type UpdateAdminPrivateProductMutationVariables = {id: string;data: BodyType<PrivateProductUpdate>}
+
+    export const useUpdateAdminPrivateProduct = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateAdminPrivateProduct>>, TError,UpdateAdminPrivateProductMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateAdminPrivateProduct>>,
+        TError,
+        UpdateAdminPrivateProductMutationVariables,
+        TContext
+      > => {
+      return useMutation(getUpdateAdminPrivateProductMutationOptions(options));
+    }
+
+export const getDeleteAdminPrivateProductUrl = (id: string,) => {
+
+
+
+
+  return `/api/admin/private-products/${id}`
+}
+
+export const deleteAdminPrivateProduct = async (id: string, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
+
+  return customFetch<void>(getDeleteAdminPrivateProductUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+
+export const getDeleteAdminPrivateProductMutationKey = () => ['deleteAdminPrivateProduct'] as const;
+
+export const getDeleteAdminPrivateProductMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAdminPrivateProduct>>, TError,DeleteAdminPrivateProductMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteAdminPrivateProduct>>, TError,DeleteAdminPrivateProductMutationVariables, TContext> => {
+
+const mutationKey = getDeleteAdminPrivateProductMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteAdminPrivateProduct>>, DeleteAdminPrivateProductMutationVariables> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteAdminPrivateProduct(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteAdminPrivateProductMutationResult = NonNullable<Awaited<ReturnType<typeof deleteAdminPrivateProduct>>>
+
+    export type DeleteAdminPrivateProductMutationError = ErrorType<unknown>
+    export type DeleteAdminPrivateProductMutationVariables = {id: string}
+
+    export const useDeleteAdminPrivateProduct = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAdminPrivateProduct>>, TError,DeleteAdminPrivateProductMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof deleteAdminPrivateProduct>>,
+        TError,
+        DeleteAdminPrivateProductMutationVariables,
+        TContext
+      > => {
+      return useMutation(getDeleteAdminPrivateProductMutationOptions(options));
+    }
+
+export const getListAdminPrivatePaymentsUrl = () => {
+
+
+
+
+  return `/api/admin/private-payments`
+}
+
+export const listAdminPrivatePayments = async ( options?: Parameters<typeof customFetch>[1]): Promise<PrivatePayment[]> => {
+
+  return customFetch<PrivatePayment[]>(getListAdminPrivatePaymentsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListAdminPrivatePaymentsQueryKey = () => {
+    return [
+    `/api/admin/private-payments`
+    ] as const;
+    }
+
+
+export const getListAdminPrivatePaymentsQueryOptions = <TData = Awaited<ReturnType<typeof listAdminPrivatePayments>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listAdminPrivatePayments>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListAdminPrivatePaymentsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listAdminPrivatePayments>>> = ({ signal }) => listAdminPrivatePayments({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listAdminPrivatePayments>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListAdminPrivatePaymentsQueryResult = NonNullable<Awaited<ReturnType<typeof listAdminPrivatePayments>>>
+export type ListAdminPrivatePaymentsQueryError = ErrorType<unknown>
+
+
+
+export function useListAdminPrivatePayments<TData = Awaited<ReturnType<typeof listAdminPrivatePayments>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listAdminPrivatePayments>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListAdminPrivatePaymentsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGetPrivateProductUrl = (token: string,) => {
+
+
+
+
+  return `/api/private-products/${token}`
+}
+
+export const getPrivateProduct = async (token: string, options?: Parameters<typeof customFetch>[1]): Promise<PrivateProduct> => {
+
+  return customFetch<PrivateProduct>(getGetPrivateProductUrl(token),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetPrivateProductQueryKey = (token: string,) => {
+    return [
+    `/api/private-products/${token}`
+    ] as const;
+    }
+
+
+export const getGetPrivateProductQueryOptions = <TData = Awaited<ReturnType<typeof getPrivateProduct>>, TError = ErrorType<unknown>>(token: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPrivateProduct>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetPrivateProductQueryKey(token);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPrivateProduct>>> = ({ signal }) => getPrivateProduct(token, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: token !== null && token !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getPrivateProduct>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetPrivateProductQueryResult = NonNullable<Awaited<ReturnType<typeof getPrivateProduct>>>
+export type GetPrivateProductQueryError = ErrorType<unknown>
+
+
+
+export function useGetPrivateProduct<TData = Awaited<ReturnType<typeof getPrivateProduct>>, TError = ErrorType<unknown>>(
+ token: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPrivateProduct>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetPrivateProductQueryOptions(token,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreatePrivateCheckoutUrl = (token: string,) => {
+
+
+
+
+  return `/api/private-products/${token}/checkout`
+}
+
+export const createPrivateCheckout = async (token: string,
+    privateCheckoutInput: PrivateCheckoutInput, options?: Parameters<typeof customFetch>[1]): Promise<PrivateCheckoutRedirect> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<PrivateCheckoutRedirect>(getCreatePrivateCheckoutUrl(token),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(privateCheckoutInput)
+  }
+);}
+
+
+
+
+
+export const getCreatePrivateCheckoutMutationKey = () => ['createPrivateCheckout'] as const;
+
+export const getCreatePrivateCheckoutMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPrivateCheckout>>, TError,CreatePrivateCheckoutMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createPrivateCheckout>>, TError,CreatePrivateCheckoutMutationVariables, TContext> => {
+
+const mutationKey = getCreatePrivateCheckoutMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createPrivateCheckout>>, CreatePrivateCheckoutMutationVariables> = (props) => {
+          const {token,data} = props ?? {};
+
+          return  createPrivateCheckout(token,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreatePrivateCheckoutMutationResult = NonNullable<Awaited<ReturnType<typeof createPrivateCheckout>>>
+    export type CreatePrivateCheckoutMutationBody = BodyType<PrivateCheckoutInput>
+    export type CreatePrivateCheckoutMutationError = ErrorType<unknown>
+    export type CreatePrivateCheckoutMutationVariables = {token: string;data: BodyType<PrivateCheckoutInput>}
+
+    export const useCreatePrivateCheckout = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPrivateCheckout>>, TError,CreatePrivateCheckoutMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createPrivateCheckout>>,
+        TError,
+        CreatePrivateCheckoutMutationVariables,
+        TContext
+      > => {
+      return useMutation(getCreatePrivateCheckoutMutationOptions(options));
+    }
+
+export const getGetPrivatePaymentUrl = (token: string,
+    sessionId: string,) => {
+
+
+
+
+  return `/api/private-products/${token}/payments/${sessionId}`
+}
+
+export const getPrivatePayment = async (token: string,
+    sessionId: string, options?: Parameters<typeof customFetch>[1]): Promise<PrivatePaymentStatus> => {
+
+  return customFetch<PrivatePaymentStatus>(getGetPrivatePaymentUrl(token,sessionId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetPrivatePaymentQueryKey = (token: string,
+    sessionId: string,) => {
+    return [
+    `/api/private-products/${token}/payments/${sessionId}`
+    ] as const;
+    }
+
+
+export const getGetPrivatePaymentQueryOptions = <TData = Awaited<ReturnType<typeof getPrivatePayment>>, TError = ErrorType<unknown>>(token: string,
+    sessionId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPrivatePayment>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetPrivatePaymentQueryKey(token,sessionId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPrivatePayment>>> = ({ signal }) => getPrivatePayment(token,sessionId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: token !== null && token !== undefined && sessionId !== null && sessionId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getPrivatePayment>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetPrivatePaymentQueryResult = NonNullable<Awaited<ReturnType<typeof getPrivatePayment>>>
+export type GetPrivatePaymentQueryError = ErrorType<unknown>
+
+
+
+export function useGetPrivatePayment<TData = Awaited<ReturnType<typeof getPrivatePayment>>, TError = ErrorType<unknown>>(
+ token: string,
+    sessionId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPrivatePayment>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetPrivatePaymentQueryOptions(token,sessionId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
 
 export const getGetAccessStatusUrl = () => {
 

@@ -19,6 +19,7 @@
 
 export * from "./store-products";
 export * from "./store-catalog-additions";
+export * from "./private-product-links";
 export * from "./store-settings";
 export * from "./demo-orders";
 export * from "./order-email-jobs";
